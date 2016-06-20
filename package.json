@@ -1,7 +1,7 @@
 {
     "name": "node-red-contrib-s7",
     "version": "0.1.0",
-    "description": "\"A Siemens S7 DataBlock Watcher\"",
+    "description": "A Node-RED node to interact with Siemens S7 PLCs",
     "main": "index.js",
     "dependencies": {
         "nodes7": "latest"
