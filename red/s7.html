@@ -1,0 +1,365 @@
+<!--
+ Copyright 2016 Smart-Tech Controle e Automação
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+		 http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="s7 endpoint">
+	<div class="form-row">
+		<ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="node-config-s7-endpoint-tabs"></ul>
+	</div>
+	<div id="node-config-s7-endpoint-tabs-content" style="min-height: 170px;">
+		<div id="s7-endpoint-tab-connection" style="display:none">
+			<div class="form-row">
+				<label for="node-config-input-address"><i class="fa fa-globe"></i> <span data-i18n="s7.endpoint.label.address"></span></label>
+				<input class="input-append-left" type="text" id="node-config-input-address" data-i18n="[placeholder]s7.endpoint.label.address" style="width: 40%;">
+				<label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> <span data-i18n="s7.endpoint.label.port"></span></label>
+				<input type="text" id="node-config-input-port" data-i18n="[placeholder]s7.endpoint.label.port" style="width:45px">
+			</div>
+			<div class="form-row">
+				<label for="node-config-input-rack"><i class="fa fa-globe"></i> <span data-i18n="s7.endpoint.label.rack"></span></label>
+				<input class="input-append-left" type="text" id="node-config-input-rack" data-i18n="[placeholder]s7.endpoint.label.rack" style="width: 40%;">
+				<label for="node-config-input-slot" style="margin-left: 10px; width: 35px; "> <span data-i18n="s7.endpoint.label.slot"></span></label>
+				<input type="text" id="node-config-input-slot" data-i18n="[placeholder]s7.endpoint.label.slot" style="width:45px">
+			</div>
+			<div class="form-row">
+				<label for="node-config-input-cycletime"><i class="fa fa-tag"></i> <span data-i18n="s7.endpoint.label.cycletime"></span></label>
+				<input type="text" id="node-config-input-cycletime" data-i18n="[placeholder]s7.endpoint.label.cycletime" style="width: 60px;"> <span>ms</span>
+			</div>
+			<div class="form-row">
+				<label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="s7.label.name"></span></label>
+				<input type="text" id="node-config-input-name" data-i18n="[placeholder]s7.label.name">
+			</div>
+		</div>
+		<div id="s7-endpoint-tab-variables" style="display:none">
+			<div class="form-row" style="margin-bottom:0;">
+				<label><i class="fa fa-list"></i> <span data-i18n="s7.endpoint.label.variables.list"></span></label>
+			</div>
+			<div class="form-row node-input-variables-container-row" style="margin-bottom: 0px;">
+				<div id="node-config-input-variables-container-div" style="box-sizing: border-box; border-radius: 5px; height: 300px; padding: 5px; border: 1px solid #ccc; overflow-y:scroll;">
+					<ol id="node-config-input-variables-container" style=" list-style-type:none; margin: 0;"></ol>
+				</div>
+			</div>
+			<div class="form-row">
+				<a href="#" class="editor-button editor-button-small" id="node-config-input-add-variable" style="margin-top: 4px;"><i class="fa fa-plus"></i> <span data-i18n="s7.endpoint.label.variables.add"></span></a>
+			</div>
+			<input type="hidden" id="node-config-input-vartable">
+		</div>
+	</div>
+</script>
+
+<script type="text/x-red" data-help-name="s7 endpoint">
+	<p>Represents a PLC connection</p>
+</script>
+
+<script type="text/javascript">
+	RED.nodes.registerType('s7 endpoint', {
+		category: 'config',
+		defaults: {
+			address: {
+				value: "",
+				validate: RED.validators.regex(/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/)
+			},
+			port: {
+				value: "102",
+				validate: RED.validators.number()
+			},
+			rack: {
+				value: "0",
+				validate: RED.validators.number()
+			},
+			slot: {
+				value: "2",
+				validate: RED.validators.number()
+			},
+			cycletime: {
+				value: 500
+			},
+			name: {
+				value: ""
+			},
+			vartable: {
+				value: [{
+					name: "",
+					addr: ""
+				}]
+			}
+		},
+		label: function() {
+			return this.name || this.address + ":" + this.port + ":" + this.rack + ":" + this.slot;
+		},
+		oneditprepare: function() {
+			var self = this;
+			var labelName = this._("s7.endpoint.label.variables.name");
+			var labelAddr = this._("s7.endpoint.label.variables.addr");
+			var labelDel = this._("s7.endpoint.label.variables.del");
+
+			// Prepare tabs
+			var tabs = RED.tabs.create({
+				id: "node-config-s7-endpoint-tabs",
+				onchange: function(tab) {
+					$("#node-config-s7-endpoint-tabs-content").children().hide();
+					$("#" + tab.id).show();
+				}
+			});
+			tabs.addTab({
+				id: "s7-endpoint-tab-connection",
+				label: this._("s7.endpoint.label.tabs.connection")
+			});
+			tabs.addTab({
+				id: "s7-endpoint-tab-variables",
+				label: this._("s7.endpoint.label.tabs.variables")
+			});
+			setTimeout(function() {
+				tabs.resize()
+			}, 0);
+
+			function generateVariable(variable) {
+				var container = $('<li/>', {
+					style: "background: #fff; margin:0; padding:8px 0px; border-bottom: 1px solid #ccc;"
+				});
+				var row1 = $('<div/>').appendTo(container);
+
+				var variableAddr = $('<input/>', {
+					style: "width: 110px; margin-right: 10px;",
+					class: "node-config-input-variable-addr",
+					type: "text",
+					placeholder: labelAddr
+				}).appendTo(row1);
+
+				var variableName = $('<input/>', {
+					style: "width: 250px",
+					class: "node-config-input-variable-name",
+					type: "text",
+					placeholder: labelName
+				}).appendTo(row1);
+
+				var finalspan = $('<span/>', {
+					style: "float: right; margin-right: 10px;"
+				}).appendTo(row1);
+				var deleteButton = $('<a/>', {
+					href: "#",
+					class: "editor-button editor-button-small",
+					style: "margin-top: 7px; margin-left: 5px;",
+					title: labelDel
+				}).appendTo(finalspan);
+
+				$('<i/>', {
+					class: "fa fa-remove"
+				}).appendTo(deleteButton);
+
+				deleteButton.click(function() {
+					container.css({
+						"background": "#fee"
+					});
+					container.fadeOut(150, function() {
+						$(this).remove();
+					});
+				});
+
+				//populate data
+				variableAddr.val(variable.addr);
+				variableName.val(variable.name);
+
+				$("#node-config-input-variables-container").append(container);
+			}
+
+			$("#node-config-input-add-variable").click(function() {
+				generateVariable({
+					name: "",
+					addr: ""
+				});
+			});
+
+			$("#node-config-input-cycletime").spinner({
+				min: 50
+			});
+
+			if(self.vartable) {
+				if(typeof self.vartable == 'string') {
+					self.vartable = JSON.parse(self.vartable);
+				}
+
+			  for (var i = 0; i < self.vartable.length; i++) {
+			  	generateVariable(self.vartable[i]);
+			  }
+		  }
+
+			console.log('s7:oneditprepare', self);
+		},
+		oneditsave: function() {
+			var node = this;
+			var vars = $("#node-config-input-variables-container").children();
+			node.vartable = [];
+
+			vars.each(function(i) {
+				var elm = $(this);
+				var v = {
+					addr: elm.find(".node-config-input-variable-addr").val(),
+					name: elm.find(".node-config-input-variable-name").val()
+				}
+				node.vartable.push(v);
+			});
+			$('#node-config-input-vartable').val(JSON.stringify(node.vartable));
+
+			console.log('s7:oneditsave', node);
+		}/*,
+		oneditresize: function(size) {
+			var rows = $("#s7-endpoint-tab-variables>div:not(.form-row node-input-variables-container-row)");
+			var height = size.height;
+			for (var i = 0; i < rows.size(); i++) {
+				height -= $(rows[i]).outerHeight(true);
+			}
+			var editorRow = $("#s7-endpoint-tab-variables>div.form-row node-input-variables-container-row");
+			height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")));
+			$("#node-config-input-variables-container-div").css("height", height + "px");
+
+			var rules = $("#node-config-input-variables-container").children();
+			var newWidth = $("#node-config-input-variables-container").width();
+			rules.each(function(i) {
+				$(this).find('.node-config-input-variable-name').typedInput("width", newWidth - 180);
+			});
+		}*/
+	});
+	//# sourceURL=s7EndpointScript.js
+</script>
+
+<!-- ######################################################################################## -->
+
+<script type="text/x-red" data-template-name="s7 in">
+	<div class="form-row">
+		<label for="node-input-endpoint"><i class="fa fa-bolt"></i> <span data-i18n="s7.in.label.endpoint"></span></label>
+		<input type="text" id="node-input-endpoint" data-i18n="[placeholder]s7.in.label.endpoint">
+	</div>
+	<div class="form-row">
+		<label for="node-input-mode"><i class="fa fa-sliders"></i> <span data-i18n="s7.in.label.mode"></span></label>
+		<select type="text" id="node-input-mode">
+			<option value="single" data-i18n="s7.in.mode.single"></option>
+			<option value="all" data-i18n="s7.in.mode.all"></option>
+		</select>
+	</div>
+	<div class="form-row s7-input-var-row">
+		<label for="node-input-variable"><i class="fa fa-random"></i> <span data-i18n="s7.in.label.variable"></span></label>
+		<select type="text" id="node-input-variable">
+		</select>
+	</div>
+	<div class="form-row">
+		<label>&nbsp;</label>
+		<input type="checkbox" id="node-input-diff" style="display: inline-block; width: auto; vertical-align: top;">
+		<label for="node-input-diff" style="width:70%;"><span data-i18n="s7.in.label.diff"></span></label>
+	</div>
+	<div class="form-row">
+		<label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="s7.label.name"></span></label>
+		<input type="text" id="node-input-name" data-i18n="[placeholder]s7.label.name">
+	</div>
+</script>
+
+<script type="text/x-red" data-help-name="s7 in">
+	<p>Reads data from a S7 PLC</p>
+	<p>It's possible to read a single variable, or all configured variables at once. If <i>diff</i> mode is enabled, a message will be sent only when the variable changes (or at least one changes in the &apos;all variables&apos; mode)</p>
+	<p>The status of the node indicates the PLC connection status and the last read value, if available</p>
+</script>
+
+<script type="text/javascript">
+	RED.nodes.registerType('s7 in', {
+		category: 'input',
+		defaults: {
+			endpoint: {
+				value: "",
+				type: "s7 endpoint",
+				required: true
+			},
+			mode: {
+				value: "single"
+			},
+			variable: {
+				value: ""
+			},
+			diff: {
+				value: true
+			},
+			name: {
+				value: ""
+			}
+		},
+		color: "#3FADB5",
+		inputs: 0,
+		outputs: 1,
+		icon: "serial.png",
+		label: function() {
+			var self = this;
+
+			if (this.name) return this.name;
+
+			var endpointNode = RED.nodes.node(this.endpoint);
+			if (endpointNode) {
+				if (this.mode == 'single') {
+					return this.variable;
+				} else {
+					return endpointNode.label();
+				}
+			}
+			return this._("s7.in.label.name");
+		},
+		labelStyle: function() {
+			return this.name ? "node_label_italic" : "";
+		},
+		oneditprepare: function() {
+			var self = this;
+
+			var varList = $('#node-input-variable');
+			var modeList = $('#node-input-mode');
+			var endpointList = $("#node-input-endpoint");
+
+			function updateVarList(endpointId) {
+				$('#node-input-variable option').remove();
+
+				var endpointNode = RED.nodes.node(endpointId);
+				if (!endpointNode) return;
+				var vars = endpointNode.vartable || [];
+				if (typeof vars == 'string') vars = JSON.parse(vars);
+
+				varList.append($('<option/>', {
+					disabled: "disabled",
+					selected: "selected",
+					style: "display:none;",
+					text: vars.length ? self._("s7.in.label.variable-select") : self._("s7.in.label.variable-novar")
+				}));
+
+				$.each(vars, function(i, val) {
+					varList.append($('<option/>', {
+						value: val.name || val.addr,
+						text: val.name || val.addr
+					}));
+					if(val.name == self.variable) {
+						varList.val(self.variable);
+					}
+				});
+			}
+
+			endpointList.change(function() {
+				updateVarList(endpointList.val());
+			});
+			updateVarList(self.endpoint);
+
+			modeList.change(function() {
+				if (modeList.val() == "all") {
+					varList.parent().hide();
+				} else {
+					varList.parent().show();
+				}
+			});
+			modeList.change();
+		}
+	});
+</script>

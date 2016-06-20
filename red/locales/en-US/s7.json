@@ -1,0 +1,54 @@
+{
+    "s7": {
+        "in": {
+            "label": {
+                "name": "s7 in",
+                "endpoint": "PLC",
+                "mode": "Mode",
+                "variable": "Variable",
+                "diff": "Emit only when value changes (diff)",
+                "variable-select": "Select a variable",
+                "variable-novar": "No variables"
+            },
+            "mode": {
+                "single": "Single variable",
+                "all": "All variables"
+            }
+        },
+        "endpoint": {
+            "label": {
+                "address": "IP Address",
+                "port": "Port",
+                "rack": "Rack",
+                "slot": "Slot",
+                "cycletime": "Cycle time",
+                "tabs": {
+                    "connection": "Connection",
+                    "variables": "Variables"
+                },
+                "variables": {
+                    "list": "Variable list",
+                    "add": "Add",
+                    "del": "Remove",
+                    "name": "Name",
+                    "addr": "Address"
+                }
+            },
+            "status": {
+                "online": "online",
+                "badvalues": "failure",
+                "offline": "offline",
+                "unknown": "unknown"
+            }
+        },
+        "label": {
+            "name": "Name",
+            "select": "Select a device"
+        },
+        "error": {
+            "onconnect": "Error connecting to PLC: ",
+            "badvalues": "Failure (Bad values)",
+            "missingconfig": "Missing configuration"
+        }
+    }
+}

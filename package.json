@@ -1,0 +1,25 @@
+{
+    "name": "node-red-contrib-s7",
+    "version": "0.1.0",
+    "description": "\"A Siemens S7 DataBlock Watcher\"",
+    "main": "index.js",
+    "dependencies": {
+        "nodes7": "latest"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+        "hardware",
+        "s7",
+        "plc",
+        "node-red"
+    ],
+    "node-red": {
+        "nodes": {
+            "s7": "red/s7.js"
+        }
+    },
+    "author": "Smart-Tech",
+    "license": "Apache-2.0"
+}
