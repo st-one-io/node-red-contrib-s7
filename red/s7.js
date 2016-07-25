@@ -19,7 +19,7 @@ module.exports = function(RED) {
 
     var util = require('util');
     var nodes7 = require('nodes7');
-    var EventEmitter = require('events');
+    var EventEmitter = require('events').EventEmitter;
 
     // ---------- S7 Endpoint ----------
 
