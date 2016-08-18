@@ -34,26 +34,42 @@ module.exports = function(RED) {
     }
 
     function generateStatus(status, val) {
-      var obj;
+        var obj;
 
-      if(typeof val != 'string' && typeof val != 'number') {
-        val = RED._("s7.endpoint.status.online");
-      }
+        if (typeof val != 'string' && typeof val != 'number') {
+            val = RED._("s7.endpoint.status.online");
+        }
 
-      switch (status) {
-        case 'online':
-          obj = {fill:'green', shape:'dot', text: val};
-          break;
-        case 'badvalues':
-          obj = {fill:'yellow', shape:'dot', text:RED._("s7.endpoint.status.badvalues")};
-          break;
-        case 'offline':
-          obj = {fill:'red', shape:'dot', text:RED._("s7.endpoint.status.offline")};
-          break;
-        default:
-          obj = {fill:'grey', shape:'dot', text:RED._("s7.endpoint.status.unknown")};
-      }
-      return obj;
+        switch (status) {
+            case 'online':
+                obj = {
+                    fill: 'green',
+                    shape: 'dot',
+                    text: val
+                };
+                break;
+            case 'badvalues':
+                obj = {
+                    fill: 'yellow',
+                    shape: 'dot',
+                    text: RED._("s7.endpoint.status.badvalues")
+                };
+                break;
+            case 'offline':
+                obj = {
+                    fill: 'red',
+                    shape: 'dot',
+                    text: RED._("s7.endpoint.status.offline")
+                };
+                break;
+            default:
+                obj = {
+                    fill: 'grey',
+                    shape: 'dot',
+                    text: RED._("s7.endpoint.status.unknown")
+                };
+        }
+        return obj;
     }
 
     function S7Endpoint(config) {
@@ -63,8 +79,8 @@ module.exports = function(RED) {
         var status;
         var vars = config.vartable;
 
-        if(typeof vars == 'string') {
-          vars = JSON.parse(vars);
+        if (typeof vars == 'string') {
+            vars = JSON.parse(vars);
         }
 
         RED.nodes.createNode(this, config);
@@ -74,11 +90,17 @@ module.exports = function(RED) {
             silent: true
         });
 
+        node.getStatus = function getStatus() {
+            return status;
+        }
+
         function manageStatus(newStatus) {
-            if(status == newStatus) return;
+            if (status == newStatus) return;
 
             status = newStatus;
-            node.emit('__STATUS__', {status: status});
+            node.emit('__STATUS__', {
+                status: status
+            });
         }
 
         function cycleCallback(err, values) {
@@ -124,9 +146,12 @@ module.exports = function(RED) {
 
         node.on('close', function(done) {
             clearInterval(node._td);
-            node._conn.dropConnection();
-            done();
+            node._conn.dropConnection(function() {
+                done();
+            });
         });
+
+        manageStatus('offline');
 
         node._conn.initiateConnection({
             host: config.address,
@@ -135,7 +160,7 @@ module.exports = function(RED) {
             slot: config.slot
         }, onConnect);
     }
-    //util.inherits(S7Endpoint, EventEmitter);
+
     S7Endpoint.prototype.writeVar = function(variable, val) {
         //TODO!!!!
     };
@@ -145,7 +170,7 @@ module.exports = function(RED) {
 
     function S7In(config) {
         var node = this;
-        var endpointStatus, currentVal;
+        var currentVal;
         RED.nodes.createNode(this, config);
 
         node.endpoint = RED.nodes.getNode(config.endpoint);
@@ -159,7 +184,7 @@ module.exports = function(RED) {
             msg.payload = data;
             msg.topic = config.mode == 'single' ? config.variable : '';
             node.send(msg);
-            node.status(generateStatus(endpointStatus, currentVal));
+            node.status(generateStatus(node.endpoint.getStatus(), currentVal));
         }
 
         function onDataSelect(data) {
@@ -167,8 +192,7 @@ module.exports = function(RED) {
         }
 
         node.endpoint.on('__STATUS__', function(s) {
-          endpointStatus = s.status;
-          node.status(generateStatus(endpointStatus, currentVal));
+            node.status(generateStatus(s.status, currentVal));
         });
 
         if (config.diff) {
