@@ -36,7 +36,7 @@ module.exports = function(RED) {
     function generateStatus(status, val) {
         var obj;
 
-        if (typeof val != 'string' && typeof val != 'number') {
+        if (typeof val != 'string' && typeof val != 'number' && typeof val != 'boolean') {
             val = RED._("s7.endpoint.status.online");
         }
 
@@ -45,7 +45,7 @@ module.exports = function(RED) {
                 obj = {
                     fill: 'green',
                     shape: 'dot',
-                    text: val
+                    text: val.toString()
                 };
                 break;
             case 'badvalues':
@@ -118,6 +118,7 @@ module.exports = function(RED) {
                 if (oldValues[key] !== values[key]) {
                     changed = true;
                     node.emit(key, values[key]);
+                    node.emit('__CHANGED__', {key: key, value: values[key]});
                     oldValues[key] = values[key];
                 }
             });
@@ -170,7 +171,7 @@ module.exports = function(RED) {
 
     function S7In(config) {
         var node = this;
-        var currentVal;
+        var statusVal;
         RED.nodes.createNode(this, config);
 
         node.endpoint = RED.nodes.getNode(config.endpoint);
@@ -178,13 +179,27 @@ module.exports = function(RED) {
             return node.error(RED._("s7.in.error.missingconfig"));
         }
 
-        function onData(data) {
-            var msg = {};
-            currentVal = data;
-            msg.payload = data;
-            msg.topic = config.mode == 'single' ? config.variable : '';
+        function sendMsg(data, key, status) {
+            if (key === undefined) key = '';
+            var msg = {
+                payload: data,
+                topic: key
+            };
+            statusVal = status !== undefined ? status : data;
             node.send(msg);
-            node.status(generateStatus(node.endpoint.getStatus(), currentVal));
+            node.status(generateStatus(node.endpoint.getStatus(), statusVal));
+        }
+
+        function onChanged(variable) {
+            sendMsg(variable.value, variable.key, null);
+        }
+
+        function onDataSplit(data) {
+            Object.keys(data).forEach(key => sendMsg(data[key], key, null));
+        }
+
+        function onData(data) {
+            sendMsg(data, config.mode == 'single' ? config.variable : '')
         }
 
         function onDataSelect(data) {
@@ -192,39 +207,45 @@ module.exports = function(RED) {
         }
 
         node.endpoint.on('__STATUS__', function(s) {
-            node.status(generateStatus(s.status, currentVal));
+            node.status(generateStatus(s.status, statusVal));
         });
 
         if (config.diff) {
-            if (config.mode == 'all') {
-                node.endpoint.on('__ALL_CHANGED__', onData);
-            } else {
-                node.endpoint.on(config.variable, onData);
+            switch (config.mode) {
+                case 'all-split':
+                    node.endpoint.on('__CHANGED__', onChanged);
+                    break;
+                case 'single':
+                    node.endpoint.on(config.variable, onData);
+                    break;
+                case 'all':
+                default:
+                    node.endpoint.on('__ALL_CHANGED__', onData);
             }
         } else {
-            if (config.mode == 'all') {
-                node.endpoint.on('__ALL__', onData);
-            } else {
-                node.endpoint.on('__ALL__', onDataSelect);
+            switch (config.mode) {
+                case 'all-split':
+                    node.endpoint.on('__ALL__', onDataSplit);
+                    break;
+                case 'single':
+                    node.endpoint.on('__ALL__', onDataSelect);
+                    break;
+                case 'all':
+                default:
+                    node.endpoint.on('__ALL__', onData);
             }
         }
 
         node.on('close', function(done) {
             node.endpoint.removeListener('__ALL__', onDataSelect);
+            node.endpoint.removeListener('__ALL__', onDataSplit);
             node.endpoint.removeListener('__ALL__', onData);
             node.endpoint.removeListener('__ALL_CHANGED__', onData);
+            node.endpoint.removeListener('__CHANGED__', onChanged);
             node.endpoint.removeListener(config.variable, onData);
             done();
         });
     }
     RED.nodes.registerType("s7 in", S7In);
-
-    /*
-    RED.httpAdmin.get('/pendaq/scope', RED.auth.needsPermission('pendaq.scope'), function(req, res) {
-        res.json({
-            info: "TBD!"
-        });
-    });
-    //*/
 
 };

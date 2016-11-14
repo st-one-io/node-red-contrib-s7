@@ -53,7 +53,7 @@
 			<div class="form-row">
 				<a href="#" class="editor-button editor-button-small" id="node-config-input-add-variable" style="margin-top: 4px;"><i class="fa fa-plus"></i> <span data-i18n="s7.endpoint.label.variables.add"></span></a>
 			</div>
-			<input type="hidden" id="node-config-input-vartable">
+			<!--<input type="hidden" id="node-config-input-vartable">-->
 		</div>
 	</div>
 </script>
@@ -194,8 +194,6 @@
 			  	generateVariable(self.vartable[i]);
 			  }
 		  }
-
-			console.log('s7:oneditprepare', self);
 		},
 		oneditsave: function() {
 			var node = this;
@@ -210,9 +208,7 @@
 				}
 				node.vartable.push(v);
 			});
-			$('#node-config-input-vartable').val(JSON.stringify(node.vartable));
-
-			console.log('s7:oneditsave', node);
+			//$('#node-config-input-vartable').val(JSON.stringify(node.vartable));
 		}/*,
 		oneditresize: function(size) {
 			var rows = $("#s7-endpoint-tab-variables>div:not(.form-row node-input-variables-container-row)");
@@ -245,6 +241,7 @@
 		<label for="node-input-mode"><i class="fa fa-sliders"></i> <span data-i18n="s7.in.label.mode"></span></label>
 		<select type="text" id="node-input-mode">
 			<option value="single" data-i18n="s7.in.mode.single"></option>
+			<option value="all-split" data-i18n="s7.in.mode.all-split"></option>
 			<option value="all" data-i18n="s7.in.mode.all"></option>
 		</select>
 	</div>
@@ -266,8 +263,12 @@
 
 <script type="text/x-red" data-help-name="s7 in">
 	<p>Reads data from a S7 PLC</p>
-	<p>It's possible to read a single variable, or all configured variables at once. If <i>diff</i> mode is enabled, a message will be sent only when the variable changes (or at least one changes in the &apos;all variables&apos; mode)</p>
-	<p>The status of the node indicates the PLC connection status and the last read value, if available</p>
+	<p>All data is read cyclically from the PLC as configured in the <i>s7 endpoint</i>, but there are three modes of making it available in a flow:</p>
+	<ul>
+		<li><b>Single variable:</b> A single variable can be selected from the configured variables, and a message is sent every cycle, or only when it changes if <i>diff</i> is checked. <code>msg.payload</code> contains the variable's value and <code>msg.topic</code> has the variable's name.</li>
+		<li><b>All variables, one per message:</b> Like the <i>Single variable</i> mode, but for all variables configured. If <i>diff</i> is checked, a message is sent everytime any variable changes. If <i>diff</i> is unchecked, one message is sent for every variable, in every cycle. Care must be taken about the number of messages per second in this mode.</li>
+		<li><b>All variables:</b> In this mode, <code>msg.payload</code> contains an object with all configured variables and their values. If <i>diff</i> is checked, a message is sent if at least one of the variables changes its value.</li>
+	</ul>
 </script>
 
 <script type="text/javascript">
@@ -327,7 +328,7 @@
 				var endpointNode = RED.nodes.node(endpointId);
 				if (!endpointNode) return;
 				var vars = endpointNode.vartable || [];
-				if (typeof vars == 'string') vars = JSON.parse(vars);
+				if (typeof vars === 'string') vars = JSON.parse(vars);
 
 				varList.append($('<option/>', {
 					disabled: "disabled",
@@ -353,10 +354,10 @@
 			updateVarList(self.endpoint);
 
 			modeList.change(function() {
-				if (modeList.val() == "all") {
-					varList.parent().hide();
-				} else {
+				if (modeList.val() == "single") {
 					varList.parent().show();
+				} else {
+					varList.parent().hide();
 				}
 			});
 			modeList.change();

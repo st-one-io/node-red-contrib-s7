@@ -12,6 +12,7 @@
             },
             "mode": {
                 "single": "Single variable",
+                "all-split": "All variables, one per message",
                 "all": "All variables"
             }
         },
