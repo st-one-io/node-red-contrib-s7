@@ -1,3 +1,7 @@
+Version: 0.2.1
+------------
+- Add repository/bugs information to package.json
+
 Version: 0.2.0
 ------------
 - Implements new reading mode "All variables, one per message"

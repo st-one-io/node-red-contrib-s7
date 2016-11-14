@@ -6,6 +6,14 @@
     "dependencies": {
         "nodes7": ">=0.1.11"
     },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/netsmarttech/node-red-contrib-s7.git"
+    },
+    "bugs": {
+      "url": "https://github.com/netsmarttech/node-red-contrib-s7/issues",
+      "email": "node-red@googlegroups.com"
+    },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
