@@ -195,7 +195,9 @@ module.exports = function(RED) {
         }
 
         function onDataSplit(data) {
-            Object.keys(data).forEach(key => sendMsg(data[key], key, null));
+            Object.keys(data).forEach(function(key) {
+                sendMsg(data[key], key, null)
+            });
         }
 
         function onData(data) {

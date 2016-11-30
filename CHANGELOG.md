@@ -1,3 +1,7 @@
+Version: 0.2.2
+------------
+- Replace arrow founction with standard function, so we're backwards compatible with previous versions of Node.JS
+
 Version: 0.2.1
 ------------
 - Add repository/bugs information to package.json
