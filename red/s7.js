@@ -77,6 +77,8 @@ module.exports = function(RED) {
         var node = this;
         var oldValues = {};
         var status;
+        var readInProgress = false;
+        var readDeferred = false;
         var vars = config.vartable;
 
         if (typeof vars == 'string') {
@@ -104,6 +106,13 @@ module.exports = function(RED) {
         }
 
         function cycleCallback(err, values) {
+            readInProgress = false;
+
+            if(readDeferred) {
+                doCycle();
+                readDeferred = false;
+            }
+
             if (err) {
                 manageStatus('badvalues');
                 node.error(RED._("s7.error.badvalues"));
@@ -126,7 +135,12 @@ module.exports = function(RED) {
         }
 
         function doCycle() {
-            node._conn.readAllItems(cycleCallback);
+            if(!readInProgress) {
+                node._conn.readAllItems(cycleCallback);
+                readInProgress = true;
+            } else {
+                readDeferred = true;
+            }
         }
 
         function onConnect(err) {
@@ -208,9 +222,11 @@ module.exports = function(RED) {
             onData(data[config.variable]);
         }
 
-        node.endpoint.on('__STATUS__', function(s) {
+        function onEndpointStatus(s) {
             node.status(generateStatus(s.status, statusVal));
-        });
+        }
+
+        node.endpoint.on('__STATUS__', onEndpointStatus);
 
         if (config.diff) {
             switch (config.mode) {
@@ -244,6 +260,7 @@ module.exports = function(RED) {
             node.endpoint.removeListener('__ALL__', onData);
             node.endpoint.removeListener('__ALL_CHANGED__', onData);
             node.endpoint.removeListener('__CHANGED__', onChanged);
+            node.endpoint.removeListener('__STATUS__', onEndpointStatus);
             node.endpoint.removeListener(config.variable, onData);
             done();
         });

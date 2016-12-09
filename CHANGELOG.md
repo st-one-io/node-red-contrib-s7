@@ -1,3 +1,10 @@
+Version: 0.2.3
+------------
+- [BUGFIX] - memory leak on __STATUS__ event that was registered on the endpoint node but never removed
+- [BUGFIX] - show the endpoint label if mode:single but no variable configured, label was empty
+- Defer the reading cycle if the previous reading hasn't returned yet. This prevents queuing a lot of read requests in the stack
+- Displays the variable's address in the config of the S7 In node for information purposes only
+
 Version: 0.2.2
 ------------
 - Replace arrow founction with standard function, so we're backwards compatible with previous versions of Node.JS

@@ -249,6 +249,7 @@
 		<label for="node-input-variable"><i class="fa fa-random"></i> <span data-i18n="s7.in.label.variable"></span></label>
 		<select type="text" id="node-input-variable">
 		</select>
+    <span id="s7-custom-var-addr"></span>
 	</div>
 	<div class="form-row">
 		<label>&nbsp;</label>
@@ -304,11 +305,7 @@
 
 			var endpointNode = RED.nodes.node(this.endpoint);
 			if (endpointNode) {
-				if (this.mode == 'single') {
-					return this.variable;
-				} else {
-					return endpointNode.label();
-				}
+				return (this.mode == 'single' ? this.variable : null) || endpointNode.label();
 			}
 			return this._("s7.in.label.name");
 		},
@@ -319,15 +316,17 @@
 			var self = this;
 
 			var varList = $('#node-input-variable');
+			var varAddr = $('#s7-custom-var-addr');
 			var modeList = $('#node-input-mode');
 			var endpointList = $("#node-input-endpoint");
+			var vars = [];
 
 			function updateVarList(endpointId) {
 				$('#node-input-variable option').remove();
 
 				var endpointNode = RED.nodes.node(endpointId);
 				if (!endpointNode) return;
-				var vars = endpointNode.vartable || [];
+				vars = endpointNode.vartable || [];
 				if (typeof vars === 'string') vars = JSON.parse(vars);
 
 				varList.append($('<option/>', {
@@ -347,6 +346,15 @@
 					}
 				});
 			}
+
+			varList.change(function() {
+				$.each(vars, function(i, val) {
+					if(varList.val() == val.name) {
+						varAddr[0].innerText = val.addr;
+						return true;
+					}
+				});
+			});
 
 			endpointList.change(function() {
 				updateVarList(endpointList.val());
