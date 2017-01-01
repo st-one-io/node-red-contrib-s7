@@ -80,6 +80,8 @@ module.exports = function(RED) {
         var readInProgress = false;
         var readDeferred = false;
         var vars = config.vartable;
+        node.writeInProgress = false;
+        node.writeQueue = [];
 
         if (typeof vars == 'string') {
             vars = JSON.parse(vars);
@@ -94,6 +96,37 @@ module.exports = function(RED) {
 
         node.getStatus = function getStatus() {
             return status;
+        }
+
+        node.writeVar = function writeVar(obj) {
+            node.writeQueue.push(obj);
+
+            if(!node.writeInProgress) {
+                writeNext();
+            }
+
+        };
+
+        function onWritten(err) {
+            node.writeInProgress = false;
+
+            writeNext();
+
+            if (err) {
+                manageStatus('badvalues');
+                node.error(RED._("s7.error.badvalues"));
+                return;
+            }
+
+            manageStatus('online');
+        }
+
+        function writeNext() {
+            var nextElm = node.writeQueue.shift();
+            if(nextElm) {
+                node._conn.writeItems(nextElm.name, nextElm.val, onWritten);
+                node.writeInProgress = true;
+            }
         }
 
         function manageStatus(newStatus) {
@@ -175,10 +208,6 @@ module.exports = function(RED) {
             slot: config.slot
         }, onConnect);
     }
-
-    S7Endpoint.prototype.writeVar = function(variable, val) {
-        //TODO!!!!
-    };
     RED.nodes.registerType("s7 endpoint", S7Endpoint);
 
     // ---------- S7 In ----------
@@ -267,4 +296,42 @@ module.exports = function(RED) {
     }
     RED.nodes.registerType("s7 in", S7In);
 
+    // ---------- S7 Out ----------
+
+    function S7Out(config) {
+        var node = this;
+        var statusVal;
+        RED.nodes.createNode(this, config);
+
+        node.endpoint = RED.nodes.getNode(config.endpoint);
+        if (!node.endpoint) {
+            return node.error(RED._("s7.in.error.missingconfig"));
+        }
+
+        function onEndpointStatus(s) {
+            node.status(generateStatus(s.status, statusVal));
+        }
+
+        function onNewMsg(msg) {
+            var writeObj = {
+                name: config.variable || msg.variable,
+                val: msg.payload
+            }
+
+            if(!writeObj.name) return;
+
+            statusVal = writeObj.val;
+            node.endpoint.writeVar(writeObj);
+            node.status(generateStatus(node.endpoint.getStatus(), statusVal));
+        }
+
+        node.on('input', onNewMsg);
+        node.endpoint.on('__STATUS__', onEndpointStatus);
+
+        node.on('close', function(done) {
+            node.endpoint.removeListener('__STATUS__', onEndpointStatus);
+            done();
+        });
+    }
+    RED.nodes.registerType("s7 out", S7Out);
 };

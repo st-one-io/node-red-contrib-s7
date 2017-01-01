@@ -16,6 +16,14 @@
                 "all": "All variables"
             }
         },
+        "out": {
+            "label": {
+                "name": "s7 out",
+                "endpoint": "PLC",
+                "variable": "Variable",
+                "variable-select": "Select a variable"
+            }
+        },
         "endpoint": {
             "label": {
                 "address": "IP Address",

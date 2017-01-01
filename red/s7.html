@@ -372,3 +372,115 @@
 		}
 	});
 </script>
+
+<!-- ######################################################################################## -->
+
+<script type="text/x-red" data-template-name="s7 out">
+	<div class="form-row">
+		<label for="node-input-endpoint"><i class="fa fa-bolt"></i> <span data-i18n="s7.out.label.endpoint"></span></label>
+		<input type="text" id="node-input-endpoint" data-i18n="[placeholder]s7.out.label.endpoint">
+	</div>
+	<div class="form-row s7-input-var-row">
+		<label for="node-input-variable"><i class="fa fa-random"></i> <span data-i18n="s7.out.label.variable"></span></label>
+		<select type="text" id="node-input-variable">
+		</select>
+    <span id="s7-custom-var-addr"></span>
+	</div>
+	<div class="form-row">
+		<label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="s7.label.name"></span></label>
+		<input type="text" id="node-input-name" data-i18n="[placeholder]s7.label.name">
+	</div>
+</script>
+
+<script type="text/x-red" data-help-name="s7 out">
+	<p>Writes <code>msg.payload</code> to a memory area in a S7 PLC</p>
+  <p>The variable name can be configured in the node and takes precedence. If left blank it should be set by <code>msg.variable</code> on the incoming message.</p>
+	<p><b>Warning:</b> Caution when writing data to production PLCs!</p>
+</script>
+
+<script type="text/javascript">
+	RED.nodes.registerType('s7 out', {
+		category: 'output',
+		defaults: {
+			endpoint: {
+				value: "",
+				type: "s7 endpoint",
+				required: true
+			},
+			variable: {
+				value: ""
+			},
+			name: {
+				value: ""
+			}
+		},
+		color: "#3FADB5",
+		inputs: 1,
+		outputs: 0,
+		icon: "serial.png",
+		label: function() {
+			var self = this;
+
+			if (this.name) return this.name;
+
+			var endpointNode = RED.nodes.node(this.endpoint);
+			if (endpointNode) {
+				return this.variable || endpointNode.label();
+			}
+			return this._("s7.out.label.name");
+		},
+		labelStyle: function() {
+			return this.name ? "node_label_italic" : "";
+		},
+		oneditprepare: function() {
+			var self = this;
+
+			var varList = $('#node-input-variable');
+			var varAddr = $('#s7-custom-var-addr')[0];
+			var endpointList = $("#node-input-endpoint");
+			var vars = [];
+
+			function updateVarList(endpointId) {
+				$('#node-input-variable option').remove();
+
+				varList.append($('<option/>', {
+					//disabled: "disabled",
+					selected: "selected",
+					//style: "display:none;",
+					text: self._("s7.out.label.variable-select"),
+					value: ""
+				}));
+
+				var endpointNode = RED.nodes.node(endpointId);
+				if (!endpointNode) return;
+				vars = endpointNode.vartable || [];
+				if (typeof vars === 'string') vars = JSON.parse(vars);
+
+				$.each(vars, function(i, val) {
+					varList.append($('<option/>', {
+						value: val.name || val.addr,
+						text: val.name || val.addr
+					}));
+					if(val.name == self.variable) {
+						varList.val(self.variable);
+					}
+				});
+			}
+
+			varList.change(function() {
+				varAddr.innerText = ""
+				$.each(vars, function(i, val) {
+					if(varList.val() == val.name) {
+						varAddr.innerText = val.addr;
+						return true;
+					}
+				});
+			});
+
+			endpointList.change(function() {
+				updateVarList(endpointList.val());
+			});
+			updateVarList(self.endpoint);
+		}
+	});
+</script>
