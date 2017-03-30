@@ -80,6 +80,7 @@ module.exports = function(RED) {
         var readInProgress = false;
         var readDeferred = false;
         var vars = config.vartable;
+        var isVerbose = !!RED.settings.get('verbose');
 
         if (typeof vars == 'string') {
             vars = JSON.parse(vars);
@@ -89,7 +90,8 @@ module.exports = function(RED) {
 
         node._vars = createTranslationTable(vars);
         node._conn = new nodes7({
-            silent: true
+            silent: !isVerbose,
+            debug: isVerbose
         });
 
         node.getStatus = function getStatus() {
