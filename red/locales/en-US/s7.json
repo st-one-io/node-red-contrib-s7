@@ -22,7 +22,8 @@
                 "endpoint": "PLC",
                 "variable": "Variable",
                 "variable-select": "Select a variable"
-            }
+            },
+            "disclaimer": "Caution when writing data to production PLCs!"
         },
         "endpoint": {
             "label": {
