@@ -1,3 +1,12 @@
+Version: 1.0.0
+------------
+Major Release
+ - Implements s7 write node
+
+Version: 0.2.4
+------------
+ - Enable underlying nodes7's logging when NodeRED is run in verbose mode (either with -v or at settings.js)
+
 Version: 0.2.3
 ------------
 - [BUGFIX] - memory leak on __STATUS__ event that was registered on the endpoint node but never removed

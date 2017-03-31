@@ -16,6 +16,15 @@
                 "all": "All variables"
             }
         },
+        "out": {
+            "label": {
+                "name": "s7 out",
+                "endpoint": "PLC",
+                "variable": "Variable",
+                "variable-select": "Select a variable"
+            },
+            "disclaimer": "Caution when writing data to production PLCs!"
+        },
         "endpoint": {
             "label": {
                 "address": "IP Address",
