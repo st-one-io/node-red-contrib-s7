@@ -24,12 +24,6 @@ The **S7 In** node makes the variable's values available in a flow in three diff
 *   **All variables:** In this mode, `msg.payload` contains an object with all configured variables and their values. If _diff_ is checked, a message is sent if at least one of the variables changes its value.
 
 
-Limitations
------------
-
-* Currently, only read operations are implemented
-
-
 Bugs and enhancements
 -----------
 
@@ -37,4 +31,4 @@ Please open an issue on the [page of the project on GitHub](https://github.com/n
 
 License
 -----------
-Copyright 2016 Smart-Tech, [Apache 2.0 license](LICENSE).
+Copyright 2016-2017 Smart-Tech, [Apache 2.0 license](LICENSE).
