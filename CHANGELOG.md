@@ -1,3 +1,7 @@
+Version: 1.0.1
+------------
+ - Fixes alignment of s7 write node
+
 Version: 1.0.0
 ------------
 Major Release
