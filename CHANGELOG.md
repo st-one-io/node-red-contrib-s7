@@ -1,3 +1,7 @@
+Version: 1.1.0
+------------
+ - Implement timeout parameter, as we may have higher delays than the default one in unstable networks
+
 Version: 1.0.1
 ------------
  - Fixes alignment of s7 write node

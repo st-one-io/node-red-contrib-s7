@@ -33,8 +33,12 @@
 				<input type="text" id="node-config-input-slot" data-i18n="[placeholder]s7.endpoint.label.slot" style="width:45px">
 			</div>
 			<div class="form-row">
-				<label for="node-config-input-cycletime"><i class="fa fa-tag"></i> <span data-i18n="s7.endpoint.label.cycletime"></span></label>
+				<label for="node-config-input-cycletime"><i class="fa fa-refresh"></i> <span data-i18n="s7.endpoint.label.cycletime"></span></label>
 				<input type="text" id="node-config-input-cycletime" data-i18n="[placeholder]s7.endpoint.label.cycletime" style="width: 60px;"> <span>ms</span>
+			</div>
+			<div class="form-row">
+				<label for="node-config-input-timeout"><i class="fa fa-clock-o"></i> <span data-i18n="s7.endpoint.label.timeout"></span></label>
+				<input type="text" id="node-config-input-timeout" data-i18n="[placeholder]s7.endpoint.label.timeout" style="width: 60px;"> <span>ms</span>
 			</div>
 			<div class="form-row">
 				<label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="s7.label.name"></span></label>
@@ -184,6 +188,13 @@
 			$("#node-config-input-cycletime").spinner({
 				min: 50
 			});
+
+			$("#node-config-input-timeout").spinner({
+				min: 500
+			});
+			if(this.timeout == undefined) {
+				$("#node-config-input-timeout").val(1500);
+			}
 
 			if(self.vartable) {
 				if(typeof self.vartable == 'string') {

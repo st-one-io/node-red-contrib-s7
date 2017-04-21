@@ -32,6 +32,7 @@
                 "rack": "Rack",
                 "slot": "Slot",
                 "cycletime": "Cycle time",
+                "timeout": "Timeout",
                 "tabs": {
                     "connection": "Connection",
                     "variables": "Variables"

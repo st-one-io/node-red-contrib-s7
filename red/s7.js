@@ -95,6 +95,7 @@ module.exports = function(RED) {
             silent: !isVerbose,
             debug: isVerbose
         });
+        node._conn.globalTimeout = parseInt(config.timeout) || 1500;
 
         node.getStatus = function getStatus() {
             return status;
