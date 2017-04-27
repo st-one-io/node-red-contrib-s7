@@ -1,3 +1,7 @@
+Version: 1.1.1
+------------
+ - Fix default value of new timeout configuration
+
 Version: 1.1.0
 ------------
  - Implement timeout parameter, as we may have higher delays than the default one in unstable networks

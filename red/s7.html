@@ -89,6 +89,9 @@
 			cycletime: {
 				value: 500
 			},
+			timeout: {
+				value: 1500
+			},
 			name: {
 				value: ""
 			},
@@ -192,9 +195,6 @@
 			$("#node-config-input-timeout").spinner({
 				min: 500
 			});
-			if(this.timeout == undefined) {
-				$("#node-config-input-timeout").val(1500);
-			}
 
 			if(self.vartable) {
 				if(typeof self.vartable == 'string') {
