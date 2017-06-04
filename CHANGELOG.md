@@ -1,3 +1,7 @@
+Version: 1.1.2
+------------
+ - Fixes #4: Avoid EventEmitter warnings when lots of S7In nodes are used
+
 Version: 1.1.1
 ------------
  - Fix default value of new timeout configuration

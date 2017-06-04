@@ -89,6 +89,9 @@ module.exports = function(RED) {
         }
 
         RED.nodes.createNode(this, config);
+        
+        //avoids warnings when we have a lot of S7In nodes
+        this.setMaxListeners(0);
 
         node._vars = createTranslationTable(vars);
         node._conn = new nodes7({
