@@ -29,8 +29,11 @@
             "label": {
                 "address": "IP Address",
                 "port": "Port",
+                "connmode": "Mode",
                 "rack": "Rack",
                 "slot": "Slot",
+                "tsap-local": "Local TSAP",
+                "tsap-remote": "Remote TSAP",
                 "cycletime": "Cycle time",
                 "timeout": "Timeout",
                 "tabs": {
@@ -44,6 +47,10 @@
                     "name": "Name",
                     "addr": "Address"
                 }
+            },
+            "connmode": {
+                "rack-slot": "Rack/Slot",
+                "tsap": "TSAP"
             },
             "status": {
                 "online": "online",
@@ -59,7 +66,8 @@
         "error": {
             "onconnect": "Error connecting to PLC: ",
             "badvalues": "Failure (Bad values)",
-            "missingconfig": "Missing configuration"
+            "missingconfig": "Missing configuration",
+            "invalidconntype": "Invalid configuration type \"__connmode__\""
         }
     }
 }

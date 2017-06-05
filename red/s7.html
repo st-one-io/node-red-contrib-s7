@@ -15,7 +15,7 @@
 -->
 
 <script type="text/x-red" data-template-name="s7 endpoint">
-	<div class="form-row">
+    <div class="form-row">
 		<ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="node-config-s7-endpoint-tabs"></ul>
 	</div>
 	<div id="node-config-s7-endpoint-tabs-content" style="min-height: 170px;">
@@ -26,11 +26,26 @@
 				<label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> <span data-i18n="s7.endpoint.label.port"></span></label>
 				<input type="text" id="node-config-input-port" data-i18n="[placeholder]s7.endpoint.label.port" style="width:45px">
 			</div>
-			<div class="form-row">
+            <div class="form-row">
+                <label for="node-config-input-connmode"><i class="fa fa-sliders"></i> <span data-i18n="s7.endpoint.label.connmode"></span></label>
+                <select type="text" id="node-config-input-connmode">
+                    <option value="rack-slot" data-i18n="s7.endpoint.connmode.rack-slot"></option>
+                    <option value="tsap" data-i18n="s7.endpoint.connmode.tsap"></option>
+                </select>
+            </div>
+			<div class="form-row" id="node-config-s7-endpoint-mode-rackslot">
 				<label for="node-config-input-rack"><i class="fa fa-globe"></i> <span data-i18n="s7.endpoint.label.rack"></span></label>
 				<input class="input-append-left" type="text" id="node-config-input-rack" data-i18n="[placeholder]s7.endpoint.label.rack" style="width: 40%;">
 				<label for="node-config-input-slot" style="margin-left: 10px; width: 35px; "> <span data-i18n="s7.endpoint.label.slot"></span></label>
 				<input type="text" id="node-config-input-slot" data-i18n="[placeholder]s7.endpoint.label.slot" style="width:45px">
+			</div>
+			<div class="form-row" id="node-config-s7-endpoint-mode-tsap">
+				<label for="node-config-input-localtsaphi"><i class="fa fa-globe"></i> <span data-i18n="s7.endpoint.label.tsap-local"></span></label>
+				<input class="input-append-left" type="text" id="node-config-input-localtsaphi" style="width: 10%;"><span><b>.</b></span>
+				<input class="input-append-left" type="text" id="node-config-input-localtsaplo" style="width: 10%;">
+				<label for="node-config-input-remotetsaphi" style="margin-left: 10px"> <span data-i18n="s7.endpoint.label.tsap-remote"></span></label>
+				<input class="input-append-left" type="text" id="node-config-input-remotetsaphi" style="width: 10%"><span><b>.</b></span>
+				<input class="input-append-left" type="text" id="node-config-input-remotetsaplo" style="width: 10%">
 			</div>
 			<div class="form-row">
 				<label for="node-config-input-cycletime"><i class="fa fa-refresh"></i> <span data-i18n="s7.endpoint.label.cycletime"></span></label>
@@ -67,6 +82,13 @@
 </script>
 
 <script type="text/javascript">
+	function validateTSAP(num) {
+		if(!(/^[0-9a-fA-F]+$/.test(num))) return false;
+		var i = parseInt(num, 16);
+		if(isNaN(i) || i <  0 || i > 0xff) return false;
+		return true;
+	}
+
 	RED.nodes.registerType('s7 endpoint', {
 		category: 'config',
 		defaults: {
@@ -86,6 +108,25 @@
 				value: "2",
 				validate: RED.validators.number()
 			},
+			localtsaphi: {
+				value: "01",
+				validate: validateTSAP
+			},
+			localtsaplo: {
+				value: "00",
+				validate: validateTSAP
+			},
+			remotetsaphi: {
+				value: "01",
+				validate: validateTSAP
+			},
+			remotetsaplo: {
+				value: "00",
+				validate: validateTSAP
+			},
+			connmode: {
+				value: "rack-slot",
+			},
 			cycletime: {
 				value: 500
 			},
@@ -103,13 +144,20 @@
 			}
 		},
 		label: function() {
-			return this.name || this.address + ":" + this.port + ":" + this.rack + ":" + this.slot;
+			return this.name || this.address + ":" + this.port + ":" + (
+				this.connmode == 'tsap' ? 
+				(this.localtsaphi + "." + this.localtsaplo + "/" + this.remotetsaphi + "." + this.remotetsaplo) : 
+				(this.rack + ":" + this.slot));
 		},
 		oneditprepare: function() {
 			var self = this;
 			var labelName = this._("s7.endpoint.label.variables.name");
 			var labelAddr = this._("s7.endpoint.label.variables.addr");
 			var labelDel = this._("s7.endpoint.label.variables.del");
+
+			var connTypeList = $('#node-config-input-connmode');
+			var rackSlotRow = $('#node-config-s7-endpoint-mode-rackslot');
+			var tsapRow = $('#node-config-s7-endpoint-mode-tsap');
 
 			// Prepare tabs
 			var tabs = RED.tabs.create({
@@ -204,7 +252,31 @@
 			  for (var i = 0; i < self.vartable.length; i++) {
 			  	generateVariable(self.vartable[i]);
 			  }
-		  }
+		    }
+
+			if(self.connmode === undefined) {
+				//default for old configurations
+				console.log('change connmode default');
+				self.connmode = 'rack-slot';
+				connTypeList.val(self.connmode);
+			}
+
+			console.log('connmode', connTypeList.val());
+
+			connTypeList.change(function() {
+				if (connTypeList.val() == "rack-slot") {
+					rackSlotRow.show();
+					tsapRow.hide();
+				} else if (connTypeList.val() == "tsap"){
+					rackSlotRow.hide();
+					tsapRow.show();
+				} else {
+					rackSlotRow.hide();
+					tsapRow.hide();
+				}
+			});
+			connTypeList.change();
+			
 		},
 		oneditsave: function() {
 			var node = this;

@@ -76,6 +76,7 @@ module.exports = function(RED) {
         EventEmitter.call(this);
         var node = this;
         var oldValues = {};
+        var connOpts;
         var status;
         var readInProgress = false;
         var readDeferred = false;
@@ -89,9 +90,36 @@ module.exports = function(RED) {
         }
 
         RED.nodes.createNode(this, config);
-        
+
         //avoids warnings when we have a lot of S7In nodes
         this.setMaxListeners(0);
+
+        connOpts = {
+            host: config.address,
+            port: config.port
+        }
+
+        if(config.connmode === undefined) {
+            //default for old configurations
+            config.connmode = 'rack-slot';
+        }
+
+        switch(config.connmode) {
+            case "rack-slot":
+                connOpts.rack = config.rack;
+                connOpts.slot = config.slot;
+                break;
+            case "tsap":
+                //TODO maybe do another range validation here
+                connOpts.localTSAP = parseInt(config.localtsaphi) << 8;
+                connOpts.localTSAP += parseInt(config.localtsaplo);
+                connOpts.remoteTSAP = parseInt(config.remotetsaphi) << 8;
+                connOpts.remoteTSAP += parseInt(config.remotetsaplo);
+                break;
+            default:
+                node.error(RED._("s7.error.invalidconntype", config));
+                return;
+        }
 
         node._vars = createTranslationTable(vars);
         node._conn = new nodes7({
@@ -207,12 +235,7 @@ module.exports = function(RED) {
 
         manageStatus('offline');
 
-        node._conn.initiateConnection({
-            host: config.address,
-            port: config.port,
-            rack: config.rack,
-            slot: config.slot
-        }, onConnect);
+        node._conn.initiateConnection(connOpts, onConnect);
     }
     RED.nodes.registerType("s7 endpoint", S7Endpoint);
 
