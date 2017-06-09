@@ -1,3 +1,7 @@
+Version: 1.2.0
+------------
+ - Implements buttons to import and export the variable list in the S7 Eenpoint node
+
 Version: 1.1.2
 ------------
  - Fixes #4: Avoid EventEmitter warnings when lots of S7In nodes are used
