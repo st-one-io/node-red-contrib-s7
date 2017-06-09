@@ -43,9 +43,12 @@
                 "variables": {
                     "list": "Variable list",
                     "add": "Add",
+                    "clean": "Remove all",
                     "del": "Remove",
                     "name": "Name",
-                    "addr": "Address"
+                    "addr": "Address",
+                    "export": "Export",
+                    "import": "Import"
                 }
             },
             "connmode": {

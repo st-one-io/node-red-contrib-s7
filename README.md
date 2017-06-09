@@ -27,7 +27,6 @@ The **S7 In** node makes the variable's values available in a flow in three diff
 Wishlist
 -----------
 - Allow to configure local and remote TSAP values (to communicate with LOGO or S7200)
-- Add Import/Export functionality to the Variables list
 - Perform data type validation on the variables list, preventing errors on the runtime
 
 Bugs and enhancements
