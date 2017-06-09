@@ -1,3 +1,7 @@
+Version: 1.3.0
+------------
+ - Implements ability to connect to PLC using local/remote TSAP instead of rack and slot only
+
 Version: 1.2.0
 ------------
  - Implements buttons to import and export the variable list in the S7 Eenpoint node
