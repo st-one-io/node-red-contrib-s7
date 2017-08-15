@@ -92,6 +92,45 @@
 
 <script type="text/javascript">
 
+	function validateS7Address(addr) {
+		var isBitAddr, isStrAddr, isArray, c, i;
+		addr = addr.split(',');
+		if (addr.length > 2) return "MULTCOMMA";
+		if (addr.length > 1) {
+			// test DB part
+			if(!(/^DB\d+/.test(addr[0]))) return "DB";
+			addr = addr[1].split('.');
+			if(!(/^(S|STRING|DI|DINT|I|INT|DW|DWORD|R|REAL|WORD|TIMER|COUNTER|B|BYTE|C|CHAR|X)\d+$/.test(addr[0]))) return "MEMAREADB"; 
+ 			isBitAddr = /^X\d+$/.test(addr[0]);
+ 			isStrAddr = /^(S|STRING)\d+$/.test(addr[0]);
+		} else {
+			addr = addr.split('.');
+			if(!(/^(PIB|PEB|PQB|PAB|PIC|PEC|PQC|PAC|PIW|PEW|PQW|PAW|PII|PEI|PQI|PAI|PID|PED|PQD|PAD|PIDI|PEDI|PQDI|PADI|PIR|PER|PQR|PAR|IB|EB|IC|EC|IW|EW|II|EI|ID|ED|IDI|EDI|IR|ER|QB|AB|QC|AC|QW|AW|QI|AI|QD|AD|QDI|ADI|QR|AR|MB|MC|MW|MI|MD|MDI|MR|T|C|I|E|Q|A|M)\d+$/
+				.test(addr[0]))) return "MEMAREA";
+			isBitAddr = /^(I|E|Q|A|M)\d+$/.test(addr[0]);
+		}
+		if(((isBitAddr || isStrAddr) && addr.length > 3) || addr.length > 2) return "SUBADDR";
+		isArray = ((isBitAddr || isStrAddr) && addr.length == 3) || addr.length == 2;
+		if(isBitAddr && addr.length < 2) return "NOBITADDR";
+ 		if(isStrAddr && addr.length < 2) return "NOSTRLEN";
+		for (i = 1; i < addr.length; i++){
+			if(!(/^\d+$/.test(addr[i]))) return "NUMTYPE";
+		}
+		if(isBitAddr) {
+			num = parseInt(addr[1]);
+ 			if(isNaN(num) || num < 0 || num > 7) return "BITADDR";
+		}
+ 		if(isStrAddr) {
+			num = parseInt(addr[1]);
+ 			if(isNaN(num) || num <= 0) return "STRLEN";
+		}
+		if(isArray){
+ 			num = parseInt(addr[isBitAddr || isStrAddr ? 2 : 1]);
+ 			if(isNaN(num) || num <= 0) return "ARRLEN";
+		}
+		return null;
+	}
+
 	function validateTSAP(num) {
 		if(!(/^[0-9a-fA-F]+$/.test(num))) return false;
 		var i = parseInt(num, 16);

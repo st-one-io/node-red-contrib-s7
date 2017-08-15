@@ -71,6 +71,19 @@
             "badvalues": "Failure (Bad values)",
             "missingconfig": "Missing configuration",
             "invalidconntype": "Invalid configuration type \"__connmode__\""
+        }, 
+        "addrval": {
+            "MULTCOMMA": "Invalid address with multiple commas",
+            "DB": "Invalid DB address",
+            "MEMAREA": "Invalid memory area type",
+            "MEMAREADB": "Invalid memory area type inside DB",
+            "SUBADDR": "Invalid address offset with multiple dots",
+            "NOBITADDR": "Memory area requires bit address",
+            "NOSTRLEN": "Memory area requires string length",
+            "NUMTYPE": "Bit-offset and/or array size must be a number",
+            "ARRLEN": "Array size must be greater than zero",
+            "STRLEN": "String size must be greater than zero",
+            "BITADDR": "Bit offset must be between 0 and 7"
         }
     }
 }
