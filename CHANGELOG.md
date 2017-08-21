@@ -1,3 +1,9 @@
+Version: 1.3.1
+------------
+ - Force a connection restart if we receive no callback response within 10 tries
+ - Retry to connect to PLC if failing to connect on flow deploy
+ - 
+
 Version: 1.3.0
 ------------
  - Implements ability to connect to PLC using local/remote TSAP instead of rack and slot only

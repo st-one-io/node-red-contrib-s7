@@ -70,8 +70,13 @@
             "onconnect": "Error connecting to PLC: ",
             "badvalues": "Failure (Bad values)",
             "missingconfig": "Missing configuration",
+            "noresponse": "No response from PLC, restarting communication",
             "invalidconntype": "Invalid configuration type \"__connmode__\""
-        }, 
+        },
+        "info": {
+            "connect": "Initiating connection to PLC",
+            "disconnect": "Closing connection to PLC"
+        },
         "addrval": {
             "MULTCOMMA": "Invalid address with multiple commas",
             "DB": "Invalid DB address",

@@ -79,7 +79,7 @@ module.exports = function(RED) {
         var connOpts;
         var status;
         var readInProgress = false;
-        var readDeferred = false;
+        var readDeferred = 0;
         var vars = config.vartable;
         var isVerbose = !!RED.settings.get('verbose');
         node.writeInProgress = false;
@@ -177,7 +177,7 @@ module.exports = function(RED) {
 
             if(readDeferred) {
                 doCycle();
-                readDeferred = false;
+                readDeferred = 0;
             }
 
             if (err) {
@@ -206,7 +206,16 @@ module.exports = function(RED) {
                 node._conn.readAllItems(cycleCallback);
                 readInProgress = true;
             } else {
-                readDeferred = true;
+                readDeferred++;
+
+                if(readDeferred > 10) {
+                    node.warn(RED._("s7.error.noresponse"));
+                    closeConnection(function() {
+                        readInProgress = false;
+                        readDeferred = 0;
+                        node._conn.initiateConnection(connOpts, onConnect);
+                    });
+                }
             }
         }
 
@@ -214,6 +223,10 @@ module.exports = function(RED) {
             if (err) {
                 manageStatus('offline');
                 node.error(RED._("s7.error.onconnect") + err.toString());
+
+                //try to reconnect if failed to connect
+                setTimeout(connect, 5000);
+
                 return;
             }
 
@@ -225,17 +238,31 @@ module.exports = function(RED) {
             node._conn.addItems(Object.keys(node._vars));
             node._td = setInterval(doCycle, config.cycletime);
         }
-
-        node.on('close', function(done) {
+        
+        function closeConnection(done) {
+            if (isVerbose) {
+                node.log(RED._("s7.info.disconnect"));
+            }
+            manageStatus('offline');
             clearInterval(node._td);
             node._conn.dropConnection(function() {
-                done();
+                if(typeof done == 'function') done();
             });
-        });
+        }
+
+        node.on('close', closeConnection);
 
         manageStatus('offline');
 
-        node._conn.initiateConnection(connOpts, onConnect);
+        function connect(){
+            if (isVerbose) {
+                node.log(RED._("s7.info.connect"));
+            }
+            node._conn.initiateConnection(connOpts, onConnect);
+        }
+
+        connect();
+
     }
     RED.nodes.registerType("s7 endpoint", S7Endpoint);
 
