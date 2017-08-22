@@ -2,7 +2,7 @@ Version: 1.3.1
 ------------
  - Force a connection restart if we receive no callback response within 10 tries
  - Retry to connect to PLC if failing to connect on flow deploy
- - 
+ - Improve logging
 
 Version: 1.3.0
 ------------
