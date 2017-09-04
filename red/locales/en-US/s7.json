@@ -64,9 +64,9 @@
                 "unknown": "unknown"
             },
             "verbosemode": {
-                "default": "default",
-                "on": "on",
-                "off": "off"
+                "default": "Default",
+                "on": "On",
+                "off": "Off"
             }
         },
         "label": {
