@@ -49,7 +49,9 @@
                     "addr": "Address",
                     "export": "Export",
                     "import": "Import"
-                }
+                },
+                "verbose": "Verbose"
+
             },
             "connmode": {
                 "rack-slot": "Rack/Slot",
@@ -60,6 +62,11 @@
                 "badvalues": "failure",
                 "offline": "offline",
                 "unknown": "unknown"
+            },
+            "verbosemode": {
+                "default": "default",
+                "on": "on",
+                "off": "off"
             }
         },
         "label": {
