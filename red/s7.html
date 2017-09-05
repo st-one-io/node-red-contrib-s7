@@ -58,8 +58,8 @@
 				<input type="text" id="node-config-input-timeout" data-i18n="[placeholder]s7.endpoint.label.timeout" style="width: 60px;">				<span>ms</span>
 			</div>
 			<div class="form-row">
-				<label for="node-config-input-verbose"><i class="fa fa-comment"></i> <span data-i18n="s7.endpoint.label.verbose"></span></label>
-				<select type="text" id="node-config-input-verbose">
+				<label for="node-config-input-verbosemode"><i class="fa fa-comment"></i> <span data-i18n="s7.endpoint.label.verbose"></span></label>
+				<select type="text" id="node-config-input-verbosemode">
 					<option value="default" data-i18n="s7.endpoint.verbosemode.default"></option>
 					<option value="on" data-i18n="s7.endpoint.verbosemode.on"></option>
 					<option value="off" data-i18n="s7.endpoint.verbosemode.off"></option>                 
@@ -395,6 +395,10 @@
 				self.connmode = 'rack-slot';
 				connTypeList.val(self.connmode);
 			}
+
+
+
+
 
 			console.log('connmode', connTypeList.val());
 

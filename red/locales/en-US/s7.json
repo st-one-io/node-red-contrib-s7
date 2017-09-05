@@ -36,6 +36,7 @@
                 "tsap-remote": "Remote TSAP",
                 "cycletime": "Cycle time",
                 "timeout": "Timeout",
+                "verbosemode": "Verbose",
                 "tabs": {
                     "connection": "Connection",
                     "variables": "Variables"
@@ -49,8 +50,7 @@
                     "addr": "Address",
                     "export": "Export",
                     "import": "Import"
-                },
-                "verbose": "Verbose"
+                }
 
             },
             "connmode": {
