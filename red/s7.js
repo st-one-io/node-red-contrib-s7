@@ -81,13 +81,9 @@ module.exports = function(RED) {
         var readInProgress = false;
         var readDeferred = 0;
         var vars = config.vartable;
-        var isVerbose = (config.verbosemode == 'on' || config.verbosemode == 'off') ? (config.verbosemode==on) : RED.settings.get('verbose');
+        var isVerbose = (config.verbose == 'on' || config.verbose == 'off') ? (config.verbose=='on') : RED.settings.get('verbose');
         node.writeInProgress = false;
         node.writeQueue = [];
-
-        node.warn(JSON.stringify(config));
-        node.warn('HELLO '+isVerbose);
-
 
         if (typeof vars == 'string') {
             vars = JSON.parse(vars);

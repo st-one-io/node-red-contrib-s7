@@ -36,7 +36,7 @@
                 "tsap-remote": "Remote TSAP",
                 "cycletime": "Cycle time",
                 "timeout": "Timeout",
-                "verbosemode": "Verbose",
+                "verbose": "Verbose",
                 "tabs": {
                     "connection": "Connection",
                     "variables": "Variables"
@@ -63,7 +63,7 @@
                 "offline": "offline",
                 "unknown": "unknown"
             },
-            "verbosemode": {
+            "verbose": {
                 "default": "Default",
                 "on": "On",
                 "off": "Off"
