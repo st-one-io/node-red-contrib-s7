@@ -36,6 +36,7 @@
                 "tsap-remote": "Remote TSAP",
                 "cycletime": "Cycle time",
                 "timeout": "Timeout",
+                "verbose": "Verbose",
                 "tabs": {
                     "connection": "Connection",
                     "variables": "Variables"
@@ -50,6 +51,7 @@
                     "export": "Export",
                     "import": "Import"
                 }
+
             },
             "connmode": {
                 "rack-slot": "Rack/Slot",
@@ -60,6 +62,11 @@
                 "badvalues": "failure",
                 "offline": "offline",
                 "unknown": "unknown"
+            },
+            "verbose": {
+                "default": "Default",
+                "on": "On",
+                "off": "Off"
             }
         },
         "label": {

@@ -81,7 +81,7 @@ module.exports = function(RED) {
         var readInProgress = false;
         var readDeferred = 0;
         var vars = config.vartable;
-        var isVerbose = !!RED.settings.get('verbose');
+        var isVerbose = (config.verbose == 'on' || config.verbose == 'off') ? (config.verbose=='on') : RED.settings.get('verbose');
         node.writeInProgress = false;
         node.writeQueue = [];
 
@@ -103,6 +103,7 @@ module.exports = function(RED) {
             //default for old configurations
             config.connmode = 'rack-slot';
         }
+
 
         switch(config.connmode) {
             case "rack-slot":
