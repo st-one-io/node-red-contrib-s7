@@ -387,12 +387,20 @@
 				$('#node-config-s7-endpoint-var-import').click();
 			})
 
+			//set defaults for old flows
+
 			if(self.connmode === undefined) {
 				//default for old configurations
 				console.log('change connmode default');
 				self.connmode = 'rack-slot';
 				connTypeList.val(self.connmode);
 			}
+
+			if(self.verbose === undefined) {
+				console.log('defaults verbose to "default"');
+				self.verbose = 'default';
+				$("#node-config-input-verbose").val(self.verbose);
+			} 
 
 			console.log('connmode', connTypeList.val());
 
