@@ -1,3 +1,8 @@
+Version: 1.4.0
+------------
+ - Implements configuration option to set library's debug independently from Node-RED
+ - Sets timeout and TSAP defaults to old configs without them
+
 Version: 1.3.1
 ------------
  - Force a connection restart if we receive no callback response within 10 tries

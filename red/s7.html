@@ -390,19 +390,30 @@
 			//set defaults for old flows
 
 			if(self.connmode === undefined) {
-				//default for old configurations
-				console.log('change connmode default');
+				console.log('defaults conmode to "rack-slot"');
 				self.connmode = 'rack-slot';
+				self.localtsaphi = "01";
+				self.localtsaplo = "00";
+				self.remotetsaphi = "01";
+				self.remotetsaplo = "00";
+				$("#node-config-input-localtsaphi").val(self.localtsaphi);
+				$("#node-config-input-localtsaplo").val(self.localtsaplo);
+				$("#node-config-input-remotetsaphi").val(self.remotetsaphi);
+				$("#node-config-input-remotetsaplo").val(self.remotetsaplo);
 				connTypeList.val(self.connmode);
+			}
+
+			if(self.timeout === undefined) {
+				console.log('defaults timeout to "1500"');
+				self.timeout = 1500;
+				$("#node-config-input-timeout").val(self.timeout);
 			}
 
 			if(self.verbose === undefined) {
 				console.log('defaults verbose to "default"');
 				self.verbose = 'default';
 				$("#node-config-input-verbose").val(self.verbose);
-			} 
-
-			console.log('connmode', connTypeList.val());
+			}
 
 			connTypeList.change(function() {
 				if (connTypeList.val() == "rack-slot") {
