@@ -140,6 +140,8 @@
 	}
 
 	function validateTSAP(num) {
+		num = num.toString();
+		if(num.length != 2) return false;
 		if(!(/^[0-9a-fA-F]+$/.test(num))) return false;
 		var i = parseInt(num, 16);
 		if(isNaN(i) || i <  0 || i > 0xff) return false;

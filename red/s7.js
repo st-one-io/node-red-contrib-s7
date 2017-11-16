@@ -72,6 +72,15 @@ module.exports = function(RED) {
         return obj;
     }
 
+    function validateTSAP(num) {
+        num = num.toString();
+        if (num.length != 2) return false;
+        if (!(/^[0-9a-fA-F]+$/.test(num))) return false;
+        var i = parseInt(num, 16);
+        if (isNaN(i) || i < 0 || i > 0xff) return false;
+        return true;
+    }
+
     function S7Endpoint(config) {
         EventEmitter.call(this);
         var node = this;
@@ -111,11 +120,18 @@ module.exports = function(RED) {
                 connOpts.slot = config.slot;
                 break;
             case "tsap":
-                //TODO maybe do another range validation here
-                connOpts.localTSAP = parseInt(config.localtsaphi) << 8;
-                connOpts.localTSAP += parseInt(config.localtsaplo);
-                connOpts.remoteTSAP = parseInt(config.remotetsaphi) << 8;
-                connOpts.remoteTSAP += parseInt(config.remotetsaplo);
+                if (!validateTSAP(config.localtsaphi) ||
+                    !validateTSAP(config.localtsaplo) ||
+                    !validateTSAP(config.remotetsaphi) ||
+                    !validateTSAP(config.remotetsaplo)) {
+                    node.error(RED._("s7.error.invalidtsap", config));
+                    return;
+                }
+            
+                connOpts.localTSAP = parseInt(config.localtsaphi, 16) << 8;
+                connOpts.localTSAP += parseInt(config.localtsaplo, 16);
+                connOpts.remoteTSAP = parseInt(config.remotetsaphi, 16) << 8;
+                connOpts.remoteTSAP += parseInt(config.remotetsaplo, 16);
                 break;
             default:
                 node.error(RED._("s7.error.invalidconntype", config));

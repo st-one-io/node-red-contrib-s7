@@ -78,7 +78,8 @@
             "badvalues": "Failure (Bad values)",
             "missingconfig": "Missing configuration",
             "noresponse": "No response from PLC, restarting communication",
-            "invalidconntype": "Invalid configuration type \"__connmode__\""
+            "invalidconntype": "Invalid configuration type \"__connmode__\"",
+            "invalidtsap": "Invalid TSAP configuration"
         },
         "info": {
             "connect": "Initiating connection to PLC",
