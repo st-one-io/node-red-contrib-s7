@@ -62,6 +62,13 @@ module.exports = function(RED) {
                     text: RED._("s7.endpoint.status.offline")
                 };
                 break;
+	    case 'connecting':
+		obj = {
+		    fill: 'yellow',
+		    shape: 'dot',
+		    text: RED._("s7.endpoint.status.connecting")
+		};
+		break;
             default:
                 obj = {
                     fill: 'grey',
@@ -269,9 +276,9 @@ module.exports = function(RED) {
 
         node.on('close', closeConnection);
 
-        manageStatus('offline');
 
         function connect(){
+            manageStatus('connecting');
             if (isVerbose) {
                 node.log(RED._("s7.info.connect"));
             }
@@ -327,6 +334,8 @@ module.exports = function(RED) {
         function onEndpointStatus(s) {
             node.status(generateStatus(s.status, statusVal));
         }
+
+	node.status({fill:"yellow",shape:"dot",text:RED._("s7.endpoint.status.connecting")});
 
         node.endpoint.on('__STATUS__', onEndpointStatus);
 
@@ -398,6 +407,8 @@ module.exports = function(RED) {
             node.status(generateStatus(node.endpoint.getStatus(), statusVal));
         }
 
+	node.status({fill:"yellow",shape:"dot",text:RED._("s7.endpoint.status.connecting")});
+
         node.on('input', onNewMsg);
         node.endpoint.on('__STATUS__', onEndpointStatus);
 
@@ -405,6 +416,7 @@ module.exports = function(RED) {
             node.endpoint.removeListener('__STATUS__', onEndpointStatus);
             done();
         });
+
     }
     RED.nodes.registerType("s7 out", S7Out);
 };
