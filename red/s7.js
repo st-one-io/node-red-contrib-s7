@@ -162,7 +162,7 @@ module.exports = function(RED) {
 
             if (err) {
                 manageStatus('badvalues');
-                node.error(RED._("s7.error.badvalues"));
+                node.error(RED._("s7.error.badvalues"), {});
                 return;
             }
 
@@ -198,7 +198,7 @@ module.exports = function(RED) {
 
             if (err) {
                 manageStatus('badvalues');
-                node.error(RED._("s7.error.badvalues"));
+                node.error(RED._("s7.error.badvalues"), {});
                 return;
             }
 
@@ -225,7 +225,7 @@ module.exports = function(RED) {
                 readDeferred++;
 
                 if(readDeferred > 10) {
-                    node.warn(RED._("s7.error.noresponse"));
+                    node.warn(RED._("s7.error.noresponse"), {});
                     connect(); //this also drops any existing connection
                 }
             }
@@ -236,7 +236,7 @@ module.exports = function(RED) {
 
             if (err) {
                 manageStatus('offline');
-                node.error(RED._("s7.error.onconnect") + err.toString());
+                node.error(RED._("s7.error.onconnect") + err.toString(), {});
 
                 connected = false;
 
