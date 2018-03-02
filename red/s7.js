@@ -365,7 +365,7 @@ module.exports = function(RED) {
             node.status(generateStatus(s.status, statusVal));
         }
 
-	node.status({fill:"yellow",shape:"dot",text:RED._("s7.endpoint.status.connecting")});
+        node.status(generateStatus("connecting", ""));
 
         node.endpoint.on('__STATUS__', onEndpointStatus);
 
@@ -437,7 +437,7 @@ module.exports = function(RED) {
             node.status(generateStatus(node.endpoint.getStatus(), statusVal));
         }
 
-	node.status({fill:"yellow",shape:"dot",text:RED._("s7.endpoint.status.connecting")});
+        node.status(generateStatus("connecting", ""));
 
         node.on('input', onNewMsg);
         node.endpoint.on('__STATUS__', onEndpointStatus);
