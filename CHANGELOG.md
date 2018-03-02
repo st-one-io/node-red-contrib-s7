@@ -1,3 +1,13 @@
+Version: 1.5.0
+------------
+ - Enables errors to be catch by the "catch" node (#17)
+ - Implements "connecting" status - thanks @CarstenMaul (#19)
+ - Fixes connection leak introduced on 1.3.1
+
+Version: 1.4.1
+------------
+ - Fixes #11: Correctly parses tsap values and improve validation
+
 Version: 1.4.0
 ------------
  - Implements configuration option to set library's debug independently from Node-RED
