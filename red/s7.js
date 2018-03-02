@@ -91,6 +91,8 @@ module.exports = function(RED) {
         var readDeferred = 0;
         var vars = config.vartable;
         var isVerbose = (config.verbose == 'on' || config.verbose == 'off') ? (config.verbose=='on') : RED.settings.get('verbose');
+        var connectTimeoutTimer;
+        var connected = false;
         node.writeInProgress = false;
         node.writeQueue = [];
 
@@ -139,11 +141,6 @@ module.exports = function(RED) {
         }
 
         node._vars = createTranslationTable(vars);
-        node._conn = new nodes7({
-            silent: !isVerbose,
-            debug: isVerbose
-        });
-        node._conn.globalTimeout = parseInt(config.timeout) || 1500;
 
         node.getStatus = function getStatus() {
             return status;
@@ -173,6 +170,8 @@ module.exports = function(RED) {
         }
 
         function writeNext() {
+            if(!connected) return;
+
             var nextElm = node.writeQueue.shift();
             if(nextElm) {
                 node._conn.writeItems(nextElm.name, nextElm.val, onWritten);
@@ -192,7 +191,7 @@ module.exports = function(RED) {
         function cycleCallback(err, values) {
             readInProgress = false;
 
-            if(readDeferred) {
+            if (readDeferred && connected) {
                 doCycle();
                 readDeferred = 0;
             }
@@ -219,7 +218,7 @@ module.exports = function(RED) {
         }
 
         function doCycle() {
-            if(!readInProgress) {
+            if (!readInProgress && connected) {
                 node._conn.readAllItems(cycleCallback);
                 readInProgress = true;
             } else {
@@ -227,25 +226,29 @@ module.exports = function(RED) {
 
                 if(readDeferred > 10) {
                     node.warn(RED._("s7.error.noresponse"));
-                    closeConnection(function() {
-                        readInProgress = false;
-                        readDeferred = 0;
-                        node._conn.initiateConnection(connOpts, onConnect);
-                    });
+                    connect(); //this also drops any existing connection
                 }
             }
         }
 
         function onConnect(err) {
+            clearTimeout(connectTimeoutTimer);
+
             if (err) {
                 manageStatus('offline');
                 node.error(RED._("s7.error.onconnect") + err.toString());
 
+                connected = false;
+
                 //try to reconnect if failed to connect
-                setTimeout(connect, 5000);
+                connectTimeoutTimer = setTimeout(connect, 5000);
 
                 return;
             }
+
+            readInProgress = false;
+            readDeferred = 0;
+            connected = true;
 
             manageStatus('online');
 
@@ -254,6 +257,8 @@ module.exports = function(RED) {
             });
             node._conn.addItems(Object.keys(node._vars));
             node._td = setInterval(doCycle, config.cycletime);
+
+            writeNext();
         }
         
         function closeConnection(done) {
@@ -262,9 +267,18 @@ module.exports = function(RED) {
             }
             manageStatus('offline');
             clearInterval(node._td);
-            node._conn.dropConnection(function() {
-                if(typeof done == 'function') done();
-            });
+
+            function doCb(){
+                node._conn = null;
+                if (typeof done == 'function') done();
+            }
+            connected = false;
+
+            if(node._conn) {
+                node._conn.dropConnection(doCb);
+            } else {
+                process.nextTick(doCb);
+            }
         }
 
         node.on('close', closeConnection);
@@ -272,10 +286,25 @@ module.exports = function(RED) {
         manageStatus('offline');
 
         function connect(){
-            if (isVerbose) {
-                node.log(RED._("s7.info.connect"));
+            function doConnect() {
+                if (isVerbose) {
+                    node.log(RED._("s7.info.connect"));
+                }
+
+                connected = false;
+                node._conn = new nodes7({
+                    silent: !isVerbose,
+                    debug: isVerbose
+                });
+                node._conn.globalTimeout = parseInt(config.timeout) || 1500;
+                node._conn.initiateConnection(connOpts, onConnect);
             }
-            node._conn.initiateConnection(connOpts, onConnect);
+
+            if(node._conn) {
+                closeConnection(doConnect);
+            } else {
+                process.nextTick(doConnect);
+            }
         }
 
         connect();
