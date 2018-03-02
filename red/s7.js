@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-module.exports = function(RED) {
+module.exports = function (RED) {
     "use strict";
 
     var util = require('util');
@@ -26,7 +26,7 @@ module.exports = function(RED) {
     function createTranslationTable(vars) {
         var res = {};
 
-        vars.forEach(function(elm) {
+        vars.forEach(function (elm) {
             res[elm.name] = elm.addr;
         });
 
@@ -62,13 +62,13 @@ module.exports = function(RED) {
                     text: RED._("s7.endpoint.status.offline")
                 };
                 break;
-	    case 'connecting':
-		obj = {
-		    fill: 'yellow',
-		    shape: 'dot',
-		    text: RED._("s7.endpoint.status.connecting")
-		};
-		break;
+            case 'connecting':
+                obj = {
+                    fill: 'yellow',
+                    shape: 'dot',
+                    text: RED._("s7.endpoint.status.connecting")
+                };
+                break;
             default:
                 obj = {
                     fill: 'grey',
@@ -97,7 +97,7 @@ module.exports = function(RED) {
         var readInProgress = false;
         var readDeferred = 0;
         var vars = config.vartable;
-        var isVerbose = (config.verbose == 'on' || config.verbose == 'off') ? (config.verbose=='on') : RED.settings.get('verbose');
+        var isVerbose = (config.verbose == 'on' || config.verbose == 'off') ? (config.verbose == 'on') : RED.settings.get('verbose');
         var connectTimeoutTimer;
         var connected = false;
         node.writeInProgress = false;
@@ -115,15 +115,15 @@ module.exports = function(RED) {
         connOpts = {
             host: config.address,
             port: config.port
-        }
+        };
 
-        if(config.connmode === undefined) {
+        if (config.connmode === undefined) {
             //default for old configurations
             config.connmode = 'rack-slot';
         }
 
 
-        switch(config.connmode) {
+        switch (config.connmode) {
             case "rack-slot":
                 connOpts.rack = config.rack;
                 connOpts.slot = config.slot;
@@ -136,7 +136,7 @@ module.exports = function(RED) {
                     node.error(RED._("s7.error.invalidtsap", config));
                     return;
                 }
-            
+
                 connOpts.localTSAP = parseInt(config.localtsaphi, 16) << 8;
                 connOpts.localTSAP += parseInt(config.localtsaplo, 16);
                 connOpts.remoteTSAP = parseInt(config.remotetsaphi, 16) << 8;
@@ -151,12 +151,12 @@ module.exports = function(RED) {
 
         node.getStatus = function getStatus() {
             return status;
-        }
+        };
 
         node.writeVar = function writeVar(obj) {
             node.writeQueue.push(obj);
 
-            if(!node.writeInProgress) {
+            if (!node.writeInProgress) {
                 writeNext();
             }
 
@@ -177,10 +177,10 @@ module.exports = function(RED) {
         }
 
         function writeNext() {
-            if(!connected) return;
+            if (!connected) return;
 
             var nextElm = node.writeQueue.shift();
-            if(nextElm) {
+            if (nextElm) {
                 node._conn.writeItems(nextElm.name, nextElm.val, onWritten);
                 node.writeInProgress = true;
             }
@@ -213,11 +213,14 @@ module.exports = function(RED) {
 
             var changed = false;
             node.emit('__ALL__', values);
-            Object.keys(values).forEach(function(key) {
+            Object.keys(values).forEach(function (key) {
                 if (oldValues[key] !== values[key]) {
                     changed = true;
                     node.emit(key, values[key]);
-                    node.emit('__CHANGED__', {key: key, value: values[key]});
+                    node.emit('__CHANGED__', {
+                        key: key,
+                        value: values[key]
+                    });
                     oldValues[key] = values[key];
                 }
             });
@@ -231,7 +234,7 @@ module.exports = function(RED) {
             } else {
                 readDeferred++;
 
-                if(readDeferred > 10) {
+                if (readDeferred > 10) {
                     node.warn(RED._("s7.error.noresponse"), {});
                     connect(); //this also drops any existing connection
                 }
@@ -259,7 +262,7 @@ module.exports = function(RED) {
 
             manageStatus('online');
 
-            node._conn.setTranslationCB(function(tag) {
+            node._conn.setTranslationCB(function (tag) {
                 return node._vars[tag];
             });
             node._conn.addItems(Object.keys(node._vars));
@@ -267,7 +270,7 @@ module.exports = function(RED) {
 
             writeNext();
         }
-        
+
         function closeConnection(done) {
             if (isVerbose) {
                 node.log(RED._("s7.info.disconnect"));
@@ -275,13 +278,13 @@ module.exports = function(RED) {
             manageStatus('offline');
             clearInterval(node._td);
 
-            function doCb(){
+            function doCb() {
                 node._conn = null;
                 if (typeof done == 'function') done();
             }
             connected = false;
 
-            if(node._conn) {
+            if (node._conn) {
                 node._conn.dropConnection(doCb);
             } else {
                 process.nextTick(doCb);
@@ -291,7 +294,7 @@ module.exports = function(RED) {
         node.on('close', closeConnection);
 
 
-        function connect(){
+        function connect() {
             function doConnect() {
                 manageStatus('connecting');
 
@@ -308,7 +311,7 @@ module.exports = function(RED) {
                 node._conn.initiateConnection(connOpts, onConnect);
             }
 
-            if(node._conn) {
+            if (node._conn) {
                 closeConnection(doConnect);
             } else {
                 process.nextTick(doConnect);
@@ -348,13 +351,13 @@ module.exports = function(RED) {
         }
 
         function onDataSplit(data) {
-            Object.keys(data).forEach(function(key) {
-                sendMsg(data[key], key, null)
+            Object.keys(data).forEach(function (key) {
+                sendMsg(data[key], key, null);
             });
         }
 
         function onData(data) {
-            sendMsg(data, config.mode == 'single' ? config.variable : '')
+            sendMsg(data, config.mode == 'single' ? config.variable : '');
         }
 
         function onDataSelect(data) {
@@ -395,7 +398,7 @@ module.exports = function(RED) {
             }
         }
 
-        node.on('close', function(done) {
+        node.on('close', function (done) {
             node.endpoint.removeListener('__ALL__', onDataSelect);
             node.endpoint.removeListener('__ALL__', onDataSplit);
             node.endpoint.removeListener('__ALL__', onData);
@@ -428,9 +431,9 @@ module.exports = function(RED) {
             var writeObj = {
                 name: config.variable || msg.variable,
                 val: msg.payload
-            }
+            };
 
-            if(!writeObj.name) return;
+            if (!writeObj.name) return;
 
             statusVal = writeObj.val;
             node.endpoint.writeVar(writeObj);
@@ -442,7 +445,7 @@ module.exports = function(RED) {
         node.on('input', onNewMsg);
         node.endpoint.on('__STATUS__', onEndpointStatus);
 
-        node.on('close', function(done) {
+        node.on('close', function (done) {
             node.endpoint.removeListener('__STATUS__', onEndpointStatus);
             done();
         });

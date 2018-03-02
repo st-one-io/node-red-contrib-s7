@@ -62,7 +62,7 @@
                 "badvalues": "failure",
                 "offline": "offline",
                 "unknown": "unknown",
-		"connecting": "connecting"
+                "connecting": "connecting"
             },
             "verbose": {
                 "default": "Default (command line)",
