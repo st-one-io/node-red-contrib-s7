@@ -272,6 +272,9 @@ module.exports = function (RED) {
         }
 
         function closeConnection(done) {
+            //ensure we won't try to connect again if anybody wants to close it
+            clearTimeout(connectTimeoutTimer);
+
             if (isVerbose) {
                 node.log(RED._("s7.info.disconnect"));
             }
