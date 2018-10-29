@@ -27,6 +27,10 @@ module.exports = function (RED) {
         var res = {};
 
         vars.forEach(function (elm) {
+            if (!elm.name || !elm.addr) {
+                //skip incomplete entries
+                return;
+            }
             res[elm.name] = elm.addr;
         });
 
@@ -242,6 +246,8 @@ module.exports = function (RED) {
         }
 
         function onConnect(err) {
+            var varKeys = Object.keys(node._vars);
+
             clearTimeout(connectTimeoutTimer);
 
             if (err) {
@@ -262,10 +268,15 @@ module.exports = function (RED) {
 
             manageStatus('online');
 
+            if (!varKeys || !varKeys.length) {
+                node.warn(RED._("s7.info.novars"), {});
+                return;
+            }
+
             node._conn.setTranslationCB(function (tag) {
                 return node._vars[tag];
             });
-            node._conn.addItems(Object.keys(node._vars));
+            node._conn.addItems(varKeys);
             node._td = setInterval(doCycle, config.cycletime);
 
             writeNext();

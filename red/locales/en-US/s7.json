@@ -84,7 +84,8 @@
         },
         "info": {
             "connect": "Initiating connection to PLC",
-            "disconnect": "Closing connection to PLC"
+            "disconnect": "Closing connection to PLC",
+            "novars": "No variables configured, skipping cyclic reading"
         },
         "addrval": {
             "MULTCOMMA": "Invalid address with multiple commas",
