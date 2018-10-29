@@ -1,3 +1,11 @@
+Version: 1.5.2
+------------
+ - Skip cyclic reading of variables if there's none configured
+
+Version: 1.5.1
+------------
+ - Avoids trying to connect again after closing the node
+
 Version: 1.5.0
 ------------
  - Enables errors to be catch by the "catch" node (#17)
