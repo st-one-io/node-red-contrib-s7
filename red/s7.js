@@ -14,6 +14,25 @@
    limitations under the License.
 */
 
+/**
+ * Compares values for equality, includes special handling for arrays. Fixes #33
+ * @param {number|string|Array} a
+ * @param {number|string|Array} b 
+ */
+function equals(a, b) {
+    if (a === b) return true;
+    if (a == null || b == null) return false;
+    if(Array.isArray(a) && Array.isArray(b)) {
+        if (a.length != b.length) return false;
+        
+        for (var i = 0; i < a.length; ++i) {
+            if (a[i] !== b[i]) return false;
+        }
+        return true;
+    }
+    return false;
+}
+
 module.exports = function (RED) {
     "use strict";
 
@@ -218,7 +237,7 @@ module.exports = function (RED) {
             var changed = false;
             node.emit('__ALL__', values);
             Object.keys(values).forEach(function (key) {
-                if (oldValues[key] !== values[key]) {
+                if (!equals(oldValues[key], values[key])) {
                     changed = true;
                     node.emit(key, values[key]);
                     node.emit('__CHANGED__', {

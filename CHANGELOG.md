@@ -1,3 +1,7 @@
+Version: 1.5.3
+------------
+ - Fixes #33: handle diff of array types, so they're emitted only when an item changes
+
 Version: 1.5.2
 ------------
  - Skip cyclic reading of variables if there's none configured
