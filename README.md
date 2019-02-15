@@ -43,18 +43,18 @@ The variables and their addresses configured on the **S7 Endpoint** follow a sli
 | `IB4` or `EB4`                | `IB4` or `EB4`        | Number        | Byte 4 (0 -255) of input area |
 | `QB5` or `AB5`                | `QB5` or `AB5`        | Number        | Byte 5 (0 -255) of output area |
 | `MB6`                         | `MB6`                 | Number        | Byte 6 (0 -255) of memory area |
-| `IC7` or `EC7`                | `IC7` or `EC7`        | String        | Byte 7 of input area as a Char |
-| `QC8` or `AC8`                | `QC8` or `AC8`        | String        | Byte 8 of output area as a Char |
-| `MC9`                         | `MC9`                 | String        | Byte 9 of memory area as a Char |
-| `II10` or `EI10`              | `II10` or `EI10`      | Number        | Signed 16-bit number at byte 10 of input area |
-| `QI12` or `AI12`              | `QI12` or `AI12`      | Number        | Signed 16-bit number at byte 12 of output area |
-| `MI14`                        | `MI14`                | Number        | Signed 16-bit number at byte 14 of memory area |
+| `IC7` or `EC7`                | `IB7` or `EB7`        | String        | Byte 7 of input area as a Char |
+| `QC8` or `AC8`                | `QB8` or `AB8`        | String        | Byte 8 of output area as a Char |
+| `MC9`                         | `MB9`                 | String        | Byte 9 of memory area as a Char |
+| `II10` or `EI10`              | `IW10` or `EW10`      | Number        | Signed 16-bit number at byte 10 of input area |
+| `QI12` or `AI12`              | `QW12` or `AW12`      | Number        | Signed 16-bit number at byte 12 of output area |
+| `MI14`                        | `MW14`                | Number        | Signed 16-bit number at byte 14 of memory area |
 | `IW16` or `EW16`              | `IW16` or `EW16`      | Number        | Unsigned 16-bit number at byte 16 of input area |
 | `QW18` or `AW18`              | `QW18` or `AW18`      | Number        | Unsigned 16-bit number at byte 18 of output area |
 | `MW20`                        | `MW20`                | Number        | Unsigned 16-bit number at byte 20 of memory area |
-| `IDI22` or `EDI22`            | `IDI22` or `EDI22`    | Number        | Signed 32-bit number at byte 22 of input area |
-| `QDI24` or `ADI24`            | `QDI24` or `ADI24`    | Number        | Signed 32-bit number at byte 24 of output area |
-| `MDI26`                       | `MDI26`               | Number        | Signed 32-bit number at byte 26 of memory area |
+| `IDI22` or `EDI22`            | `ID22` or `ED22`      | Number        | Signed 32-bit number at byte 22 of input area |
+| `QDI24` or `ADI24`            | `QD24` or `AD24`      | Number        | Signed 32-bit number at byte 24 of output area |
+| `MDI26`                       | `MD26`                | Number        | Signed 32-bit number at byte 26 of memory area |
 | `ID28` or `ED28`              | `ID28` or `ED28`      | Number        | Unsigned 32-bit number at byte 28 of input area |
 | `QD30` or `AD30`              | `QD30` or `AD30`      | Number        | Unsigned 32-bit number at byte 30 of output area |
 | `MD32`                        | `MD32`                | Number        | Unsigned 32-bit number at byte 32 of memory area |
