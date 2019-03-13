@@ -314,7 +314,7 @@
 			});
 
 			$("#node-config-input-cycletime").spinner({
-				min: 50
+				min: 0
 			});
 
 			$("#node-config-input-timeout").spinner({
@@ -720,6 +720,86 @@
 				updateVarList(endpointList.val());
 			});
 			updateVarList(self.endpoint);
+		}
+	});
+</script>
+
+<!-- ######################################################################################## -->
+
+<script type="text/x-red" data-template-name="s7 control">
+	<div class="form-row">
+		<label for="node-input-endpoint"><i class="fa fa-bolt"></i> <span data-i18n="s7.control.label.endpoint"></span></label>
+		<input type="text" id="node-input-endpoint" data-i18n="[placeholder]s7.control.label.endpoint">
+	</div>
+	<div class="form-row">
+		<label for="node-input-function"><i class="fa fa-sliders"></i> <span data-i18n="s7.control.label.function"></span></label>
+		<select type="text" id="node-input-function">
+			<option value="cycletime" data-i18n="s7.control.function.cycletime"></option>
+		</select>
+	</div>
+	<div class="form-row">
+		<label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="s7.label.name"></span></label>
+		<input type="text" id="node-input-name" data-i18n="[placeholder]s7.label.name">
+	</div>
+</script>
+
+<script type="text/x-red" data-help-name="s7 control">
+	<p>Enables advanced control of the PLC and the connection</p>
+	
+	<h3>Details</h3>
+	<p>The behavior of this node is changed according to the selected function. Each function
+		has its own configuration, expects different parameters in the messages, and sends
+		different messages out
+	</p>
+	<dl class="message-properties">
+		<dt>Cycle Time</dt>
+		<dd>
+			Changes the time interval between each cyclic read 
+			of variables. It expects a message with <code>payload</code> with a 
+			positive number, being the time in milliseconds between each read. A 
+			value of zero disables the cyclic read.
+		</dd>
+	</dl>
+</script>
+
+<script type="text/javascript">
+	RED.nodes.registerType('s7 control', {
+		category: 'advanced',
+		defaults: {
+			endpoint: {
+				value: "",
+				type: "s7 endpoint",
+				required: true
+			},
+			function: {
+				value: "cycletime",
+				required: true
+			},
+			name: {
+				value: ""
+			}
+		},
+		color: "#3FADB5",
+		inputs: 1,
+		outputs: 1,
+		icon: "serial.png",
+		label: function () {
+			var self = this;
+
+			if (this.name) return this.name;
+
+			var endpointNode = RED.nodes.node(this.endpoint);
+			if (endpointNode) {
+				if(this.function) {
+					return endpointNode.label() + ": " + this._("s7.control.function." + this.function);
+				} else {
+					return endpointNode.label()
+				}
+			}
+			return this._("s7.control.label.name");
+		},
+		labelStyle: function () {
+			return this.name ? "node_label_italic" : "";
 		}
 	});
 </script>
