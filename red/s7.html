@@ -735,6 +735,7 @@
 		<label for="node-input-function"><i class="fa fa-sliders"></i> <span data-i18n="s7.control.label.function"></span></label>
 		<select type="text" id="node-input-function">
 			<option value="cycletime" data-i18n="s7.control.function.cycletime"></option>
+			<option value="trigger" data-i18n="s7.control.function.trigger"></option>
 		</select>
 	</div>
 	<div class="form-row">
@@ -758,6 +759,13 @@
 			of variables. It expects a message with <code>payload</code> with a 
 			positive number, being the time in milliseconds between each read. A 
 			value of zero disables the cyclic read.
+		</dd>
+
+		<dt>Trigger read</dt>
+		<dd>
+			Manually triggers a read cycle. No message parameters are used. Useful
+			when longer cycle times are used, but an instant feedback is needed (for 
+			example after changing a variable)
 		</dd>
 	</dl>
 </script>

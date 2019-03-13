@@ -32,7 +32,8 @@
                 "endpoint": "PLC"
             },
             "function": {
-                "cycletime": "Cycle time"
+                "cycletime": "Cycle time",
+                "trigger": "Trigger read"
             }
         },
         "endpoint": {

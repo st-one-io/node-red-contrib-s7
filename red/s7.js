@@ -295,6 +295,7 @@ module.exports = function (RED) {
                 }
             }
         }
+        node.doCycle = doCycle;
 
         function onConnect(err) {
             var varKeys = Object.keys(node._vars);
@@ -545,6 +546,10 @@ module.exports = function (RED) {
                     } else {
                         node.send(msg);
                     }
+                    break;
+                case 'trigger':
+                    node.endpoint.doCycle();
+                    node.send(msg);
                     break;
 
                 default:
