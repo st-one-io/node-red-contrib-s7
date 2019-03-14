@@ -90,12 +90,297 @@
 </script>
 
 <script type="text/x-red" data-help-name="s7 endpoint">
-	<p>Represents a PLC connection</p>
+	<p>Configures the connection to a PLC</p>
+
+	<h3>Details</h3>
+	<p>
+		The <b>Mode</b> option selects between <i>Rack/Slot</i> and <i>TSAP</i>
+		connection modes. Usually the <i>Rack/Slot</i> mode is used, except when
+		connecting to Logo devices where the only option is the <i>TSAP</i>
+		method
+	</p>
+	<p>
+		The <b>Cycle time</b> configuration specifies the time interval in which
+		all variables will be read from the PLC. A value of <code>0</code> disables
+		automatic reading, and then a manual triggering is required from the 
+		<i>s7 control</i> node
+	</p>
+	<p>
+		The <b>Timeout</b> parameter sets the maximum amount of time that the PLC
+		may take to answer our requests. It may be desirable to raise this time if
+		the network is busy of it's latency is high
+	</p>
+	<p>
+		It's possible to log the PLC communication by setting the <b>Debug</b> option
+		to "On" of "Off". By default, the behavior is controlled by the <code>-v</code>
+		command-line parameter when running Node-RED
+	</p>
+
+	<h3>Notes on S7-1200/S7-1500</h3>
+	<p>
+		Some extra configuration may be needed on the S7-1200 and S7-1500 series
+		of PLCS in order to access their data:
+		<ul>
+			<li>
+				"Optimized block access" must be disabled for the DBs we want 
+				to access
+			</li>
+			<li>
+				In the "Protection" section of the CPU Properties, enable the 
+				"Permit access with PUT/GET" checkbox
+			</li>
+		</ul>
+	</p>
+
+	<h3>Variable addressing</h3>
+	<p>
+		The variables and their addresses configured on the <strong>S7 Endpoint</strong> 
+		follow a slightly different scheme than used on Step 7 or TIA Portal. 
+		Here are some examples that may guide you on addressing your variables:
+	</p>
+	<style>
+		table {
+		padding: 0; }
+		table tr {
+			border-top: 1px solid #cccccc;
+			background-color: white;
+			margin: 0;
+			padding: 0; }
+			table tr:nth-child(2n) {
+			background-color: #f8f8f8; }
+			table tr th {
+			font-weight: bold;
+			border: 1px solid #cccccc;
+			text-align: left;
+			margin: 0;
+			padding: 6px 13px; }
+			table tr td {
+			border: 1px solid #cccccc;
+			text-align: left;
+			margin: 0;
+			padding: 6px 13px; }
+			table tr th :first-child, table tr td :first-child {
+			margin-top: 0; }
+			table tr th :last-child, table tr td :last-child {
+			margin-bottom: 0; }
+	</style>
+	<table>
+		<thead>
+			<tr>
+				<th>Address</th>
+				<th>Step7 equivalent</th>
+				<th>JS Data type</th>
+				<th>Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td><code>DB5,X0.1</code></td>
+				<td><code>DB5.DBX0.1</code></td>
+				<td>Boolean</td>
+				<td>Bit 1 of byte 0 of DB 5</td>
+			</tr>
+			<tr>
+				<td><code>DB23,B1</code> or <code>DB23,BYTE1</code></td>
+				<td><code>DB23.DBB1</code></td>
+				<td>Number</td>
+				<td>Byte 1 (0-255) of DB 23</td>
+			</tr>
+			<tr>
+				<td><code>DB100,C2</code> or <code>DB100,CHAR2</code></td>
+				<td><code>DB100.DBB2</code></td>
+				<td>String</td>
+				<td>Byte 2 of DB 100 as a Char</td>
+			</tr>
+			<tr>
+				<td><code>DB42,I3</code> or <code>DB42,INT3</code></td>
+				<td><code>DB42.DBW3</code></td>
+				<td>Number</td>
+				<td>Signed 16-bit number at byte 3 of DB 42</td>
+			</tr>
+			<tr>
+				<td><code>DB57,WORD4</code></td>
+				<td><code>DB57.DBW4</code></td>
+				<td>Number</td>
+				<td>Unsigned 16-bit number at byte 4 of DB 57</td>
+			</tr>
+			<tr>
+				<td><code>DB13,DI5</code> or <code>DB13,DINT5</code></td>
+				<td><code>DB13.DBD5</code></td>
+				<td>Number</td>
+				<td>Signed 32-bit number at byte 5 of DB 13</td>
+			</tr>
+			<tr>
+				<td><code>DB19,DW6</code> or <code>DB19,DWORD6</code></td>
+				<td><code>DB19.DBD6</code></td>
+				<td>Number</td>
+				<td>Unsigned 32-bit number at byte 6 of DB 19</td>
+			</tr>
+			<tr>
+				<td><code>DB21,DR7</code> or <code>DB21,REAL7</code></td>
+				<td><code>DB19.DBD6</code></td>
+				<td>Number</td>
+				<td>Floating point 32-bit number at byte 7 of DB 21</td>
+			</tr>
+			<tr>
+				<td><code>DB2,S7.10</code>*</td>
+				<td>-</td>
+				<td>String</td>
+				<td>String of length 10 starting at byte 7 of DB 2</td>
+			</tr>
+			<tr>
+				<td><code>I1.0</code> or <code>E1.0</code></td>
+				<td><code>I1.0</code> or <code>E1.0</code></td>
+				<td>Boolean</td>
+				<td>Bit 0 of byte 1 of input area</td>
+			</tr>
+			<tr>
+				<td><code>Q2.1</code> or <code>A2.1</code></td>
+				<td><code>Q2.1</code> or <code>A2.1</code></td>
+				<td>Boolean</td>
+				<td>Bit 1 of byte 2 of output area</td>
+			</tr>
+			<tr>
+				<td><code>M3.2</code></td>
+				<td><code>QM3.2</code></td>
+				<td>Boolean</td>
+				<td>Bit 2 of byte 3 of memory area</td>
+			</tr>
+			<tr>
+				<td><code>IB4</code> or <code>EB4</code></td>
+				<td><code>IB4</code> or <code>EB4</code></td>
+				<td>Number</td>
+				<td>Byte 4 (0 -255) of input area</td>
+			</tr>
+			<tr>
+				<td><code>QB5</code> or <code>AB5</code></td>
+				<td><code>QB5</code> or <code>AB5</code></td>
+				<td>Number</td>
+				<td>Byte 5 (0 -255) of output area</td>
+			</tr>
+			<tr>
+				<td><code>MB6</code></td>
+				<td><code>MB6</code></td>
+				<td>Number</td>
+				<td>Byte 6 (0 -255) of memory area</td>
+			</tr>
+			<tr>
+				<td><code>IC7</code> or <code>EC7</code></td>
+				<td><code>IB7</code> or <code>EB7</code></td>
+				<td>String</td>
+				<td>Byte 7 of input area as a Char</td>
+			</tr>
+			<tr>
+				<td><code>QC8</code> or <code>AC8</code></td>
+				<td><code>QB8</code> or <code>AB8</code></td>
+				<td>String</td>
+				<td>Byte 8 of output area as a Char</td>
+			</tr>
+			<tr>
+				<td><code>MC9</code></td>
+				<td><code>MB9</code></td>
+				<td>String</td>
+				<td>Byte 9 of memory area as a Char</td>
+			</tr>
+			<tr>
+				<td><code>II10</code> or <code>EI10</code></td>
+				<td><code>IW10</code> or <code>EW10</code></td>
+				<td>Number</td>
+				<td>Signed 16-bit number at byte 10 of input area</td>
+			</tr>
+			<tr>
+				<td><code>QI12</code> or <code>AI12</code></td>
+				<td><code>QW12</code> or <code>AW12</code></td>
+				<td>Number</td>
+				<td>Signed 16-bit number at byte 12 of output area</td>
+			</tr>
+			<tr>
+				<td><code>MI14</code></td>
+				<td><code>MW14</code></td>
+				<td>Number</td>
+				<td>Signed 16-bit number at byte 14 of memory area</td>
+			</tr>
+			<tr>
+				<td><code>IW16</code> or <code>EW16</code></td>
+				<td><code>IW16</code> or <code>EW16</code></td>
+				<td>Number</td>
+				<td>Unsigned 16-bit number at byte 16 of input area</td>
+			</tr>
+			<tr>
+				<td><code>QW18</code> or <code>AW18</code></td>
+				<td><code>QW18</code> or <code>AW18</code></td>
+				<td>Number</td>
+				<td>Unsigned 16-bit number at byte 18 of output area</td>
+			</tr>
+			<tr>
+				<td><code>MW20</code></td>
+				<td><code>MW20</code></td>
+				<td>Number</td>
+				<td>Unsigned 16-bit number at byte 20 of memory area</td>
+			</tr>
+			<tr>
+				<td><code>IDI22</code> or <code>EDI22</code></td>
+				<td><code>ID22</code> or <code>ED22</code></td>
+				<td>Number</td>
+				<td>Signed 32-bit number at byte 22 of input area</td>
+			</tr>
+			<tr>
+				<td><code>QDI24</code> or <code>ADI24</code></td>
+				<td><code>QD24</code> or <code>AD24</code></td>
+				<td>Number</td>
+				<td>Signed 32-bit number at byte 24 of output area</td>
+			</tr>
+			<tr>
+				<td><code>MDI26</code></td>
+				<td><code>MD26</code></td>
+				<td>Number</td>
+				<td>Signed 32-bit number at byte 26 of memory area</td>
+			</tr>
+			<tr>
+				<td><code>ID28</code> or <code>ED28</code></td>
+				<td><code>ID28</code> or <code>ED28</code></td>
+				<td>Number</td>
+				<td>Unsigned 32-bit number at byte 28 of input area</td>
+			</tr>
+			<tr>
+				<td><code>QD30</code> or <code>AD30</code></td>
+				<td><code>QD30</code> or <code>AD30</code></td>
+				<td>Number</td>
+				<td>Unsigned 32-bit number at byte 30 of output area</td>
+			</tr>
+			<tr>
+				<td><code>MD32</code></td>
+				<td><code>MD32</code></td>
+				<td>Number</td>
+				<td>Unsigned 32-bit number at byte 32 of memory area</td>
+			</tr>
+			<tr>
+				<td><code>IR34</code> or <code>ER34</code></td>
+				<td><code>IR34</code> or <code>ER34</code></td>
+				<td>Number</td>
+				<td>Floating point 32-bit number at byte 34 of input area</td>
+			</tr>
+			<tr>
+				<td><code>QR36</code> or <code>AR36</code></td>
+				<td><code>QR36</code> or <code>AR36</code></td>
+				<td>Number</td>
+				<td>Floating point 32-bit number at byte 36 of output area</td>
+			</tr>
+			<tr>
+				<td><code>MR38</code></td>
+				<td><code>MR38</code></td>
+				<td>Number</td>
+				<td>Floating point 32-bit number at byte 38 of memory area</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<p>*) Note that strings on the PLC uses 2 extra bytes at start for size/length of the string</p>
 </script>
 
 <script type="text/javascript">
 	/*! @source http://purl.eligrey.com/github/FileSaver.js/blob/master/FileSaver.js */
-	var saveAs=saveAs||function(e){"use strict";if(typeof e==="undefined"||typeof navigator!=="undefined"&&/MSIE [1-9]\./.test(navigator.userAgent)){return}var t=e.document,n=function(){return e.URL||e.webkitURL||e},r=t.createElementNS("http://www.w3.org/1999/xhtml","a"),o="download"in r,a=function(e){var t=new MouseEvent("click");e.dispatchEvent(t)},i=/constructor/i.test(e.HTMLElement)||e.safari,f=/CriOS\/[\d]+/.test(navigator.userAgent),u=function(t){(e.setImmediate||e.setTimeout)(function(){throw t},0)},s="application/octet-stream",d=1e3*40,c=function(e){var t=function(){if(typeof e==="string"){n().revokeObjectURL(e)}else{e.remove()}};setTimeout(t,d)},l=function(e,t,n){t=[].concat(t);var r=t.length;while(r--){var o=e["on"+t[r]];if(typeof o==="function"){try{o.call(e,n||e)}catch(a){u(a)}}}},p=function(e){if(/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(e.type)){return new Blob([String.fromCharCode(65279),e],{type:e.type})}return e},v=function(t,u,d){if(!d){t=p(t)}var v=this,w=t.type,m=w===s,y,h=function(){l(v,"writestart progress write writeend".split(" "))},S=function(){if((f||m&&i)&&e.FileReader){var r=new FileReader;r.onloadend=function(){var t=f?r.result:r.result.replace(/^data:[^;]*;/,"data:attachment/file;");var n=e.open(t,"_blank");if(!n)e.location.href=t;t=undefined;v.readyState=v.DONE;h()};r.readAsDataURL(t);v.readyState=v.INIT;return}if(!y){y=n().createObjectURL(t)}if(m){e.location.href=y}else{var o=e.open(y,"_blank");if(!o){e.location.href=y}}v.readyState=v.DONE;h();c(y)};v.readyState=v.INIT;if(o){y=n().createObjectURL(t);setTimeout(function(){r.href=y;r.download=u;a(r);h();c(y);v.readyState=v.DONE});return}S()},w=v.prototype,m=function(e,t,n){return new v(e,t||e.name||"download",n)};if(typeof navigator!=="undefined"&&navigator.msSaveOrOpenBlob){return function(e,t,n){t=t||e.name||"download";if(!n){e=p(e)}return navigator.msSaveOrOpenBlob(e,t)}}w.abort=function(){};w.readyState=w.INIT=0;w.WRITING=1;w.DONE=2;w.error=w.onwritestart=w.onprogress=w.onwrite=w.onabort=w.onerror=w.onwriteend=null;return m}(typeof self!=="undefined"&&self||typeof window!=="undefined"&&window||this.content);if(typeof module!=="undefined"&&module.exports){module.exports.saveAs=saveAs}else if(typeof define!=="undefined"&&define!==null&&define.amd!==null){define("FileSaver.js",function(){return saveAs})}
+	var saveAs = saveAs || function (e) { "use strict"; if (typeof e === "undefined" || typeof navigator !== "undefined" && /MSIE [1-9]\./.test(navigator.userAgent)) { return } var t = e.document, n = function () { return e.URL || e.webkitURL || e }, r = t.createElementNS("http://www.w3.org/1999/xhtml", "a"), o = "download" in r, a = function (e) { var t = new MouseEvent("click"); e.dispatchEvent(t) }, i = /constructor/i.test(e.HTMLElement) || e.safari, f = /CriOS\/[\d]+/.test(navigator.userAgent), u = function (t) { (e.setImmediate || e.setTimeout)(function () { throw t }, 0) }, s = "application/octet-stream", d = 1e3 * 40, c = function (e) { var t = function () { if (typeof e === "string") { n().revokeObjectURL(e) } else { e.remove() } }; setTimeout(t, d) }, l = function (e, t, n) { t = [].concat(t); var r = t.length; while (r--) { var o = e["on" + t[r]]; if (typeof o === "function") { try { o.call(e, n || e) } catch (a) { u(a) } } } }, p = function (e) { if (/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(e.type)) { return new Blob([String.fromCharCode(65279), e], { type: e.type }) } return e }, v = function (t, u, d) { if (!d) { t = p(t) } var v = this, w = t.type, m = w === s, y, h = function () { l(v, "writestart progress write writeend".split(" ")) }, S = function () { if ((f || m && i) && e.FileReader) { var r = new FileReader; r.onloadend = function () { var t = f ? r.result : r.result.replace(/^data:[^;]*;/, "data:attachment/file;"); var n = e.open(t, "_blank"); if (!n) e.location.href = t; t = undefined; v.readyState = v.DONE; h() }; r.readAsDataURL(t); v.readyState = v.INIT; return } if (!y) { y = n().createObjectURL(t) } if (m) { e.location.href = y } else { var o = e.open(y, "_blank"); if (!o) { e.location.href = y } } v.readyState = v.DONE; h(); c(y) }; v.readyState = v.INIT; if (o) { y = n().createObjectURL(t); setTimeout(function () { r.href = y; r.download = u; a(r); h(); c(y); v.readyState = v.DONE }); return } S() }, w = v.prototype, m = function (e, t, n) { return new v(e, t || e.name || "download", n) }; if (typeof navigator !== "undefined" && navigator.msSaveOrOpenBlob) { return function (e, t, n) { t = t || e.name || "download"; if (!n) { e = p(e) } return navigator.msSaveOrOpenBlob(e, t) } } w.abort = function () { }; w.readyState = w.INIT = 0; w.WRITING = 1; w.DONE = 2; w.error = w.onwritestart = w.onprogress = w.onwrite = w.onabort = w.onerror = w.onwriteend = null; return m }(typeof self !== "undefined" && self || typeof window !== "undefined" && window || this.content); if (typeof module !== "undefined" && module.exports) { module.exports.saveAs = saveAs } else if (typeof define !== "undefined" && define !== null && define.amd !== null) { define("FileSaver.js", function () { return saveAs }) }
 </script>
 
 <script type="text/javascript">
@@ -106,45 +391,45 @@
 		if (addr.length > 2) return "MULTCOMMA";
 		if (addr.length > 1) {
 			// test DB part
-			if(!(/^DB\d+/.test(addr[0]))) return "DB";
+			if (!(/^DB\d+/.test(addr[0]))) return "DB";
 			addr = addr[1].split('.');
-			if(!(/^(S|STRING|DI|DINT|I|INT|DW|DWORD|R|REAL|WORD|TIMER|COUNTER|B|BYTE|C|CHAR|X)\d+$/.test(addr[0]))) return "MEMAREADB"; 
- 			isBitAddr = /^X\d+$/.test(addr[0]);
- 			isStrAddr = /^(S|STRING)\d+$/.test(addr[0]);
+			if (!(/^(S|STRING|DI|DINT|I|INT|DW|DWORD|R|REAL|WORD|TIMER|COUNTER|B|BYTE|C|CHAR|X)\d+$/.test(addr[0]))) return "MEMAREADB";
+			isBitAddr = /^X\d+$/.test(addr[0]);
+			isStrAddr = /^(S|STRING)\d+$/.test(addr[0]);
 		} else {
 			addr = addr.split('.');
-			if(!(/^(PIB|PEB|PQB|PAB|PIC|PEC|PQC|PAC|PIW|PEW|PQW|PAW|PII|PEI|PQI|PAI|PID|PED|PQD|PAD|PIDI|PEDI|PQDI|PADI|PIR|PER|PQR|PAR|IB|EB|IC|EC|IW|EW|II|EI|ID|ED|IDI|EDI|IR|ER|QB|AB|QC|AC|QW|AW|QI|AI|QD|AD|QDI|ADI|QR|AR|MB|MC|MW|MI|MD|MDI|MR|T|C|I|E|Q|A|M)\d+$/
+			if (!(/^(PIB|PEB|PQB|PAB|PIC|PEC|PQC|PAC|PIW|PEW|PQW|PAW|PII|PEI|PQI|PAI|PID|PED|PQD|PAD|PIDI|PEDI|PQDI|PADI|PIR|PER|PQR|PAR|IB|EB|IC|EC|IW|EW|II|EI|ID|ED|IDI|EDI|IR|ER|QB|AB|QC|AC|QW|AW|QI|AI|QD|AD|QDI|ADI|QR|AR|MB|MC|MW|MI|MD|MDI|MR|T|C|I|E|Q|A|M)\d+$/
 				.test(addr[0]))) return "MEMAREA";
 			isBitAddr = /^(I|E|Q|A|M)\d+$/.test(addr[0]);
 		}
-		if(((isBitAddr || isStrAddr) && addr.length > 3) || addr.length > 2) return "SUBADDR";
+		if (((isBitAddr || isStrAddr) && addr.length > 3) || addr.length > 2) return "SUBADDR";
 		isArray = ((isBitAddr || isStrAddr) && addr.length == 3) || addr.length == 2;
-		if(isBitAddr && addr.length < 2) return "NOBITADDR";
- 		if(isStrAddr && addr.length < 2) return "NOSTRLEN";
-		for (i = 1; i < addr.length; i++){
-			if(!(/^\d+$/.test(addr[i]))) return "NUMTYPE";
+		if (isBitAddr && addr.length < 2) return "NOBITADDR";
+		if (isStrAddr && addr.length < 2) return "NOSTRLEN";
+		for (i = 1; i < addr.length; i++) {
+			if (!(/^\d+$/.test(addr[i]))) return "NUMTYPE";
 		}
-		if(isBitAddr) {
+		if (isBitAddr) {
 			num = parseInt(addr[1]);
- 			if(isNaN(num) || num < 0 || num > 7) return "BITADDR";
+			if (isNaN(num) || num < 0 || num > 7) return "BITADDR";
 		}
- 		if(isStrAddr) {
+		if (isStrAddr) {
 			num = parseInt(addr[1]);
- 			if(isNaN(num) || num <= 0) return "STRLEN";
+			if (isNaN(num) || num <= 0) return "STRLEN";
 		}
-		if(isArray){
- 			num = parseInt(addr[isBitAddr || isStrAddr ? 2 : 1]);
- 			if(isNaN(num) || num <= 0) return "ARRLEN";
+		if (isArray) {
+			num = parseInt(addr[isBitAddr || isStrAddr ? 2 : 1]);
+			if (isNaN(num) || num <= 0) return "ARRLEN";
 		}
 		return null;
 	}
 
 	function validateTSAP(num) {
 		num = num.toString();
-		if(num.length != 2) return false;
-		if(!(/^[0-9a-fA-F]+$/.test(num))) return false;
+		if (num.length != 2) return false;
+		if (!(/^[0-9a-fA-F]+$/.test(num))) return false;
 		var i = parseInt(num, 16);
-		if(isNaN(i) || i <  0 || i > 0xff) return false;
+		if (isNaN(i) || i < 0 || i > 0xff) return false;
 		return true;
 	}
 
@@ -192,7 +477,7 @@
 			timeout: {
 				value: 1500
 			},
-            verbose: {
+			verbose: {
 				value: "default"
 			},
 			name: {
@@ -205,13 +490,13 @@
 				}]
 			}
 		},
-		label: function() {
+		label: function () {
 			return this.name || this.address + ":" + this.port + ":" + (
-				this.connmode == 'tsap' ? 
-				(this.localtsaphi + "." + this.localtsaplo + "/" + this.remotetsaphi + "." + this.remotetsaplo) : 
-				(this.rack + ":" + this.slot));
+				this.connmode == 'tsap' ?
+					(this.localtsaphi + "." + this.localtsaplo + "/" + this.remotetsaphi + "." + this.remotetsaplo) :
+					(this.rack + ":" + this.slot));
 		},
-		oneditprepare: function() {
+		oneditprepare: function () {
 			var self = this;
 			var labelName = this._("s7.endpoint.label.variables.name");
 			var labelAddr = this._("s7.endpoint.label.variables.addr");
@@ -224,7 +509,7 @@
 			// Prepare tabs
 			var tabs = RED.tabs.create({
 				id: "node-config-s7-endpoint-tabs",
-				onchange: function(tab) {
+				onchange: function (tab) {
 					$("#node-config-s7-endpoint-tabs-content").children().hide();
 					$("#" + tab.id).show();
 				}
@@ -237,7 +522,7 @@
 				id: "s7-endpoint-tab-variables",
 				label: this._("s7.endpoint.label.tabs.variables")
 			});
-			setTimeout(function() {
+			setTimeout(function () {
 				tabs.resize()
 			}, 0);
 
@@ -275,11 +560,11 @@
 					class: "fa fa-remove"
 				}).appendTo(deleteButton);
 
-				deleteButton.click(function() {
+				deleteButton.click(function () {
 					container.css({
 						"background": "#fee"
 					});
-					container.fadeOut(150, function() {
+					container.fadeOut(150, function () {
 						$(this).remove();
 					});
 				});
@@ -296,8 +581,8 @@
 			}
 
 			function populateVarTable() {
-				if(self.vartable) {
-					if(typeof self.vartable == 'string') {
+				if (self.vartable) {
+					if (typeof self.vartable == 'string') {
 						self.vartable = JSON.parse(self.vartable);
 					}
 					for (var i = 0; i < self.vartable.length; i++) {
@@ -306,7 +591,7 @@
 				}
 			}
 
-			$("#node-config-input-add-variable").click(function() {
+			$("#node-config-input-add-variable").click(function () {
 				generateVariable({
 					name: "",
 					addr: ""
@@ -326,11 +611,11 @@
 			populateVarTable();
 
 			// export
-			function exportCSV(){
+			function exportCSV() {
 				var vars = $("#node-config-input-variables-container").children();
 				var lines = [];
 
-				vars.each(function(i) {
+				vars.each(function (i) {
 					var elm = $(this);
 					lines.push([
 						elm.find(".node-config-input-variable-addr").val(), //addr
@@ -349,24 +634,24 @@
 					return;
 				}
 				var reader = new FileReader();
-				reader.onload = function(e) {
+				reader.onload = function (e) {
 					var res = [], i, fields;
 					var contents = e.target.result || '';
 					var lines = contents.split(/[\r\n]+/);
-					
-					if(!lines.length) {
+
+					if (!lines.length) {
 						alert('file is empty!');
 						return;
 					}
 
-					for(i = 0; i < lines.length; i++){
-						
+					for (i = 0; i < lines.length; i++) {
+
 						lines[i] = lines[i].trim();
-						if(lines[i] == '') continue;
+						if (lines[i] == '') continue;
 
 						fields = lines[i].split(/[\t;]/);
 
-						if(fields.length < 2) {
+						if (fields.length < 2) {
 							alert('line must have at least two parameters, address and name');
 							return;
 						}
@@ -376,7 +661,7 @@
 						});
 					}
 
-					if(res.length) {
+					if (res.length) {
 						cleanVarTable();
 						self.vartable = res;
 						populateVarTable();
@@ -385,13 +670,13 @@
 				reader.readAsText(file);
 			}
 			$('#node-config-s7-endpoint-var-import').on('change', importCSV);
-			$('#node-config-s7-endpoint-var-import-btn').click(function() {
+			$('#node-config-s7-endpoint-var-import-btn').click(function () {
 				$('#node-config-s7-endpoint-var-import').click();
 			})
 
 			//set defaults for old flows
 
-			if(self.connmode === undefined) {
+			if (self.connmode === undefined) {
 				console.log('defaults conmode to "rack-slot"');
 				self.connmode = 'rack-slot';
 				self.localtsaphi = "01";
@@ -405,23 +690,23 @@
 				connTypeList.val(self.connmode);
 			}
 
-			if(self.timeout === undefined) {
+			if (self.timeout === undefined) {
 				console.log('defaults timeout to "1500"');
 				self.timeout = 1500;
 				$("#node-config-input-timeout").val(self.timeout);
 			}
 
-			if(self.verbose === undefined) {
+			if (self.verbose === undefined) {
 				console.log('defaults verbose to "default"');
 				self.verbose = 'default';
 				$("#node-config-input-verbose").val(self.verbose);
 			}
 
-			connTypeList.change(function() {
+			connTypeList.change(function () {
 				if (connTypeList.val() == "rack-slot") {
 					rackSlotRow.show();
 					tsapRow.hide();
-				} else if (connTypeList.val() == "tsap"){
+				} else if (connTypeList.val() == "tsap") {
 					rackSlotRow.hide();
 					tsapRow.show();
 				} else {
@@ -430,14 +715,14 @@
 				}
 			});
 			connTypeList.change();
-			
+
 		},
-		oneditsave: function() {
+		oneditsave: function () {
 			var node = this;
 			var vars = $("#node-config-input-variables-container").children();
 			node.vartable = [];
 
-			vars.each(function(i) {
+			vars.each(function (i) {
 				var elm = $(this);
 				var v = {
 					addr: elm.find(".node-config-input-variable-addr").val(),
@@ -445,26 +730,8 @@
 				}
 				node.vartable.push(v);
 			});
-			//$('#node-config-input-vartable').val(JSON.stringify(node.vartable));
-		}/*,
-		oneditresize: function(size) {
-			var rows = $("#s7-endpoint-tab-variables>div:not(.form-row node-input-variables-container-row)");
-			var height = size.height;
-			for (var i = 0; i < rows.size(); i++) {
-				height -= $(rows[i]).outerHeight(true);
-			}
-			var editorRow = $("#s7-endpoint-tab-variables>div.form-row node-input-variables-container-row");
-			height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")));
-			$("#node-config-input-variables-container-div").css("height", height + "px");
-
-			var rules = $("#node-config-input-variables-container").children();
-			var newWidth = $("#node-config-input-variables-container").width();
-			rules.each(function(i) {
-				$(this).find('.node-config-input-variable-name').typedInput("width", newWidth - 180);
-			});
-		}*/
+		}
 	});
-	//# sourceURL=s7EndpointScript.js
 </script>
 
 <!-- ######################################################################################## -->
@@ -501,11 +768,47 @@
 
 <script type="text/x-red" data-help-name="s7 in">
 	<p>Reads data from a S7 PLC</p>
-	<p>All data is read cyclically from the PLC as configured in the <i>s7 endpoint</i>, but there are three modes of making it available in a flow:</p>
+
+	<h3>Outputs</h3>
+	<dl class="message-properties">
+		<dt>payload<span class="property-type">any</span></dt>
+		<dd>
+			The value(s) as read from the PLC. The format and type of the payload
+			depends on the configured "Mode"
+		</dd>
+
+		<dt>topic<span class="property-type">string</span></dt>
+		<dd>
+			The name of the variable, when the message refers to a single variable
+			(that is, when mode is "Single Variable" or "All variables, one per
+			message")
+		</dd>
+	</dl>
+	
+	<h3>Details</h3>
+	<p>
+		All data is read cyclically from the PLC as configured in the <i>s7 endpoint</i>, 
+		but there are three modes of making it available in a flow:
+	</p>
 	<ul>
-		<li><b>Single variable:</b> A single variable can be selected from the configured variables, and a message is sent every cycle, or only when it changes if <i>diff</i> is checked. <code>msg.payload</code> contains the variable's value and <code>msg.topic</code> has the variable's name.</li>
-		<li><b>All variables, one per message:</b> Like the <i>Single variable</i> mode, but for all variables configured. If <i>diff</i> is checked, a message is sent everytime any variable changes. If <i>diff</i> is unchecked, one message is sent for every variable, in every cycle. Care must be taken about the number of messages per second in this mode.</li>
-		<li><b>All variables:</b> In this mode, <code>msg.payload</code> contains an object with all configured variables and their values. If <i>diff</i> is checked, a message is sent if at least one of the variables changes its value.</li>
+		<li>
+			<b>Single variable:</b> A single variable can be selected from the configured 
+			variables, and a message is sent every cycle, or only when it changes if 
+			<i>diff</i> is checked. <code>msg.payload</code> contains the variable's value
+			and <code>msg.topic</code> has the variable's name.
+		</li>
+		<li>
+			<b>All variables, one per message:</b> Like the <i>Single variable</i> mode, 
+			but for all variables configured. If <i>diff</i> is checked, a message is sent
+			everytime any variable changes. If <i>diff</i> is unchecked, one message is sent 
+			for every variable, in every cycle. Care must be taken about the number of 
+			messages per second in this mode.
+		</li>
+		<li>
+			<b>All variables:</b> In this mode, <code>msg.payload</code> contains an object 
+			with all configured variables and their values. If <i>diff</i> is checked, a 
+			message is sent if at least one of the variables changes its value.
+		</li>
 	</ul>
 </script>
 
@@ -535,7 +838,7 @@
 		inputs: 0,
 		outputs: 1,
 		icon: "serial.png",
-		label: function() {
+		label: function () {
 			var self = this;
 
 			if (this.name) return this.name;
@@ -546,10 +849,10 @@
 			}
 			return this._("s7.in.label.name");
 		},
-		labelStyle: function() {
+		labelStyle: function () {
 			return this.name ? "node_label_italic" : "";
 		},
-		oneditprepare: function() {
+		oneditprepare: function () {
 			var self = this;
 
 			var varList = $('#node-input-variable');
@@ -573,32 +876,32 @@
 					text: vars.length ? self._("s7.in.label.variable-select") : self._("s7.in.label.variable-novar")
 				}));
 
-				$.each(vars, function(i, val) {
+				$.each(vars, function (i, val) {
 					varList.append($('<option/>', {
 						value: val.name || val.addr,
 						text: val.name || val.addr
 					}));
-					if(val.name == self.variable) {
+					if (val.name == self.variable) {
 						varList.val(self.variable);
 					}
 				});
 			}
 
-			varList.change(function() {
-				$.each(vars, function(i, val) {
-					if(varList.val() == val.name) {
+			varList.change(function () {
+				$.each(vars, function (i, val) {
+					if (varList.val() == val.name) {
 						varAddr[0].innerText = val.addr;
 						return true;
 					}
 				});
 			});
 
-			endpointList.change(function() {
+			endpointList.change(function () {
 				updateVarList(endpointList.val());
 			});
 			updateVarList(self.endpoint);
 
-			modeList.change(function() {
+			modeList.change(function () {
 				if (modeList.val() == "single") {
 					varList.parent().show();
 				} else {
@@ -631,9 +934,29 @@
 </script>
 
 <script type="text/x-red" data-help-name="s7 out">
-	<p>Writes <code>msg.payload</code> to a memory area in a S7 PLC</p>
-  <p>The variable name can be configured in the node and takes precedence. If left blank it should be set by <code>msg.variable</code> on the incoming message.</p>
-	<p><b>Warning:</b> Caution when writing data to production PLCs!</p>
+	<p>Writes to a memory area in a S7 PLC</p>
+
+	<p class="form-tips">
+		<b>Caution when writing data to production PLCs!</b><br/>
+		Fully test everything you do. The authors cannot be liable for any
+		damage or injury caused by the use of this node
+	</p>
+
+	<h3>Inputs</h3>
+	<dl class="message-properties">
+		<dt>payload<span class="property-type">string | number | boolean</span></dt>
+		<dd>
+			the data to be written. It will be casted to the required data type
+			whenever possible.
+		</dd>
+		
+		<dt>variable<span class="property-type">string</span></dt>
+		<dd>
+			the variable to write to on the PLC, according to the variable list
+			on the PLC endpoint. This takes effect <i>only</i> if the "Variable"
+			field is left empty on the configuration.
+		</dd>
+	</dl>
 </script>
 
 <script type="text/javascript">
@@ -657,7 +980,7 @@
 		outputs: 0,
 		icon: "serial.png",
 		align: 'right',
-		label: function() {
+		label: function () {
 			var self = this;
 
 			if (this.name) return this.name;
@@ -668,10 +991,10 @@
 			}
 			return this._("s7.out.label.name");
 		},
-		labelStyle: function() {
+		labelStyle: function () {
 			return this.name ? "node_label_italic" : "";
 		},
-		oneditprepare: function() {
+		oneditprepare: function () {
 			var self = this;
 
 			var varList = $('#node-input-variable');
@@ -695,28 +1018,28 @@
 				vars = endpointNode.vartable || [];
 				if (typeof vars === 'string') vars = JSON.parse(vars);
 
-				$.each(vars, function(i, val) {
+				$.each(vars, function (i, val) {
 					varList.append($('<option/>', {
 						value: val.name || val.addr,
 						text: val.name || val.addr
 					}));
-					if(val.name == self.variable) {
+					if (val.name == self.variable) {
 						varList.val(self.variable);
 					}
 				});
 			}
 
-			varList.change(function() {
+			varList.change(function () {
 				varAddr.innerText = ""
-				$.each(vars, function(i, val) {
-					if(varList.val() == val.name) {
+				$.each(vars, function (i, val) {
+					if (varList.val() == val.name) {
 						varAddr.innerText = val.addr;
 						return true;
 					}
 				});
 			});
 
-			endpointList.change(function() {
+			endpointList.change(function () {
 				updateVarList(endpointList.val());
 			});
 			updateVarList(self.endpoint);
@@ -763,9 +1086,11 @@
 
 		<dt>Trigger read</dt>
 		<dd>
-			Manually triggers a read cycle. No message parameters are used. Useful
-			when longer cycle times are used, but an instant feedback is needed (for 
-			example after changing a variable)
+			Manually triggers a read cycle. No message parameters are used and the 
+			same message is sent on the output. Useful when longer cycle times are 
+			used, but an instant feedback is needed (for example after changing a 
+			variable). Note that the <i>s7 in</i> nodes are still required to read
+			the values of the variables.
 		</dd>
 	</dl>
 </script>
@@ -798,7 +1123,7 @@
 
 			var endpointNode = RED.nodes.node(this.endpoint);
 			if (endpointNode) {
-				if(this.function) {
+				if (this.function) {
 					return endpointNode.label() + ": " + this._("s7.control.function." + this.function);
 				} else {
 					return endpointNode.label()
