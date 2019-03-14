@@ -25,6 +25,17 @@
             },
             "disclaimer": "Caution when writing data to production PLCs!"
         },
+        "control": {
+            "label": {
+                "name": "s7 control",
+                "function": "Function",
+                "endpoint": "PLC"
+            },
+            "function": {
+                "cycletime": "Cycle time",
+                "trigger": "Trigger read"
+            }
+        },
         "endpoint": {
             "label": {
                 "address": "IP Address",
@@ -80,12 +91,15 @@
             "missingconfig": "Missing configuration",
             "noresponse": "No response from PLC, restarting communication",
             "invalidconntype": "Invalid configuration type \"__connmode__\"",
-            "invalidtsap": "Invalid TSAP configuration"
+            "invalidtsap": "Invalid TSAP configuration",
+            "invalidtimeinterval": "Invalid time interval for cycle time of \"__interval__\"",
+            "invalidcontrolfunction": "Invalid control function \"__function__\""
         },
         "info": {
             "connect": "Initiating connection to PLC",
             "disconnect": "Closing connection to PLC",
-            "novars": "No variables configured, skipping cyclic reading"
+            "novars": "No variables configured, skipping cyclic reading",
+            "cycletimetooshort": "Cycle time too short, enforcing minimum of __min__ ms"
         },
         "addrval": {
             "MULTCOMMA": "Invalid address with multiple commas",

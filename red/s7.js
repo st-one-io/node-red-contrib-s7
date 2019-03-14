@@ -33,6 +33,8 @@ function equals(a, b) {
     return false;
 }
 
+var MIN_CYCLE_TIME = 50;
+
 module.exports = function (RED) {
     "use strict";
 
@@ -123,6 +125,7 @@ module.exports = function (RED) {
         var isVerbose = (config.verbose == 'on' || config.verbose == 'off') ? (config.verbose == 'on') : RED.settings.get('verbose');
         var connectTimeoutTimer;
         var connected = false;
+        var currentCycleTime = config.cycletime;
         node.writeInProgress = false;
         node.writeQueue = [];
 
@@ -184,6 +187,35 @@ module.exports = function (RED) {
             }
 
         };
+
+        /**
+         * updates the current cycle time on the fly. A value of 0
+         * disables the cyclic reading of variables, and for positive values
+         * a minimum of 50 ms is enforced
+         * 
+         * @param {number} interval the cycle time interval, in ms
+         * @returns {string|undefined} an string with the error if any, or undefined
+         */
+        node.updateCycleTime = function updateCycleTime(interval){
+            let time = parseInt(interval);
+
+            if (isNaN(time) || time < 0) {
+                return RED._("s7.error.invalidtimeinterval", {interval: interval});
+            }
+
+            clearInterval(node._td);
+
+            // don't set a new timer if value is zero
+            if (!time) return;
+
+            if (time < MIN_CYCLE_TIME) {
+                node.warn(RED._("s7.info.cycletimetooshort", { min: MIN_CYCLE_TIME}), {});
+                time = MIN_CYCLE_TIME;
+            }
+
+            currentCycleTime = time;
+            node._td = setInterval(doCycle, time);
+        }
 
         function onWritten(err) {
             node.writeInProgress = false;
@@ -263,6 +295,7 @@ module.exports = function (RED) {
                 }
             }
         }
+        node.doCycle = doCycle;
 
         function onConnect(err) {
             var varKeys = Object.keys(node._vars);
@@ -296,7 +329,7 @@ module.exports = function (RED) {
                 return node._vars[tag];
             });
             node._conn.addItems(varKeys);
-            node._td = setInterval(doCycle, config.cycletime);
+            node.updateCycleTime(currentCycleTime);
 
             writeNext();
         }
@@ -365,7 +398,7 @@ module.exports = function (RED) {
 
         node.endpoint = RED.nodes.getNode(config.endpoint);
         if (!node.endpoint) {
-            return node.error(RED._("s7.in.error.missingconfig"));
+            return node.error(RED._("s7.error.missingconfig"));
         }
 
         function sendMsg(data, key, status) {
@@ -453,7 +486,7 @@ module.exports = function (RED) {
 
         node.endpoint = RED.nodes.getNode(config.endpoint);
         if (!node.endpoint) {
-            return node.error(RED._("s7.in.error.missingconfig"));
+            return node.error(RED._("s7.error.missingconfig"));
         }
 
         function onEndpointStatus(s) {
@@ -485,4 +518,55 @@ module.exports = function (RED) {
 
     }
     RED.nodes.registerType("s7 out", S7Out);
+
+
+    // ---------- S7 Control ----------
+
+    function S7Control(config) {
+        var node = this;
+        var statusVal;
+        RED.nodes.createNode(this, config);
+
+        node.endpoint = RED.nodes.getNode(config.endpoint);
+        if (!node.endpoint) {
+            return node.error(RED._("s7.error.missingconfig"));
+        }
+
+        function onEndpointStatus(s) {
+            node.status(generateStatus(s.status, statusVal));
+        }
+
+        function onMessage(msg) {
+            var res;
+            switch (config.function) {
+                case 'cycletime':
+                    res = node.endpoint.updateCycleTime(msg.payload);
+                    if (res) {
+                        node.error(res, msg);
+                    } else {
+                        node.send(msg);
+                    }
+                    break;
+                case 'trigger':
+                    node.endpoint.doCycle();
+                    node.send(msg);
+                    break;
+
+                default:
+                    node.error(RED._("s7.error.invalidcontrolfunction", {function: config.function}), msg);
+            }
+        }
+
+        node.status(generateStatus(node.endpoint.getStatus(), statusVal));
+
+        node.on('input', onMessage);
+        node.endpoint.on('__STATUS__', onEndpointStatus);
+
+        node.on('close', function (done) {
+            node.endpoint.removeListener('__STATUS__', onEndpointStatus);
+            done();
+        });
+
+    }
+    RED.nodes.registerType("s7 control", S7Control);
 };
