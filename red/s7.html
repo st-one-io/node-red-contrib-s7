@@ -21,31 +21,60 @@
 	<div id="node-config-s7-endpoint-tabs-content" style="min-height: 170px;">
 		<div id="s7-endpoint-tab-connection" style="display:none">
 			<div class="form-row">
-				<label for="node-config-input-address"><i class="fa fa-globe"></i> <span data-i18n="s7.endpoint.label.address"></span></label>
-				<input class="input-append-left" type="text" id="node-config-input-address" data-i18n="[placeholder]s7.endpoint.label.address" style="width: 40%;">
-				<label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> <span data-i18n="s7.endpoint.label.port"></span></label>
-				<input type="text" id="node-config-input-port" data-i18n="[placeholder]s7.endpoint.label.port" style="width: 50px">
+				<label for="node-config-input-transport"><i class="fa fa-plug"></i> <span data-i18n="s7.endpoint.label.transport"></span></label>
+				<select type="text" id="node-config-input-transport">
+					<option value="iso-on-tcp" data-i18n="s7.endpoint.transport.iso-on-tcp"></option>
+					<option value="mpi-usb" data-i18n="s7.endpoint.transport.mpi-usb"></option>
+				</select>
 			</div>
-            <div class="form-row">
-                <label for="node-config-input-connmode"><i class="fa fa-sliders"></i> <span data-i18n="s7.endpoint.label.connmode"></span></label>
-                <select type="text" id="node-config-input-connmode">
-                    <option value="rack-slot" data-i18n="s7.endpoint.connmode.rack-slot"></option>
-                    <option value="tsap" data-i18n="s7.endpoint.connmode.tsap"></option>
-                </select>
-            </div>
-			<div class="form-row" id="node-config-s7-endpoint-mode-rackslot">
-				<label for="node-config-input-rack"><i class="fa fa-sitemap"></i> <span data-i18n="s7.endpoint.label.rack"></span></label>
-				<input class="input-append-left" type="text" id="node-config-input-rack" data-i18n="[placeholder]s7.endpoint.label.rack" style="width: 50px">
-				<label for="node-config-input-slot" style="margin-left: 10px; width: 35px; "> <span data-i18n="s7.endpoint.label.slot"></span></label>
-				<input type="text" id="node-config-input-slot" data-i18n="[placeholder]s7.endpoint.label.slot" style="width:50px">
+			<div id="s7-endpoint-transport-iso-on-tcp" style="display:none; padding-left: 20px;">
+				<div class="form-row">
+					<label for="node-config-input-address"><i class="fa fa-globe"></i> <span data-i18n="s7.endpoint.label.address"></span></label>
+					<input class="input-append-left" type="text" id="node-config-input-address" data-i18n="[placeholder]s7.endpoint.placeholder.address" style="width: 40%;">
+					<label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> <span data-i18n="s7.endpoint.label.port"></span></label>
+					<input type="text" id="node-config-input-port" data-i18n="[placeholder]s7.endpoint.label.port" style="width: 50px">
+				</div>
+				<div class="form-row">
+					<label for="node-config-input-connmode"><i class="fa fa-sliders"></i> <span data-i18n="s7.endpoint.label.connmode"></span></label>
+					<select type="text" id="node-config-input-connmode">
+						<option value="rack-slot" data-i18n="s7.endpoint.connmode.rack-slot"></option>
+						<option value="tsap" data-i18n="s7.endpoint.connmode.tsap"></option>
+					</select>
+				</div>
+				<div class="form-row" id="node-config-s7-endpoint-mode-rackslot">
+					<label for="node-config-input-rack"><i class="fa fa-sitemap"></i> <span data-i18n="s7.endpoint.label.rack"></span></label>
+					<input class="input-append-left" type="text" id="node-config-input-rack" data-i18n="[placeholder]s7.endpoint.label.rack" style="width: 50px">
+					<label for="node-config-input-slot" style="margin-left: 10px; width: 35px; "> <span data-i18n="s7.endpoint.label.slot"></span></label>
+					<input type="text" id="node-config-input-slot" data-i18n="[placeholder]s7.endpoint.label.slot" style="width:50px">
+				</div>
+				<div class="form-row" id="node-config-s7-endpoint-mode-tsap">
+					<label for="node-config-input-localtsaphi"><i class="fa fa-exchange"></i> <span data-i18n="s7.endpoint.label.tsap-local"></span></label>
+					<input class="input-append-left" type="text" id="node-config-input-localtsaphi" style="width: 35px"><span><b>.</b></span>
+					<input class="input-append-left" type="text" id="node-config-input-localtsaplo" style="width: 35px">
+					<label for="node-config-input-remotetsaphi" style="margin-left: 10px"> <span data-i18n="s7.endpoint.label.tsap-remote"></span></label>
+					<input class="input-append-left" type="text" id="node-config-input-remotetsaphi" style="width: 35px"><span><b>.</b></span>
+					<input class="input-append-left" type="text" id="node-config-input-remotetsaplo" style="width: 35px">
+				</div>
 			</div>
-			<div class="form-row" id="node-config-s7-endpoint-mode-tsap">
-				<label for="node-config-input-localtsaphi"><i class="fa fa-exchange"></i> <span data-i18n="s7.endpoint.label.tsap-local"></span></label>
-				<input class="input-append-left" type="text" id="node-config-input-localtsaphi" style="width: 35px"><span><b>.</b></span>
-				<input class="input-append-left" type="text" id="node-config-input-localtsaplo" style="width: 35px">
-				<label for="node-config-input-remotetsaphi" style="margin-left: 10px"> <span data-i18n="s7.endpoint.label.tsap-remote"></span></label>
-				<input class="input-append-left" type="text" id="node-config-input-remotetsaphi" style="width: 35px"><span><b>.</b></span>
-				<input class="input-append-left" type="text" id="node-config-input-remotetsaplo" style="width: 35px">
+			<div id="s7-endpoint-transport-mpi-usb" style="display:none; padding-left: 20px;">
+				<div class="form-row">
+					<label>&nbsp;</label>
+					<input type="checkbox" id="node-config-input-adapterauto" style="display: inline-block; width: auto; vertical-align: top;">
+					<label for="node-config-input-adapterauto" style="width:70%;"><span data-i18n="s7.endpoint.label.adapterauto"></span></label>
+				</div>
+				<div class="form-row" id="s7-endpoint-mode-adapterport" style="display:none">
+					<label for="node-config-input-adapterport"><i class="fa fa-random"></i> <span data-i18n="s7.endpoint.label.adapterport"></span></label>
+					<input type="text" id="node-config-input-adapterport" style="width:66%;">
+					<a id="node-config-lookup-adapter" class="btn"><i class="fa fa-search"></i></a>
+				</div>
+				<div class="form-row">
+					<label><i class="fa fa-sitemap"></i> <span data-i18n="s7.endpoint.label.busaddr"></span></label>
+					<label for="node-config-input-adapteraddr" style="width: auto; margin-left: 10px;"> <span data-i18n="s7.endpoint.label.adapteraddr"></span></label>
+					<input type="text" id="node-config-input-adapteraddr" style="width: 60px;">
+					<label for="node-config-input-busaddr" style="width: auto; margin-left: 10px;"> <span data-i18n="s7.endpoint.label.plcbusaddr"></span></label>
+					<input type="text" id="node-config-input-busaddr" style="width: 60px;">
+					<a id="node-config-lookup-plc-mpi" class="btn"><i class="fa fa-search"></i></a>
+				</div>
 			</div>
 			<div class="form-row">
 				<label for="node-config-input-cycletime"><i class="fa fa-refresh"></i> <span data-i18n="s7.endpoint.label.cycletime"></span></label>
@@ -436,9 +465,12 @@
 	RED.nodes.registerType('s7 endpoint', {
 		category: 'config',
 		defaults: {
+			transport: {
+				value: "iso-on-tcp"
+			},
 			address: {
 				value: "",
-				validate: RED.validators.regex(/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/)
+				validate: function(v) {return this.transport == 'iso-on-tcp' ? !!v : true}
 			},
 			port: {
 				value: "102",
@@ -471,6 +503,18 @@
 			connmode: {
 				value: "rack-slot"
 			},
+			adapterauto: {
+				value: true
+			},
+			adapterport: {
+				value: ""
+			},
+			busaddr: {
+				value: 2
+			},
+			adapteraddr: {
+				value: 0
+			},
 			cycletime: {
 				value: 500
 			},
@@ -491,10 +535,18 @@
 			}
 		},
 		label: function () {
-			return this.name || this.address + ":" + this.port + ":" + (
-				this.connmode == 'tsap' ?
-					(this.localtsaphi + "." + this.localtsaplo + "/" + this.remotetsaphi + "." + this.remotetsaplo) :
-					(this.rack + ":" + this.slot));
+			if (this.name) {
+				return this.name
+			} else if (this.transport == "iso-on-tcp") {
+				return this.address + ":" + this.port + "@" + (
+					this.connmode == 'tsap' ?
+						(this.localtsaphi + "." + this.localtsaplo + "/" + this.remotetsaphi + "." + this.remotetsaplo) :
+						(this.rack + ":" + this.slot))
+			} else if (this.transport == "mpi-usb") {
+				return "MPI/PPI/DP@" + this.busaddr;
+			} else {
+				return "s7 endpoint";
+			}
 		},
 		oneditprepare: function () {
 			var self = this;
@@ -505,6 +557,15 @@
 			var connTypeList = $('#node-config-input-connmode');
 			var rackSlotRow = $('#node-config-s7-endpoint-mode-rackslot');
 			var tsapRow = $('#node-config-s7-endpoint-mode-tsap');
+			
+			var transportList = $('#node-config-input-transport');
+			var transportIsoOnTCPGroup = $('#s7-endpoint-transport-iso-on-tcp');
+			var transportMpiUsbGroup = $('#s7-endpoint-transport-mpi-usb');
+
+			var adapterAutoCheckbox = $('#node-config-input-adapterauto');
+			var apaterPortRow = $('#s7-endpoint-mode-adapterport');
+			var lookupAdapterBtn = $('#node-config-lookup-adapter');
+			var lookupPlcMpiBtn = $('#node-config-lookup-plc-mpi');
 
 			// Prepare tabs
 			var tabs = RED.tabs.create({
@@ -606,6 +667,20 @@
 				min: 500
 			});
 
+			$("#node-config-input-busaddr").spinner({
+				min: 0,
+				max: 127
+			});
+
+			$("#node-config-input-adapteraddr").spinner({
+				min: 0,
+				max: 127
+			});
+			//fix for undefined adapteraddr
+			if(!self.adapteraddr){
+				$("#node-config-input-adapteraddr").val(0);
+			}
+
 			$("#node-config-s7-endpoint-var-clean").click(cleanVarTable);
 
 			populateVarTable();
@@ -702,6 +777,18 @@
 				$("#node-config-input-verbose").val(self.verbose);
 			}
 
+			if (self.transport === undefined) {
+				console.log('defaults transport to "iso-on-tcp"');
+				self.transport = 'iso-on-tcp';
+				transportList.val(self.transport);
+			}
+
+			if (self.adapterauto === undefined) {
+				console.log('defaults transport to "iso-on-tcp"');
+				self.adapterauto = true;
+				adapterAutoCheckbox.prop("checked", self.adapterauto);
+			}
+
 			connTypeList.change(function () {
 				if (connTypeList.val() == "rack-slot") {
 					rackSlotRow.show();
@@ -715,6 +802,66 @@
 				}
 			});
 			connTypeList.change();
+
+			transportList.change(function() {
+				var curVal = transportList.val();
+				if(curVal == "iso-on-tcp") {
+					transportIsoOnTCPGroup.show();
+					transportMpiUsbGroup.hide();
+				} else if (curVal == "mpi-usb") {
+					transportIsoOnTCPGroup.hide();
+					transportMpiUsbGroup.show();
+				} else {
+					transportIsoOnTCPGroup.hide();
+					transportMpiUsbGroup.hide();
+				}
+			});
+			transportList.change();
+
+			adapterAutoCheckbox.change(function() {
+				var curVal = adapterAutoCheckbox.prop('checked');
+				if (curVal) {
+					apaterPortRow.hide();
+				} else {
+					apaterPortRow.show();
+				}
+			});
+			adapterAutoCheckbox.change();
+
+			lookupAdapterBtn.click(function () {
+				if (lookupAdapterBtn.hasClass('disabled')) return;
+
+				var icon = lookupAdapterBtn.children('i');
+				icon.removeClass('fa-search').addClass('disabled fa-spinner fa-spin fa-fw');
+				icon.removeClass('disabled fa-spinner fa-spin fa-fw').addClass('fa-search');
+				$("#node-config-input-adapterport").autocomplete({
+					source: ["serial:01234567890", "serial:12121212121212", "port:3.1"],
+					minLength: 0,
+					close: function (event, ui) {
+						$("#node-config-input-adapterport").autocomplete("destroy");
+					}
+				}).autocomplete("search", "");
+				return;
+			});
+
+			lookupPlcMpiBtn.click(function () {
+				if (lookupPlcMpiBtn.hasClass('disabled')) return;
+
+				var icon = lookupPlcMpiBtn.children('i');
+				icon.removeClass('fa-search').addClass('disabled fa-spinner fa-spin fa-fw');
+				setTimeout(() => {
+					icon.removeClass('disabled fa-spinner fa-spin fa-fw').addClass('fa-search');
+					$("#node-config-input-busaddr").autocomplete({
+						source: ["2", "6", "8"],
+						minLength: 0,
+						close: function (event, ui) {
+							$("#node-config-input-busaddr").autocomplete("destroy");
+						}
+					}).autocomplete("search", "");
+				}, 2000);
+				return;
+			});
+
 
 		},
 		oneditsave: function () {

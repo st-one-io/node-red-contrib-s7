@@ -38,7 +38,8 @@
         },
         "endpoint": {
             "label": {
-                "address": "IP Address",
+                "transport": "Transport",
+                "address": "Address",
                 "port": "Port",
                 "connmode": "Mode",
                 "rack": "Rack",
@@ -48,6 +49,11 @@
                 "cycletime": "Cycle time",
                 "timeout": "Timeout",
                 "verbose": "Debug",
+                "adapterauto": "Auto-detect adapter",
+                "adapterport": "Adapter",
+                "busaddr": "Bus Address",
+                "plcbusaddr": "PLC",
+                "adapteraddr": "Adapter",
                 "tabs": {
                     "connection": "Connection",
                     "variables": "Variables"
@@ -63,6 +69,13 @@
                     "import": "Import"
                 }
 
+            },
+            "placeholder": {
+                "address": "IP Address or FQDN (plc01.example.com)"
+            },
+            "transport": {
+                "iso-on-tcp": "Ethernet (ISO-on-TCP)",
+                "mpi-usb": "MPI/PPI/DP USB Adapter"
             },
             "connmode": {
                 "rack-slot": "Rack/Slot",
