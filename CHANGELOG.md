@@ -1,3 +1,11 @@
+Version: 1.6.1
+------------
+ - Bumps dependency of nodes7
+
+Version: 1.6.0
+------------
+ - Implements "s7 control" node, currently for manual control of the cycle time
+
 Version: 1.5.3
 ------------
  - Fixes #33: handle diff of array types, so they're emitted only when an item changes
