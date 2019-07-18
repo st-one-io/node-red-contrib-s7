@@ -1,0 +1,118 @@
+{
+    "s7": {
+        "in": {
+            "label": {
+                "name": "s7 in",
+                "endpoint": "SPS",
+                "mode": "Modus",
+                "variable": "Variable",
+                "diff": "Sende nur bei Wertänderung (diff)",
+                "variable-select": "Variable auswählen",
+                "variable-novar": "Keine Variablen"
+            },
+            "mode": {
+                "single": "Einzelne Variable",
+                "all-split": "Alle Variablen, eine pro Nachricht",
+                "all": "Alle Variablen"
+            }
+        },
+        "out": {
+            "label": {
+                "name": "s7 out",
+                "endpoint": "SPS",
+                "variable": "Variable",
+                "variable-select": "Variable auswählen"
+            },
+            "disclaimer": "Vorsicht beim Schreiben auf produktiven Steuerungen!"
+        },
+        "control": {
+            "label": {
+                "name": "s7 Steuerung",
+                "function": "Funktion",
+                "endpoint": "SPS"
+            },
+            "function": {
+                "cycletime": "Zykluszeit",
+                "trigger": "Lesen auslösen"
+            }
+        },
+        "endpoint": {
+            "label": {
+                "address": "IP Adresse",
+                "port": "Port",
+                "connmode": "Modus",
+                "rack": "Rack",
+                "slot": "Slot",
+                "tsap-local": "Local TSAP",
+                "tsap-remote": "Remote TSAP",
+                "cycletime": "Zykluszeit",
+                "timeout": "Timeout",
+                "verbose": "Debug",
+                "tabs": {
+                    "connection": "Verbindung",
+                    "variables": "Variablen"
+                },
+                "variables": {
+                    "list": "Variablen Listen",
+                    "add": "Hinzufügen",
+                    "clean": "Alle Entfernen",
+                    "del": "Entfernen",
+                    "name": "Name",
+                    "addr": "Adresse",
+                    "export": "Export",
+                    "import": "Import"
+                }
+
+            },
+            "connmode": {
+                "rack-slot": "Rack/Slot",
+                "tsap": "TSAP"
+            },
+            "status": {
+                "online": "online",
+                "badvalues": "fehler",
+                "offline": "offline",
+                "unknown": "unbekannt",
+                "connecting": "verbinde"
+            },
+            "verbose": {
+                "default": "Standard (command line)",
+                "on": "An",
+                "off": "Aus"
+            }
+        },
+        "label": {
+            "name": "Name",
+            "select": "Gerät wählen"
+        },
+        "error": {
+            "onconnect": "Fehler beim Verbinden: ",
+            "badvalues": "Fehler (ungültige Werte)",
+            "missingconfig": "Fehlende Konfiguration",
+            "noresponse": "Keine Antwort, Neustart der Kommunikation",
+            "invalidconntype": "Ungültiger Konfigurationstyp \"__connmode__\"",
+            "invalidtsap": "Ungültige TSAP Konfiguration",
+            "invalidtimeinterval": "Ungültige Zeitspanne für Zykluszeit von \"__interval__\"",
+            "invalidcontrolfunction": "Ungültige Kontrollfunktion \"__function__\""
+        },
+        "info": {
+            "connect": "Initialisiere Verbindung zur SPS",
+            "disconnect": "Schließe Verbindung zur SPS",
+            "novars": "Keine Variablen konfiguriert, überspringe Lesezyklus",
+            "cycletimetooshort": "Zykluszeit zu kurz, erzwinge Minimum von __min__ ms"
+        },
+        "addrval": {
+            "MULTCOMMA": "Ungültige Adresse mit mehreren Kommas",
+            "DB": "Ungültige DB Adresse",
+            "MEMAREA": "Ungültiger Typ für Speicherbereich",
+            "MEMAREADB": "Ungültiger Typ für Speicherbereich im DB",
+            "SUBADDR": "Ungültige Adressoffset mit mehreren Punkten",
+            "NOBITADDR": "Speicherbereich benötigt Bit Adresse",
+            "NOSTRLEN": "Speicherbereich benötigt Zeichenanzahl",
+            "NUMTYPE": "Bitoffset und/oder Arraylänge muss eine Ganzzahl sein",
+            "ARRLEN": "Arraylänge muss größer als Null sein",
+            "STRLEN": "Textlänge muss größer als Null Zeichen sein",
+            "BITADDR": "Bitoffset muss zwischen 0 und 7 liegen"
+        }
+    }
+}
