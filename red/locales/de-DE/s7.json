@@ -38,7 +38,7 @@
         },
         "endpoint": {
             "label": {
-                "address": "IP Addresse",
+                "address": "IP Adresse",
                 "port": "Port",
                 "connmode": "Modus",
                 "rack": "Rack",
@@ -58,7 +58,7 @@
                     "clean": "Alle Entfernen",
                     "del": "Entfernen",
                     "name": "Name",
-                    "addr": "Addresse",
+                    "addr": "Adresse",
                     "export": "Export",
                     "import": "Import"
                 }
@@ -102,12 +102,12 @@
             "cycletimetooshort": "Zykluszeit zu kurz, erzwinge Minimum von __min__ ms"
         },
         "addrval": {
-            "MULTCOMMA": "Ungültige Addresse mit mehreren Kommas",
-            "DB": "Ungültige DB Addresse",
-            "MEMAREA": "Ungültiger Speicherbereichtyp",
-            "MEMAREADB": "Ungültige Speicherbereichtyp im DB",
-            "SUBADDR": "Ungültige Addressoffset mit mehreren Punkten",
-            "NOBITADDR": "Speicherbereich benötigt bit Addresse",
+            "MULTCOMMA": "Ungültige Adresse mit mehreren Kommas",
+            "DB": "Ungültige DB Adresse",
+            "MEMAREA": "Ungültiger Typ für Speicherbereich",
+            "MEMAREADB": "Ungültiger Typ für Speicherbereich im DB",
+            "SUBADDR": "Ungültige Adressoffset mit mehreren Punkten",
+            "NOBITADDR": "Speicherbereich benötigt Bit Adresse",
             "NOSTRLEN": "Speicherbereich benötigt Zeichenanzahl",
             "NUMTYPE": "Bitoffset und/oder Arraylänge muss eine Ganzzahl sein",
             "ARRLEN": "Arraylänge muss größer als Null sein",
