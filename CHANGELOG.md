@@ -1,3 +1,7 @@
+Version: 1.6.2
+------------
+ - l10n - Add translations to German
+
 Version: 1.6.1
 ------------
  - Bumps dependency of nodes7
