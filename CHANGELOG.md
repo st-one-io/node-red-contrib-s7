@@ -1,3 +1,7 @@
+Version: 1.6.3
+------------
+ - l10n - Fix translation code for German
+
 Version: 1.6.2
 ------------
  - l10n - Add translations to German
