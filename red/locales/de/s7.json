@@ -53,7 +53,7 @@
                     "variables": "Variablen"
                 },
                 "variables": {
-                    "list": "Variablen Listen",
+                    "list": "Variablen Liste",
                     "add": "Hinzufügen",
                     "clean": "Alle Entfernen",
                     "del": "Entfernen",
@@ -70,7 +70,7 @@
             },
             "status": {
                 "online": "online",
-                "badvalues": "fehler",
+                "badvalues": "fehlerhaft",
                 "offline": "offline",
                 "unknown": "unbekannt",
                 "connecting": "verbinde"
