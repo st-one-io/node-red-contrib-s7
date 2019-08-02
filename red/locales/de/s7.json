@@ -52,7 +52,7 @@
                 "adapterauto": "Adapter automatisch erkennen",
                 "adapterport": "Adapter",
                 "busaddr": "Bus Adresse",
-                "plcbusaddr": "PLC",
+                "plcbusaddr": "SPS",
                 "adapteraddr": "Adapter",
 
                 "tabs": {
