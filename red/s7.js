@@ -41,6 +41,7 @@ module.exports = function (RED) {
     var util = require('util');
     var nodes7 = require('nodes7');
     var EventEmitter = require('events').EventEmitter;
+    var mpiS7;
 
     // ---------- S7 Endpoint ----------
 
@@ -126,6 +127,8 @@ module.exports = function (RED) {
         var connectTimeoutTimer;
         var connected = false;
         var currentCycleTime = config.cycletime;
+        var transport = config.transport || 'iso-on-tcp';
+        var NodeS7;
         node.writeInProgress = false;
         node.writeQueue = [];
 
@@ -133,44 +136,65 @@ module.exports = function (RED) {
             vars = JSON.parse(vars);
         }
 
+        if (transport === 'mpi-usb' && !mpiS7) {
+            //lazy load mpi-s7 library, as we may not need it
+            try {
+                mpiS7 = require('mpi-s7');
+            } catch (e){
+                node.error(RED._('s7.error.nompiusblibrary'));
+                return;
+            }
+        }
+
         RED.nodes.createNode(this, config);
 
         //avoids warnings when we have a lot of S7In nodes
         this.setMaxListeners(0);
 
-        connOpts = {
-            host: config.address,
-            port: config.port
-        };
+        if (transport === 'mpi-usb') {
 
-        if (config.connmode === undefined) {
-            //default for old configurations
-            config.connmode = 'rack-slot';
-        }
+            NodeS7 = mpiS7.NodeS7;
 
+            connOpts = {
+                mpiAddress: parseInt(config.busaddr),
+                selfMpiAddress: parseInt(config.adapteraddr),
+            }
 
-        switch (config.connmode) {
-            case "rack-slot":
-                connOpts.rack = config.rack;
-                connOpts.slot = config.slot;
-                break;
-            case "tsap":
-                if (!validateTSAP(config.localtsaphi) ||
-                    !validateTSAP(config.localtsaplo) ||
-                    !validateTSAP(config.remotetsaphi) ||
-                    !validateTSAP(config.remotetsaplo)) {
-                    node.error(RED._("s7.error.invalidtsap", config));
+        } else if (transport === 'iso-on-tcp') {
+
+            NodeS7 = nodes7;
+
+            connOpts = {
+                host: config.address,
+                port: config.port
+            };
+
+            switch (config.connmode) {
+                case "rack-slot":
+                    connOpts.rack = config.rack;
+                    connOpts.slot = config.slot;
+                    break;
+                case "tsap":
+                    if (!validateTSAP(config.localtsaphi) ||
+                        !validateTSAP(config.localtsaplo) ||
+                        !validateTSAP(config.remotetsaphi) ||
+                        !validateTSAP(config.remotetsaplo)) {
+                        node.error(RED._("s7.error.invalidtsap", config));
+                        return;
+                    }
+
+                    connOpts.localTSAP = parseInt(config.localtsaphi, 16) << 8;
+                    connOpts.localTSAP += parseInt(config.localtsaplo, 16);
+                    connOpts.remoteTSAP = parseInt(config.remotetsaphi, 16) << 8;
+                    connOpts.remoteTSAP += parseInt(config.remotetsaplo, 16);
+                    break;
+                default:
+                    node.error(RED._("s7.error.invalidconntype", config));
                     return;
-                }
-
-                connOpts.localTSAP = parseInt(config.localtsaphi, 16) << 8;
-                connOpts.localTSAP += parseInt(config.localtsaplo, 16);
-                connOpts.remoteTSAP = parseInt(config.remotetsaphi, 16) << 8;
-                connOpts.remoteTSAP += parseInt(config.remotetsaplo, 16);
-                break;
-            default:
-                node.error(RED._("s7.error.invalidconntype", config));
-                return;
+            }
+        } else {
+            node.error(RED._("s7.error.invalidconntype", config));
+            return;
         }
 
         node._vars = createTranslationTable(vars);
@@ -369,7 +393,7 @@ module.exports = function (RED) {
                 }
 
                 connected = false;
-                node._conn = new nodes7({
+                node._conn = new NodeS7({
                     silent: !isVerbose,
                     debug: isVerbose
                 });
