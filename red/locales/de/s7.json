@@ -38,6 +38,7 @@
         },
         "endpoint": {
             "label": {
+                "transport": "Transport",
                 "address": "IP Adresse",
                 "port": "Port",
                 "connmode": "Modus",
@@ -48,6 +49,12 @@
                 "cycletime": "Zykluszeit",
                 "timeout": "Timeout",
                 "verbose": "Debug",
+                "adapterauto": "Adapter automatisch erkennen",
+                "adapterport": "Adapter",
+                "busaddr": "Bus Adresse",
+                "plcbusaddr": "PLC",
+                "adapteraddr": "Adapter",
+
                 "tabs": {
                     "connection": "Verbindung",
                     "variables": "Variablen"
@@ -63,6 +70,13 @@
                     "import": "Import"
                 }
 
+            },
+            "placeholder": {
+                "address": "IP Adresse oder FQDN (plc01.example.com)"
+            },
+            "transport": {
+                "iso-on-tcp": "Ethernet (ISO-on-TCP)",
+                "mpi-usb": "MPI/PPI/DP USB Adapter"
             },
             "connmode": {
                 "rack-slot": "Rack/Slot",
@@ -91,9 +105,11 @@
             "missingconfig": "Fehlende Konfiguration",
             "noresponse": "Keine Antwort, Neustart der Kommunikation",
             "invalidconntype": "Ungültiger Konfigurationstyp \"__connmode__\"",
+            "invalidtransport": "Ungültiger Transport \"__transport__\"",
             "invalidtsap": "Ungültige TSAP Konfiguration",
             "invalidtimeinterval": "Ungültige Zeitspanne für Zykluszeit von \"__interval__\"",
-            "invalidcontrolfunction": "Ungültige Kontrollfunktion \"__function__\""
+            "invalidcontrolfunction": "Ungültige Kontrollfunktion \"__function__\"",
+            "nompiusblibrary": "MPI-USB Bibliothek konnte nicht geladen werden, bitte die Installation überprüfen"
         },
         "info": {
             "connect": "Initialisiere Verbindung zur SPS",

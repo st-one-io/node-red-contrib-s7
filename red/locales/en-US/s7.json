@@ -104,9 +104,11 @@
             "missingconfig": "Missing configuration",
             "noresponse": "No response from PLC, restarting communication",
             "invalidconntype": "Invalid configuration type \"__connmode__\"",
+            "invalidtransport": "Invalid transport \"__transport__\"",
             "invalidtsap": "Invalid TSAP configuration",
             "invalidtimeinterval": "Invalid time interval for cycle time of \"__interval__\"",
-            "invalidcontrolfunction": "Invalid control function \"__function__\""
+            "invalidcontrolfunction": "Invalid control function \"__function__\"",
+            "nompiusblibrary": "Could not load MPI-USB library, check your installation"
         },
         "info": {
             "connect": "Initiating connection to PLC",
