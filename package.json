@@ -31,6 +31,6 @@
     "author": "Smart-Tech",
     "license": "Apache-2.0",
     "optionalDependencies": {
-        "mpi-s7": "^0.2.0"
+        "mpi-s7": "^0.2.1"
     }
 }
