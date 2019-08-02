@@ -123,12 +123,6 @@
 
 	<h3>Details</h3>
 	<p>
-		The <b>Mode</b> option selects between <i>Rack/Slot</i> and <i>TSAP</i>
-		connection modes. Usually the <i>Rack/Slot</i> mode is used, except when
-		connecting to Logo devices where the only option is the <i>TSAP</i>
-		method
-	</p>
-	<p>
 		The <b>Cycle time</b> configuration specifies the time interval in which
 		all variables will be read from the PLC. A value of <code>0</code> disables
 		automatic reading, and then a manual triggering is required from the 
@@ -144,6 +138,36 @@
 		to "On" of "Off". By default, the behavior is controlled by the <code>-v</code>
 		command-line parameter when running Node-RED
 	</p>
+	<p>
+		In the <b>Transport</b> option it is possible to select method used
+		to reach the PLC. Different connection options are available depending
+		on the selected option:
+	</p>
+	<h4><i>Ethernet (ISO-on-TCP)</i></h4>
+	<p>
+		Connects to the specified ethernet address and port number of the PLC.
+	</p>
+	<ul>
+		<li>
+			<b>Mode</b>: selects between <i>Rack/Slot</i> and <i>TSAP</i>
+			connection modes. Usually the <i>Rack/Slot</i> mode is used, except when
+			connecting to Logo devices where the only option is the <i>TSAP</i>
+			method
+		</li>
+	</ul>
+	<h4><i>MPI/PPI/DP USB Adapter</i></h4>
+	<p>
+		Connects to the PLC using MPI/USB Adapters available on the system. Requires
+		optional libraries that may not be available on your system.
+	</p>
+	<ul>
+		<li>
+			<b>Bus Address</b>: specifies the address that the adapter will use on the
+			MPI/PPI/DP bus when communicating to other devices. The PLC address specified
+			the address of the PLC on the bus that we will communicate to.
+		</li>
+	</ul>
+	
 
 	<h3>Notes on S7-1200/S7-1500</h3>
 	<p>

@@ -6,7 +6,7 @@ This node was created by [Smart-Tech](https://netsmarttech.com) as part of the [
 
 ## Install
 
-You can install this node directly from the "Manage Palette" menu in the Node-RED interface. There are no external dependencies or compilation steps.
+You can install this node directly from the "Manage Palette" menu in the Node-RED interface. An optional compilation step is only necessary for supporting MPI-USB adapter.
 
 Alternatively, run the following command in your Node-RED user directory - typically `~/.node-red` on Linux or `%HOMEPATH%\.nodered` on Windows
 

@@ -1,3 +1,7 @@
+Version: 2.0.0
+------------
+ - Adds support for MPI-USB adapters as transport for connecting to PLCs
+
 Version: 1.6.3
 ------------
  - l10n - Fix translation code for German
