@@ -57,7 +57,7 @@
 				</div>
 			</div>
 			<div id="s7-endpoint-transport-mpi-usb" style="display:none; padding-left: 20px;">
-				<div class="form-row">
+				<div class="form-row" style="display:none"> <!-- we can't choose the adapter for now, sorry -->
 					<label>&nbsp;</label>
 					<input type="checkbox" id="node-config-input-adapterauto" style="display: inline-block; width: auto; vertical-align: top;">
 					<label for="node-config-input-adapterauto" style="width:70%;"><span data-i18n="s7.endpoint.label.adapterauto"></span></label>
@@ -73,7 +73,7 @@
 					<input type="text" id="node-config-input-adapteraddr" style="width: 60px;">
 					<label for="node-config-input-busaddr" style="width: auto; margin-left: 10px;"> <span data-i18n="s7.endpoint.label.plcbusaddr"></span></label>
 					<input type="text" id="node-config-input-busaddr" style="width: 60px;">
-					<a id="node-config-lookup-plc-mpi" class="btn"><i class="fa fa-search"></i></a>
+					<a id="node-config-lookup-plc-mpi" class="btn" disabled><i class="fa fa-search"></i></a>
 				</div>
 			</div>
 			<div class="form-row">
@@ -828,6 +828,7 @@
 			});
 			adapterAutoCheckbox.change();
 
+			/*
 			lookupAdapterBtn.click(function () {
 				if (lookupAdapterBtn.hasClass('disabled')) return;
 
@@ -842,8 +843,9 @@
 					}
 				}).autocomplete("search", "");
 				return;
-			});
+			});//*/
 
+			/*
 			lookupPlcMpiBtn.click(function () {
 				if (lookupPlcMpiBtn.hasClass('disabled')) return;
 
@@ -860,8 +862,7 @@
 					}).autocomplete("search", "");
 				}, 2000);
 				return;
-			});
-
+			});//*/
 
 		},
 		oneditsave: function () {
