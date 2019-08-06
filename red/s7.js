@@ -458,8 +458,7 @@ module.exports = function (RED) {
             node.status(generateStatus(s.status, statusVal));
         }
 
-        node.status(generateStatus("connecting", ""));
-
+        node.status(generateStatus(node.endpoint.getStatus(), statusVal));
         node.endpoint.on('__STATUS__', onEndpointStatus);
 
         if (config.diff) {
@@ -534,9 +533,9 @@ module.exports = function (RED) {
             node.status(generateStatus(node.endpoint.getStatus(), statusVal));
         }
 
-        node.status(generateStatus("connecting", ""));
-
         node.on('input', onNewMsg);
+        
+        node.status(generateStatus(node.endpoint.getStatus(), statusVal));
         node.endpoint.on('__STATUS__', onEndpointStatus);
 
         node.on('close', function (done) {
