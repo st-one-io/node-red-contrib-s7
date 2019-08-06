@@ -22,9 +22,9 @@
 function equals(a, b) {
     if (a === b) return true;
     if (a == null || b == null) return false;
-    if(Array.isArray(a) && Array.isArray(b)) {
+    if (Array.isArray(a) && Array.isArray(b)) {
         if (a.length != b.length) return false;
-        
+
         for (var i = 0; i < a.length; ++i) {
             if (a[i] !== b[i]) return false;
         }
@@ -140,7 +140,7 @@ module.exports = function (RED) {
             //lazy load mpi-s7 library, as we may not need it
             try {
                 mpiS7 = require('mpi-s7');
-            } catch (e){
+            } catch (e) {
                 node.error(RED._('s7.error.nompiusblibrary'));
                 return;
             }
@@ -220,11 +220,11 @@ module.exports = function (RED) {
          * @param {number} interval the cycle time interval, in ms
          * @returns {string|undefined} an string with the error if any, or undefined
          */
-        node.updateCycleTime = function updateCycleTime(interval){
+        node.updateCycleTime = function updateCycleTime(interval) {
             let time = parseInt(interval);
 
             if (isNaN(time) || time < 0) {
-                return RED._("s7.error.invalidtimeinterval", {interval: interval});
+                return RED._("s7.error.invalidtimeinterval", { interval: interval });
             }
 
             clearInterval(node._td);
@@ -233,7 +233,7 @@ module.exports = function (RED) {
             if (!time) return;
 
             if (time < MIN_CYCLE_TIME) {
-                node.warn(RED._("s7.info.cycletimetooshort", { min: MIN_CYCLE_TIME}), {});
+                node.warn(RED._("s7.info.cycletimetooshort", { min: MIN_CYCLE_TIME }), {});
                 time = MIN_CYCLE_TIME;
             }
 
@@ -581,7 +581,7 @@ module.exports = function (RED) {
                     break;
 
                 default:
-                    node.error(RED._("s7.error.invalidcontrolfunction", {function: config.function}), msg);
+                    node.error(RED._("s7.error.invalidcontrolfunction", { function: config.function }), msg);
             }
         }
 
