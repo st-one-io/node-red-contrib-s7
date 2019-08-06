@@ -1,3 +1,7 @@
+Version: 2.0.1
+------------
+ - Fixes #48 - prevents exception being thrown when writing to unknown variables
+
 Version: 2.0.0
 ------------
  - Adds support for MPI-USB adapters as transport for connecting to PLCs
