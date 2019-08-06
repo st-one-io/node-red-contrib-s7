@@ -103,6 +103,7 @@
             "onconnect": "Fehler beim Verbinden: ",
             "badvalues": "Fehler (ungültige Werte)",
             "missingconfig": "Fehlende Konfiguration",
+            "varunknown": "Unbekannte Variable '__var__'",
             "noresponse": "Keine Antwort, Neustart der Kommunikation",
             "invalidconntype": "Ungültiger Konfigurationstyp \"__connmode__\"",
             "invalidtransport": "Ungültiger Transport \"__transport__\"",

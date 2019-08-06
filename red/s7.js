@@ -523,7 +523,11 @@ module.exports = function (RED) {
                 val: msg.payload
             };
 
-            if (!writeObj.name) return;
+            if (!node.endpoint._vars[writeObj.name]) {
+                node.error(RED._("s7.error.varunknown", { var: writeObj.name }));
+                node.status(generateStatus('badvalues', statusVal));
+                return;
+            }
 
             statusVal = writeObj.val;
             node.endpoint.writeVar(writeObj);

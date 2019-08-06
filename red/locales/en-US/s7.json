@@ -102,6 +102,7 @@
             "onconnect": "Error connecting to PLC: ",
             "badvalues": "Failure (Bad values)",
             "missingconfig": "Missing configuration",
+            "varunknown": "Unknown variable '__var__'",
             "noresponse": "No response from PLC, restarting communication",
             "invalidconntype": "Invalid configuration type \"__connmode__\"",
             "invalidtransport": "Invalid transport \"__transport__\"",
