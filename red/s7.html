@@ -1116,19 +1116,32 @@
 
 	<h3>Inputs</h3>
 	<dl class="message-properties">
-		<dt>payload<span class="property-type">string | number | boolean</span></dt>
+		<dt>payload<span class="property-type">string | number | boolean | array</span></dt>
 		<dd>
 			the data to be written. It will be casted to the required data type
 			whenever possible.
 		</dd>
 		
-		<dt>variable<span class="property-type">string</span></dt>
+		<dt>variable<span class="property-type">string | array</span></dt>
 		<dd>
 			the variable to write to on the PLC, according to the variable list
 			on the PLC endpoint. This takes effect <i>only</i> if the "Variable"
 			field is left empty on the configuration.
 		</dd>
 	</dl>
+
+	<h3>Details</h3>
+	<p>
+		Writes data to the PLC on the variable specified on the node configuration
+		or on <code>msg.variable</code>.
+	</p>
+	<p>
+		It is possible to write to multiple variables at once, by setting both 
+		<code>msg.variable</code> and <code>msg.payload</code> to arrays containing 
+		the variable names and their values, respectively. Note that they may not be
+		written in the same write cycle to the PLC, depending on the amount of variables 
+		to be written.
+	</p>
 </script>
 
 <script type="text/javascript">
