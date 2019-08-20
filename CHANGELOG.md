@@ -1,3 +1,7 @@
+Version: 2.0.2
+------------
+ - Fixes #49 - fixes regression introduced in 2.0.1 that prevented writing to array of vars
+
 Version: 2.0.1
 ------------
  - Fixes #48 - prevents exception being thrown when writing to unknown variables
