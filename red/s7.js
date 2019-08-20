@@ -522,7 +522,24 @@ module.exports = function (RED) {
                 val: msg.payload
             };
 
-            if (!node.endpoint._vars[writeObj.name]) {
+            // Test for the case we're writing multiple vars
+            if (Array.isArray(writeObj.name)) {
+
+                if (!Array.isArray(writeObj.val) || writeObj.val.length !== writeObj.name.length) {
+                    node.error(RED._("s7.error.valmismatch"));
+                    node.status(generateStatus('badvalues', statusVal));
+                    return;
+                }
+
+                for (const elm of writeObj.name) {
+                    if (!node.endpoint._vars[elm]) {
+                        node.error(RED._("s7.error.varunknown", { var: elm }));
+                        node.status(generateStatus('badvalues', statusVal));
+                        return;
+                    }
+                }
+
+            } else if (!node.endpoint._vars[writeObj.name]) {
                 node.error(RED._("s7.error.varunknown", { var: writeObj.name }));
                 node.status(generateStatus('badvalues', statusVal));
                 return;

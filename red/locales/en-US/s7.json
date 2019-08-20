@@ -103,6 +103,7 @@
             "badvalues": "Failure (Bad values)",
             "missingconfig": "Missing configuration",
             "varunknown": "Unknown variable '__var__'",
+            "valmismatch": "Amount of variables and data mismatch",
             "noresponse": "No response from PLC, restarting communication",
             "invalidconntype": "Invalid configuration type \"__connmode__\"",
             "invalidtransport": "Invalid transport \"__transport__\"",
