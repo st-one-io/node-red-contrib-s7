@@ -4,6 +4,16 @@
   GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 */
 
+
+function nrInputShim(node, fn) {
+    function doErr(err) { err && node.error(err) }
+    node.on('input', function (msg, send, done) {
+        send = send || node.send;
+        done = done || doErr;
+        fn(msg, send, done);
+    });
+}
+
 /**
  * Compares values for equality, includes special handling for arrays. Fixes #33
  * @param {number|string|Array} a
@@ -233,13 +243,16 @@ module.exports = function (RED) {
 
         function onWritten(err) {
             node.writeInProgress = false;
+            var elm = node.writeQueue.shift();
 
             writeNext();
 
             if (err) {
                 manageStatus('badvalues');
-                node.error(RED._("s7.error.badvalues"), {});
-                return;
+                elm.done(RED._("s7.error.badvalues"), {});
+            } else {
+                manageStatus('online');
+                elm.done();
             }
 
             manageStatus('online');
@@ -248,7 +261,7 @@ module.exports = function (RED) {
         function writeNext() {
             if (!connected) return;
 
-            var nextElm = node.writeQueue.shift();
+            var nextElm = node.writeQueue[0];
             if (nextElm) {
                 node._conn.writeItems(nextElm.name, nextElm.val, onWritten);
                 node.writeInProgress = true;
@@ -506,10 +519,11 @@ module.exports = function (RED) {
             node.status(generateStatus(s.status, statusVal));
         }
 
-        function onNewMsg(msg) {
+        function onNewMsg(msg, send, done) {
             var writeObj = {
                 name: config.variable || msg.variable,
-                val: msg.payload
+                val: msg.payload,
+                done: done
             };
 
             // Test for the case we're writing multiple vars
@@ -540,7 +554,7 @@ module.exports = function (RED) {
             node.status(generateStatus(node.endpoint.getStatus(), statusVal));
         }
 
-        node.on('input', onNewMsg);
+        nrInputShim(node, onNewMsg);
         
         node.status(generateStatus(node.endpoint.getStatus(), statusVal));
         node.endpoint.on('__STATUS__', onEndpointStatus);
@@ -570,20 +584,20 @@ module.exports = function (RED) {
             node.status(generateStatus(s.status, statusVal));
         }
 
-        function onMessage(msg) {
+        function onMessage(msg, send, done) {
             var res;
             switch (config.function) {
                 case 'cycletime':
                     res = node.endpoint.updateCycleTime(msg.payload);
                     if (res) {
-                        node.error(res, msg);
+                        done(res, msg);
                     } else {
-                        node.send(msg);
+                        send(msg);
                     }
                     break;
                 case 'trigger':
                     node.endpoint.doCycle();
-                    node.send(msg);
+                    send(msg);
                     break;
 
                 default:
@@ -593,7 +607,7 @@ module.exports = function (RED) {
 
         node.status(generateStatus(node.endpoint.getStatus(), statusVal));
 
-        node.on('input', onMessage);
+        nrInputShim(node, onMessage);
         node.endpoint.on('__STATUS__', onEndpointStatus);
 
         node.on('close', function (done) {
