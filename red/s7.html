@@ -20,8 +20,10 @@
 				<div class="form-row">
 					<label for="node-config-input-address"><i class="fa fa-globe"></i> <span data-i18n="s7.endpoint.label.address"></span></label>
 					<input class="input-append-left" type="text" id="node-config-input-address" data-i18n="[placeholder]s7.endpoint.placeholder.address" style="width: 40%;">
-					<label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> <span data-i18n="s7.endpoint.label.port"></span></label>
-					<input type="text" id="node-config-input-port" data-i18n="[placeholder]s7.endpoint.label.port" style="width: 50px">
+					<label for="node-config-input-port" style="margin-left: 10px; width: auto; "> <span data-i18n="s7.endpoint.label.port"></span></label>
+					<input type="text" id="node-config-input-port" data-i18n="[placeholder]s7.endpoint.label.port" style="width: 50px; margin-right: 10px;">
+					<a id="node-config-lookup-plc-pn" class="btn red-ui-button" style="display: none"><i class="fa fa-search"></i></a>
+					<a id="node-config-flash-plc-pn" class="btn red-ui-button disabled" style="display: none"><i class="fa fa-sun-o"></i></a>
 				</div>
 				<div class="form-row">
 					<label for="node-config-input-connmode"><i class="fa fa-sliders"></i> <span data-i18n="s7.endpoint.label.connmode"></span></label>
@@ -54,7 +56,7 @@
 				<div class="form-row" id="s7-endpoint-mode-adapterport" style="display:none">
 					<label for="node-config-input-adapterport"><i class="fa fa-random"></i> <span data-i18n="s7.endpoint.label.adapterport"></span></label>
 					<input type="text" id="node-config-input-adapterport" style="width:66%;">
-					<a id="node-config-lookup-adapter" class="btn"><i class="fa fa-search"></i></a>
+					<a id="node-config-lookup-adapter" class="btn red-ui-button"><i class="fa fa-search"></i></a>
 				</div>
 				<div class="form-row">
 					<label><i class="fa fa-sitemap"></i> <span data-i18n="s7.endpoint.label.busaddr"></span></label>
@@ -62,7 +64,7 @@
 					<input type="text" id="node-config-input-adapteraddr" style="width: 60px;">
 					<label for="node-config-input-busaddr" style="width: auto; margin-left: 10px;"> <span data-i18n="s7.endpoint.label.plcbusaddr"></span></label>
 					<input type="text" id="node-config-input-busaddr" style="width: 60px;">
-					<a id="node-config-lookup-plc-mpi" class="btn" disabled><i class="fa fa-search"></i></a>
+					<a id="node-config-lookup-plc-mpi" class="btn red-ui-button" disabled><i class="fa fa-search"></i></a>
 				</div>
 			</div>
 			<div class="form-row">
@@ -575,10 +577,15 @@
 			var transportIsoOnTCPGroup = $('#s7-endpoint-transport-iso-on-tcp');
 			var transportMpiUsbGroup = $('#s7-endpoint-transport-mpi-usb');
 
+			var fieldAddressIsoOnTcp = $('#node-config-input-address');
+			var fieldName = $('#node-config-input-name');
+
 			var adapterAutoCheckbox = $('#node-config-input-adapterauto');
 			var apaterPortRow = $('#s7-endpoint-mode-adapterport');
 			var lookupAdapterBtn = $('#node-config-lookup-adapter');
 			var lookupPlcMpiBtn = $('#node-config-lookup-plc-mpi');
+			var lookupPlcPNBtn = $('#node-config-lookup-plc-pn');
+			var flashPlcPNBtn = $('#node-config-flash-plc-pn');
 
 			// Prepare tabs
 			var tabs = RED.tabs.create({
@@ -840,6 +847,90 @@
 				}
 			});
 			adapterAutoCheckbox.change();
+
+			$.getJSON('__node-red-contrib-s7/discover/available/iso-on-tcp', function(data) {
+				if (data) {
+					lookupPlcPNBtn.show();
+					flashPlcPNBtn.show();
+				}
+			});
+
+			var lookupPlcPNValue = null;
+			fieldAddressIsoOnTcp.change(function() {
+				lookupPlcPNValue = null;
+				flashPlcPNBtn.addClass('disabled');
+			})
+
+			lookupPlcPNBtn.click(function () {
+				if (lookupPlcPNBtn.hasClass('disabled')) return;
+
+				lookupPlcPNBtn.addClass('disabled');
+				var iconLookup = lookupPlcPNBtn.children('i');
+				iconLookup.removeClass('fa-search').addClass('fa-spinner fa-spin fa-fw');
+
+				$.getJSON('__node-red-contrib-s7/discover/iso-on-tcp', function (data) {
+					console.log("node-red-contrib-s7 discovered PLCs", data)
+
+					var listData = $.map(data, function(val){
+						return { label: val, value: val['IP Address']}
+					})
+
+					fieldAddressIsoOnTcp.autocomplete({
+						source: listData,
+						minLength: 0,
+						create: function (event, ui) {
+							$(this).data('ui-autocomplete')._renderItem = function (ul, elm) {
+								var item = elm.label;
+								elmHtml = '<a>'
+									+ '<small style="float: right;">' + item['Vendor Value'] + '</small>'
+									+ '<b>' + item['Station Name'] + '</b>'
+									+ '<br/>'
+									+ '<small style="float: right;">' + item['MAC Address'] + '</small>'
+									+ item['IP Address']
+									+ '</a>'
+								return $('<li style="padding: 2px">').attr("data-value", elm.value).append(elmHtml).appendTo(ul);
+							};
+						},
+						select: function (event, ui) {
+							var elm = ui.item.label
+							
+							event.preventDefault();
+							event.stopPropagation();
+							fieldAddressIsoOnTcp.val(elm['IP Address']);
+							fieldAddressIsoOnTcp.change();
+
+
+							if (!fieldName.val()){
+								fieldName.val(elm['Station Name']);
+							}
+
+							lookupPlcPNValue = elm;
+							flashPlcPNBtn.removeClass('disabled');
+						}
+					});
+					
+					fieldAddressIsoOnTcp.focus(function() {
+						fieldAddressIsoOnTcp.autocomplete("search", "")
+					});
+					fieldAddressIsoOnTcp.focus();
+				}).always(function() {
+					iconLookup.removeClass('fa-spinner fa-spin fa-fw').addClass('fa-search');
+					lookupPlcPNBtn.removeClass('disabled');
+				});
+			});
+
+			flashPlcPNBtn.click(function() {
+				if (flashPlcPNBtn.hasClass('disabled')) return;
+
+				if (!lookupPlcPNValue) {
+					flashPlcPNBtn.addClass('disabled');
+					return;
+				}
+
+				var macaddr = lookupPlcPNValue['MAC Address'].replace(/:/g, '-');
+				var tgtUrl = '__node-red-contrib-s7/flashled/iso-on-tcp/' + macaddr;
+				$.getJSON(tgtUrl);
+			});
 
 			/*
 			lookupAdapterBtn.click(function () {

@@ -35,6 +35,8 @@ function equals(a, b) {
 
 var MIN_CYCLE_TIME = 50;
 
+var tools = require('../src/tools.js');
+
 module.exports = function (RED) {
     "use strict";
 
@@ -42,6 +44,46 @@ module.exports = function (RED) {
     var nodes7 = require('nodes7');
     var EventEmitter = require('events').EventEmitter;
     var mpiS7;
+
+    // ---------- Discovery Endpoints ----------
+
+    RED.httpAdmin.get('/__node-red-contrib-s7/discover/available/iso-on-tcp', RED.auth.needsPermission('s7.discover'), function(req, res) {
+        tools.isPnToolsAvailable().then(function(available){
+            res.json(available).end();
+        }).catch(() => {
+            res.status(500).end();
+        });
+    });
+
+    RED.httpAdmin.get('/__node-red-contrib-s7/discover/available/mpi-s7', RED.auth.needsPermission('s7.discover'), function(req, res) {
+        tools.isMpiS7Available().then(function(available){
+            res.json(available).end();
+        }).catch(() => {
+            res.status(500).end();
+        });
+    });
+
+    RED.httpAdmin.get('/__node-red-contrib-s7/discover/iso-on-tcp', RED.auth.needsPermission('s7.discover'), function(req, res) {
+        tools.listDevicesPN().then(function(devices){
+            res.json(devices).end();
+        }).catch(() => {
+            res.status(500).end();
+        });
+    });
+
+    RED.httpAdmin.get('/__node-red-contrib-s7/flashled/iso-on-tcp/:mac', RED.auth.needsPermission('s7.discover'), function(req, res) {
+        let mac_addr = (req.params.mac || '').replace(/-/g, ':');
+        if (!/^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$/.test(mac_addr)){
+            res.status(400).end();
+            return;
+        }
+
+        tools.flashLedPN(mac_addr).then(function(){
+            res.status(204).end();
+        }).catch(() => {
+            res.status(500).end();
+        });
+    });
 
     // ---------- S7 Endpoint ----------
 
