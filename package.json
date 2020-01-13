@@ -4,7 +4,7 @@
     "description": "A Node-RED node to interact with Siemens S7 PLCs",
     "main": "index.js",
     "dependencies": {
-        "nodes7": "^0.3.9"
+        "nodes7": "^0.3.10"
     },
     "repository": {
         "type": "git",
