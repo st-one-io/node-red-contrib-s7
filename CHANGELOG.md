@@ -1,3 +1,13 @@
+Version: 2.1.1
+------------
+ - Updates dependency of nodes7 - fixes sequence collision bug
+
+Version: 2.1.0
+------------
+ - Adds support for Node-RED 1.0 API
+ - Changes node's category to "plc"
+ - Implements discovery of ethernet PLCs
+
 Version: 2.0.2
 ------------
  - Fixes #49 - fixes regression introduced in 2.0.1 that prevented writing to array of vars
