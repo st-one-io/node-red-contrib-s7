@@ -35,7 +35,7 @@ The variables and their addresses configured on the **S7 Endpoint** follow a sli
 | `DB57,WORD4`                  | `DB57.DBW4`           | Number        | Unsigned 16-bit number at byte 4 of DB 57 |
 | `DB13,DI5` or `DB13,DINT5`    | `DB13.DBD5`           | Number        | Signed 32-bit number at byte 5 of DB 13 |
 | `DB19,DW6` or `DB19,DWORD6`   | `DB19.DBD6`           | Number        | Unsigned 32-bit number at byte 6 of DB 19 |
-| `DB21,DR7` or `DB21,REAL7`    | `DB21.DBD7`           | Number        | Floating point 32-bit number at byte 7 of DB 21 |
+| `DB21,R7` or `DB21,REAL7`     | `DB21.DBD7`           | Number        | Floating point 32-bit number at byte 7 of DB 21 |
 | `DB2,S7.10`*                  | -                     | String        | String of length 10 starting at byte 7 of DB 2 |
 | `I1.0` or `E1.0`              | `I1.0` or `E1.0`      | Boolean       | Bit 0 of byte 1 of input area |
 | `Q2.1` or `A2.1`              | `Q2.1` or `A2.1`      | Boolean       | Bit 1 of byte 2 of output area |
