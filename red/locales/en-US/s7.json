@@ -13,7 +13,8 @@
             "mode": {
                 "single": "Single variable",
                 "all-split": "All variables, one per message",
-                "all": "All variables"
+                "all": "All variables",
+                "byFlag" :"All variables, excluding flag" 
             }
         },
         "out": {

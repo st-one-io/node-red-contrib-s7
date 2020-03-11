@@ -480,7 +480,19 @@ module.exports = function (RED) {
             node.send(msg);
             node.status(generateStatus(node.endpoint.getStatus(), statusVal));
         }
-
+        function sendMsgByFlag(data, key, status) {
+            if (key === undefined) key = '';
+            let flag =data[config.variable]
+            delete data[config.variable];
+            var msg = {
+                payload: flag,
+                values: data,
+                topic: key
+            };
+            statusVal = status !== undefined ? status : data;
+            node.send(msg);
+            node.status(generateStatus(node.endpoint.getStatus(), statusVal));
+        }
         function onChanged(variable) {
             sendMsg(variable.value, variable.key, null);
         }
@@ -492,13 +504,16 @@ module.exports = function (RED) {
         }
 
         function onData(data) {
+            
             sendMsg(data, config.mode == 'single' ? config.variable : '');
         }
-
         function onDataSelect(data) {
             onData(data[config.variable]);
         }
-
+        function onDataByFlag(data)
+        {
+            sendMsgByFlag(data, config.mode == 'single' ? config.variable : '');
+        }
         function onEndpointStatus(s) {
             node.status(generateStatus(s.status, statusVal));
         }
@@ -513,6 +528,9 @@ module.exports = function (RED) {
                     break;
                 case 'single':
                     node.endpoint.on(config.variable, onData);
+                    break;
+                case 'byFlag':
+                    node.endpoint.on('__ALL_CHANGED__', onDataByFlag);
                     break;
                 case 'all':
                 default:
@@ -537,6 +555,7 @@ module.exports = function (RED) {
             node.endpoint.removeListener('__ALL__', onDataSplit);
             node.endpoint.removeListener('__ALL__', onData);
             node.endpoint.removeListener('__ALL_CHANGED__', onData);
+            node.endpoint.removeListener('__ALL_CHANGED__', onDataByFlag);
             node.endpoint.removeListener('__CHANGED__', onChanged);
             node.endpoint.removeListener('__STATUS__', onEndpointStatus);
             node.endpoint.removeListener(config.variable, onData);

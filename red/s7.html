@@ -261,8 +261,8 @@
 				<td>Unsigned 32-bit number at byte 6 of DB 19</td>
 			</tr>
 			<tr>
-				<td><code>DB21,R7</code> or <code>DB21,REAL7</code></td>
-				<td><code>DB19.DBD7</code></td>
+				<td><code>DB21,DR7</code> or <code>DB21,REAL7</code></td>
+				<td><code>DB19.DBD6</code></td>
 				<td>Number</td>
 				<td>Floating point 32-bit number at byte 7 of DB 21</td>
 			</tr>
@@ -999,6 +999,7 @@
 			<option value="single" data-i18n="s7.in.mode.single"></option>
 			<option value="all-split" data-i18n="s7.in.mode.all-split"></option>
 			<option value="all" data-i18n="s7.in.mode.all"></option>
+			<option value="byFlag" data-i18n="s7.in.mode.byFlag"></option>
 		</select>
 	</div>
 	<div class="form-row s7-input-var-row">
@@ -1060,6 +1061,11 @@
 			<b>All variables:</b> In this mode, <code>msg.payload</code> contains an object 
 			with all configured variables and their values. If <i>diff</i> is checked, a 
 			message is sent if at least one of the variables changes its value.
+		</li>
+		<li>
+			<b>All variables by Flag:</b> In this mode, <code>msg.payload</code> contains an object 
+			with all configured variables and their values excluding the flag. If <i>diff</i> is checked, a 
+			message is sent if the flag's value changes.
 		</li>
 	</ul>
 </script>
@@ -1154,7 +1160,7 @@
 			updateVarList(self.endpoint);
 
 			modeList.change(function () {
-				if (modeList.val() == "single") {
+				if ((modeList.val() == "single") || (modeList.val() =="byFlag")){
 					varList.parent().show();
 				} else {
 					varList.parent().hide();
