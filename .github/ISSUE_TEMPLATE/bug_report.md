@@ -29,10 +29,12 @@ If applicable, attach the Node-RED logs with the "Verbose" option on the configu
 ### Flow
 Please attach your flow either as a file or properly formatted as JSON
 
-### Environment (please complete the following information):
+### Environment
+ - **Version** of this node: [e.g. 2.1.1]
+ - **Node-RED version**: [e.g. 1.0.3]
+ - **PLC Part Number**: [e.g. 6E57-... ]
  - **OS**: [e.g. Windows 10, Ubuntu]
  - **Browser**: [e.g. chrome, safari]
- - **PLC Part Number**: [e.g. 6E57-... ]
 
 ### Additional context
 Add any other context about the problem here.
