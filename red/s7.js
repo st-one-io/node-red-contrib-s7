@@ -16,12 +16,13 @@ function nrInputShim(node, fn) {
 
 /**
  * Compares values for equality, includes special handling for arrays. Fixes #33
- * @param {number|string|Array} a
- * @param {number|string|Array} b 
+ * @param {number|string|Array|Date} a
+ * @param {number|string|Array|Date} b 
  */
 function equals(a, b) {
     if (a === b) return true;
     if (a == null || b == null) return false;
+    if (a instanceof Date && b instanceof Date) return a.getTime() === b.getTime();
     if (Array.isArray(a) && Array.isArray(b)) {
         if (a.length != b.length) return false;
 
@@ -472,6 +473,7 @@ module.exports = function (RED) {
 
         function sendMsg(data, key, status) {
             if (key === undefined) key = '';
+            if (data instanceof Date) data = data.getTime();
             var msg = {
                 payload: data,
                 topic: key
