@@ -1,3 +1,7 @@
+Version: next
+------------
+ - Adds support to `DT`, `DTZ`, `DTL` and `DTLZ` data types
+
 Version: 2.1.1
 ------------
  - Updates dependency of nodes7 - fixes sequence collision bug
