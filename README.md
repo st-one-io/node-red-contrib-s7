@@ -61,9 +61,14 @@ The variables and their addresses configured on the **S7 Endpoint** follow a sli
 | `IR34` or `ER34`              | `IR34` or `ER34`      | Number        | Floating point 32-bit number at byte 34 of input area |
 | `QR36` or `AR36`              | `QR36` or `AR36`      | Number        | Floating point 32-bit number at byte 36 of output area |
 | `MR38`                        | `MR38`                | Number        | Floating point 32-bit number at byte 38 of memory area |
+| `DB1,DT0`                     | -                     | Date**        | A timestamp in the DATE_AND_TIME format |
+| `DB1,DTZ10`                   | -                     | Date**        | A timestamp in the DATE_AND_TIME format, in UTC |
+| `DB2,DTL2`                    | -                     | Date**        | A timestamp in the DTL format |
+| `DB2,DTLZ12`                  | -                     | Date**        | A timestamp in the DTL format, in UTC |
 
 
-*) Note that strings on the PLC uses 2 extra bytes at start for size/length of the string
+ - *) Note that strings on the PLC uses 2 extra bytes at start for size/length of the string
+ - **) Note that javascript's `Date` are _always_ represented in UTC. Please use other nodes like [node-red-contrib-moment](https://flows.nodered.org/node/node-red-contrib-moment) to properly handle type conversions
 
 
 ### Notes on S7-1200/1500

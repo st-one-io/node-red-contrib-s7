@@ -416,10 +416,35 @@
 				<td>Number</td>
 				<td>Floating point 32-bit number at byte 38 of memory area</td>
 			</tr>
+			<tr>
+				<td><code>DB1,DT0</code></td>
+				<td><code>-</code></td>
+				<td>Date**</td>
+				<td>A timestamp in the DATE_AND_TIME format</td>
+			</tr>
+			<tr>
+				<td><code>DB1,DTZ10</code></td>
+				<td><code>-</code></td>
+				<td>Date**</td>
+				<td>A timestamp in the DATE_AND_TIME format, in UTC</td>
+			</tr>
+			<tr>
+				<td><code>DB2,DTL2</code></td>
+				<td><code>-</code></td>
+				<td>Date**</td>
+				<td>A timestamp in the DTL format</td>
+			</tr>
+			<tr>
+				<td><code>DB1,DTLZ12</code></td>
+				<td><code>-</code></td>
+				<td>Date**</td>
+				<td>A timestamp in the DTL format, in UTC</td>
+			</tr>
 		</tbody>
 	</table>
 
 	<p>*) Note that strings on the PLC uses 2 extra bytes at start for size/length of the string</p>
+	<p>**) Note that javascript's <code>Date</code> are <i>always</i> represented in UTC. Please use other nodes like <a href="https://flows.nodered.org/node/node-red-contrib-moment" target="_blank">node-red-contrib-moment</a> to properly handle type conversions</p>
 </script>
 
 <script type="text/javascript">
