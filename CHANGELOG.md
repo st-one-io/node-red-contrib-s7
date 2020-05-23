@@ -1,4 +1,4 @@
-Version: next
+Version: 2.2.0
 ------------
  - Adds support to `DT`, `DTZ`, `DTL` and `DTLZ` data types
 
