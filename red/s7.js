@@ -1,6 +1,6 @@
 //@ts-check
 /*
-  Copyright: (c) 2016-2019, Smart-Tech Controle e Automação
+  Copyright: (c) 2016-2020, Smart-Tech Controle e Automação
   GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 */
 

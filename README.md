@@ -87,6 +87,6 @@ Therefore, some additional configuration steps on the PLC are necessary:
 Please share your ideas and experiences on the [Node-RED forum](https://discourse.nodered.org/), or open an issue on the [page of the project on GitHub](https://github.com/netsmarttech/node-red-contrib-s7)
 
 ## License
-Copyright: (c) 2016-2019, Smart-Tech, Guilherme Francescon Cittolin <guilherme.francescon@netsmarttech.com>
+Copyright: (c) 2016-2020, Smart-Tech, Guilherme Francescon Cittolin <guilherme.francescon@netsmarttech.com>
 
 GNU General Public License v3.0+ (see [LICENSE](LICENSE) or https://www.gnu.org/licenses/gpl-3.0.txt)
