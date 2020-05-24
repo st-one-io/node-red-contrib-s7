@@ -54,7 +54,8 @@
                 "busaddr": "Bus Adresse",
                 "plcbusaddr": "SPS",
                 "adapteraddr": "Adapter",
-
+                "search": "Suchen",
+                "flash-led": "LED Blinken",
                 "tabs": {
                     "connection": "Verbindung",
                     "variables": "Variablen"

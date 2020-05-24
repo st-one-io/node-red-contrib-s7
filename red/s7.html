@@ -22,8 +22,8 @@
 					<input class="input-append-left" type="text" id="node-config-input-address" data-i18n="[placeholder]s7.endpoint.placeholder.address" style="width: 40%;">
 					<label for="node-config-input-port" style="margin-left: 10px; width: auto; "> <span data-i18n="s7.endpoint.label.port"></span></label>
 					<input type="text" id="node-config-input-port" data-i18n="[placeholder]s7.endpoint.label.port" style="width: 50px; margin-right: 10px;">
-					<a id="node-config-lookup-plc-pn" class="btn red-ui-button" style="display: none"><i class="fa fa-search"></i></a>
-					<a id="node-config-flash-plc-pn" class="btn red-ui-button disabled" style="display: none"><i class="fa fa-sun-o"></i></a>
+					<a id="node-config-lookup-plc-pn" class="btn red-ui-button disabled" data-i18n="[title]s7.endpoint.label.search"><i class="fa fa-search"></i></a>
+					<a id="node-config-flash-plc-pn" class="btn red-ui-button disabled" data-i18n="[title]s7.endpoint.label.flash-led"><i class="fa fa-lightbulb-o"></i></a>
 				</div>
 				<div class="form-row">
 					<label for="node-config-input-connmode"><i class="fa fa-sliders"></i> <span data-i18n="s7.endpoint.label.connmode"></span></label>
@@ -876,8 +876,7 @@
 
 			$.getJSON('__node-red-contrib-s7/discover/available/iso-on-tcp', function(data) {
 				if (data) {
-					lookupPlcPNBtn.show();
-					flashPlcPNBtn.show();
+					lookupPlcPNBtn.removeClass('disabled');
 				}
 			});
 

@@ -54,6 +54,8 @@
                 "busaddr": "Bus Address",
                 "plcbusaddr": "PLC",
                 "adapteraddr": "Adapter",
+                "search": "Search",
+                "flash-led": "Flash LED",
                 "tabs": {
                     "connection": "Connection",
                     "variables": "Variables"
