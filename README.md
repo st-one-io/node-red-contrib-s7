@@ -79,6 +79,41 @@ Therefore, some additional configuration steps on the PLC are necessary:
  - "Optimized block access" must be disabled for the DBs we want to access ([image](http://snap7.sourceforge.net/snap7_client_file/db_1500.bmp))
  - In the "Protection" section of the CPU Properties, enable the "Permit access with PUT/GET" checkbox ([image](http://snap7.sourceforge.net/snap7_client_file/cpu_1500.bmp))
 
+### Notes on Logo! 8
+
+On the newest Logo! 8.FS4 (and possibly 0BA8) Logic modules there is no need to set the Mode to TSAP any more, instead the default Rack/Slot value of 0/2 works just fine.
+
+The following table shows memory areas accessible without additional settings in the controller program:
+
+*Note: These memory areas seem to be read-only from outside the controller, as they are directly used by the function blocks listed in "Logo Block" of the table*
+
+| Logo Block | Logo VM Range | example Node-RED address                          | Description |
+|------------|---------------|---------------------------------------------------|-------------|
+| `I`        | `1024 - 1031` | `DB1,BYTE1024` or `DB1,X1024.5` or `DB1,WORD1024` | Reads input terminals 1...8 or 6 or 1...16 |
+| `AI`       | `1032 - 1063` | `DB1,WORD1032`                                    | Reads analog input terminal 1. Always word sized. |
+| `Q`        | `1064 - 1071` | `DB1,BYTE1064` or `DB1,X1064.5` or `DB1,WORD1064` | Reads output terminals 1...8 or 6 or 1...16 |
+| `AQ`       | `1072 - 1103` | `DB1,WORD1072`                                    | Reads analog output terminal 1. Always word sized. |
+| `M`        | `1104 - 1117` | `DB1,BYTE1104` or `DB1,X1104.5` or `DB1,WORD1104` | Reads bit flags M1...M8 or M6 or M1...16 |
+| `AM`       | `1118 - 1245` | `DB1,WORD1118`                                    | Reads analog flag 1. Always word sized. |
+| `NI`       | `1246 - 1061` | `DB1,BYTE1246` or `DB1,X1246.5` or `DB1,WORD1246` | Reads network input 1...8 or 6 or 1...16 |
+| `NAI`      | `1262 - 1389` | `DB1,WORD1262`                                    | Reads analog network input 1. Always word sized. |
+| `NQ`       | `1390 - 1405` | `DB1,BYTE1390` or `DB1,X1390.5` or `DB1,WORD1390` | Reads network output 1...8 or 6 or 1...16 |
+| `NAQ`      | `1406 - 1469` | `DB1,WORD1406`                                    | Reads network output 1. Always word sized. |
+
+On the other hand, Logo memory areas VM 0-849 are mutable from outside the controller, but they need to be mapped into the Logo program. Without mapping, data written into these addresses will have no effect on program execution. Used VM addresses in the range mentioned above can be read/written from/into in the Logo program using the "Network" function blocks (in the function block setup use the *"Local variable memory (VM)"* option to map VMs to the function block).
+
+*Note: it may seem to be convenient just to use the block memory areas tabulated above to read data out, but unfortunately you might not always get the results you expected using those. In order to get reliable data IO to/from the Logo controller, use addresses in the range of 0-849 (with appropriate mapping) for all your communication needs.*
+
+Some example addressing:
+
+| Logo VM | Example Node-RED address | Description |
+|---------|--------------------------|-------------|
+| `0`     | `DB1,BYTE0`              | R/W access  |
+| `1`     | `DB1,X1.3`               | R/W access Note: use booleans |
+| `2..3`  | `DB1,WORD2`              | R/W access  |
+| `4..7`  | `DB1,DWORD4`             | R/W access  |
+ 
+ 
 ## Wishlist
 - Perform data type validation on the variables list, preventing errors on the runtime
 
