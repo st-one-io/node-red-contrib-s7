@@ -49,11 +49,9 @@
                 "cycletime": "Zykluszeit",
                 "timeout": "Timeout",
                 "verbose": "Debug",
-                "adapterauto": "Adapter automatisch erkennen",
-                "adapterport": "Adapter",
-                "busaddr": "Bus Adresse",
-                "plcbusaddr": "SPS",
-                "adapteraddr": "Adapter",
+                "adapter": "Adapter",
+                "adapterplaceholder": "Bitte 'node-red-contrib-mpi-s7' installieren",
+                "busaddr": "Adresse",
                 "search": "Suchen",
                 "flash-led": "LED Blinken",
                 "tabs": {
@@ -70,14 +68,13 @@
                     "export": "Export",
                     "import": "Import"
                 }
-
             },
             "placeholder": {
                 "address": "IP Adresse oder FQDN (plc01.example.com)"
             },
             "transport": {
                 "iso-on-tcp": "Ethernet (ISO-on-TCP)",
-                "mpi-usb": "MPI/PPI/DP USB Adapter"
+                "mpi-s7": "MPI/PPI/DP Adapter"
             },
             "connmode": {
                 "rack-slot": "Rack/Slot",
@@ -89,11 +86,6 @@
                 "offline": "offline",
                 "unknown": "unbekannt",
                 "connecting": "verbinde"
-            },
-            "verbose": {
-                "default": "Standard (command line)",
-                "on": "An",
-                "off": "Aus"
             }
         },
         "label": {
@@ -102,7 +94,6 @@
         },
         "error": {
             "onconnect": "Fehler beim Verbinden: ",
-            "badvalues": "Fehler (ungültige Werte)",
             "missingconfig": "Fehlende Konfiguration",
             "varunknown": "Unbekannte Variable '__var__'",
             "valmismatch": "Anzahl von Daten und Variablen passen nicht",
@@ -111,8 +102,7 @@
             "invalidtransport": "Ungültiger Transport \"__transport__\"",
             "invalidtsap": "Ungültige TSAP Konfiguration",
             "invalidtimeinterval": "Ungültige Zeitspanne für Zykluszeit von \"__interval__\"",
-            "invalidcontrolfunction": "Ungültige Kontrollfunktion \"__function__\"",
-            "nompiusblibrary": "MPI-USB Bibliothek konnte nicht geladen werden, bitte die Installation überprüfen"
+            "invalidcontrolfunction": "Ungültige Kontrollfunktion \"__function__\""
         },
         "info": {
             "connect": "Initialisiere Verbindung zur SPS",
@@ -120,18 +110,18 @@
             "novars": "Keine Variablen konfiguriert, überspringe Lesezyklus",
             "cycletimetooshort": "Zykluszeit zu kurz, erzwinge Minimum von __min__ ms"
         },
-        "addrval": {
-            "MULTCOMMA": "Ungültige Adresse mit mehreren Kommas",
-            "DB": "Ungültige DB Adresse",
-            "MEMAREA": "Ungültiger Typ für Speicherbereich",
-            "MEMAREADB": "Ungültiger Typ für Speicherbereich im DB",
-            "SUBADDR": "Ungültige Adressoffset mit mehreren Punkten",
-            "NOBITADDR": "Speicherbereich benötigt Bit Adresse",
-            "NOSTRLEN": "Speicherbereich benötigt Zeichenanzahl",
-            "NUMTYPE": "Bitoffset und/oder Arraylänge muss eine Ganzzahl sein",
-            "ARRLEN": "Arraylänge muss größer als Null sein",
-            "STRLEN": "Textlänge muss größer als Null Zeichen sein",
-            "BITADDR": "Bitoffset muss zwischen 0 und 7 liegen"
+        "validation": {
+            "ERR_PARSE_EMPTY": "Adresse kann nich leer sein",
+            "ERR_PARSE_UNKNOWN_FORMAT": "Unbekanntes Format, bitte Hilfetext überprüfen",
+            "ERR_PARSE_ADDR_OFFSET": "Byte offset ist ungültig",
+            "ERR_PARSE_DB_NUMBER": "DB nummer ist unbekannt oder ungültig",
+            "ERR_PARSE_DB_DATATYPE": "Datatyp von DB Bereich ist unbekannt oder ungültig",
+            "ERR_PARSE_AREA": "Bereich ist unbekannt oder ungültig",
+            "ERR_PARSE_DATATYPE": "Datatyp ist unbekannt oder ungültig",
+            "ERR_PARSE_BIT_OFFSET": "Bit offset fehlt oder ist ungültig",
+            "ERR_PARSE_STRING_LEN": "String Länge fehlt oder ist ungültig",
+            "ERR_PARSE_INVALID_BIT_OFFSET": "Bit offset bei Datentyp nicht unterstützt",
+            "ERR_PARSE_INVALID_ARR_LEN": "Ungülgige Array Länge"
         }
     }
 }

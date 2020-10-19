@@ -1,15 +1,13 @@
 //@ts-check
 /*
-  Copyright: (c) 2016-2020, Smart-Tech Controle e Automação
+  Copyright: (c) 2016-2020, St-One Ltda., Guilherme Francescon Cittolin <guilherme@st-one.io>
   GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 */
 
-
 function nrInputShim(node, fn) {
-    function doErr(err) { err && node.error(err) }
     node.on('input', function (msg, send, done) {
         send = send || node.send;
-        done = done || doErr;
+        done = done || (err => err && node.error(err, msg));
         fn(msg, send, done);
     });
 }
@@ -41,45 +39,35 @@ var tools = require('../src/tools.js');
 module.exports = function (RED) {
     "use strict";
 
-    var util = require('util');
-    var nodes7 = require('nodes7');
+    var nodes7 = require('@st-one-io/nodes7');
     var EventEmitter = require('events').EventEmitter;
-    var mpiS7;
 
     // ---------- Discovery Endpoints ----------
 
-    RED.httpAdmin.get('/__node-red-contrib-s7/discover/available/iso-on-tcp', RED.auth.needsPermission('s7.discover'), function(req, res) {
-        tools.isPnToolsAvailable().then(function(available){
+    RED.httpAdmin.get('/__node-red-contrib-s7/discover/available/iso-on-tcp', RED.auth.needsPermission('s7.discover'), function (req, res) {
+        tools.isPnToolsAvailable().then(function (available) {
             res.json(available).end();
         }).catch(() => {
             res.status(500).end();
         });
     });
 
-    RED.httpAdmin.get('/__node-red-contrib-s7/discover/available/mpi-s7', RED.auth.needsPermission('s7.discover'), function(req, res) {
-        tools.isMpiS7Available().then(function(available){
-            res.json(available).end();
-        }).catch(() => {
-            res.status(500).end();
-        });
-    });
-
-    RED.httpAdmin.get('/__node-red-contrib-s7/discover/iso-on-tcp', RED.auth.needsPermission('s7.discover'), function(req, res) {
-        tools.listDevicesPN().then(function(devices){
+    RED.httpAdmin.get('/__node-red-contrib-s7/discover/iso-on-tcp', RED.auth.needsPermission('s7.discover'), function (req, res) {
+        tools.listDevicesPN().then(function (devices) {
             res.json(devices).end();
         }).catch(() => {
             res.status(500).end();
         });
     });
 
-    RED.httpAdmin.get('/__node-red-contrib-s7/flashled/iso-on-tcp/:mac', RED.auth.needsPermission('s7.discover'), function(req, res) {
+    RED.httpAdmin.get('/__node-red-contrib-s7/flashled/iso-on-tcp/:mac', RED.auth.needsPermission('s7.discover'), function (req, res) {
         let mac_addr = (req.params.mac || '').replace(/-/g, ':');
-        if (!/^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$/.test(mac_addr)){
+        if (!/^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$/.test(mac_addr)) {
             res.status(400).end();
             return;
         }
 
-        tools.flashLedPN(mac_addr).then(function(){
+        tools.flashLedPN(mac_addr).then(function () {
             res.status(204).end();
         }).catch(() => {
             res.status(500).end();
@@ -161,61 +149,48 @@ module.exports = function (RED) {
         EventEmitter.call(this);
         var node = this;
         var oldValues = {};
-        var connOpts;
         var status;
         var readInProgress = false;
         var readDeferred = 0;
-        var vars = config.vartable;
-        var isVerbose = (config.verbose == 'on' || config.verbose == 'off') ? (config.verbose == 'on') : RED.settings.get('verbose');
-        var connectTimeoutTimer;
         var connected = false;
         var currentCycleTime = config.cycletime;
         var transport = config.transport || 'iso-on-tcp';
-        var NodeS7;
-        node.writeInProgress = false;
-        node.writeQueue = [];
-
-        if (typeof vars == 'string') {
-            vars = JSON.parse(vars);
-        }
-
-        if (transport === 'mpi-usb' && !mpiS7) {
-            //lazy load mpi-s7 library, as we may not need it
-            try {
-                mpiS7 = require('mpi-s7');
-            } catch (e) {
-                node.error(RED._('s7.error.nompiusblibrary'));
-                return;
-            }
-        }
 
         RED.nodes.createNode(this, config);
 
         //avoids warnings when we have a lot of S7In nodes
         this.setMaxListeners(0);
 
-        if (transport === 'mpi-usb') {
+        node.endpoint = null;
+        let connOpts;
+        let itemGroup;
+        let s7ConnOpts = { timeout: parseInt(config.timeout) }
 
-            NodeS7 = mpiS7.NodeS7;
+        if (transport === 'mpi-s7') {
+
+            node.adapter = RED.nodes.getNode(config.adapter);
+            if (!node.adapter) {
+                return node.error(RED._("s7.error.missingconfig"));
+            }
+
+            s7ConnOpts.maxJobs = 1;
 
             connOpts = {
-                mpiAddress: parseInt(config.busaddr),
-                selfMpiAddress: parseInt(config.adapteraddr),
+                customTransport: async () => node.adapter.getStream(config.busaddr),
+                s7ConnOpts
             }
 
         } else if (transport === 'iso-on-tcp') {
 
-            NodeS7 = nodes7;
-
-            connOpts = {
-                host: config.address,
-                port: config.port
-            };
-
             switch (config.connmode) {
                 case "rack-slot":
-                    connOpts.rack = config.rack;
-                    connOpts.slot = config.slot;
+                    connOpts = {
+                        host: config.address,
+                        port: Number(config.port),
+                        rack: Number(config.rack),
+                        slot: Number(config.slot),
+                        s7ConnOpts: s7ConnOpts
+                    }
                     break;
                 case "tsap":
                     if (!validateTSAP(config.localtsaphi) ||
@@ -226,10 +201,18 @@ module.exports = function (RED) {
                         return;
                     }
 
-                    connOpts.localTSAP = parseInt(config.localtsaphi, 16) << 8;
-                    connOpts.localTSAP += parseInt(config.localtsaplo, 16);
-                    connOpts.remoteTSAP = parseInt(config.remotetsaphi, 16) << 8;
-                    connOpts.remoteTSAP += parseInt(config.remotetsaplo, 16);
+                    let localTSAP = parseInt(config.localtsaphi, 16) << 8;
+                    localTSAP += parseInt(config.localtsaplo, 16);
+                    let remoteTSAP = parseInt(config.remotetsaphi, 16) << 8;
+                    remoteTSAP += parseInt(config.remotetsaplo, 16);
+
+                    connOpts = {
+                        host: config.address,
+                        port: config.port,
+                        srcTSAP: localTSAP,
+                        dstTSAP: remoteTSAP,
+                        s7ConnOpts: s7ConnOpts
+                    }
                     break;
                 default:
                     node.error(RED._("s7.error.invalidconntype", config));
@@ -240,19 +223,16 @@ module.exports = function (RED) {
             return;
         }
 
-        node._vars = createTranslationTable(vars);
+        node._vars = createTranslationTable(config.vartable);
 
         node.getStatus = function getStatus() {
             return status;
         };
 
         node.writeVar = function writeVar(obj) {
-            node.writeQueue.push(obj);
-
-            if (!node.writeInProgress) {
-                writeNext();
-            }
-
+            itemGroup.writeItems(obj.name, obj.val)
+                .then(() => obj.done())
+                .catch(e => obj.done(e))
         };
 
         /**
@@ -284,33 +264,6 @@ module.exports = function (RED) {
             node._td = setInterval(doCycle, time);
         }
 
-        function onWritten(err) {
-            node.writeInProgress = false;
-            var elm = node.writeQueue.shift();
-
-            writeNext();
-
-            if (err) {
-                manageStatus('badvalues');
-                elm.done(RED._("s7.error.badvalues"), {});
-            } else {
-                manageStatus('online');
-                elm.done();
-            }
-
-            manageStatus('online');
-        }
-
-        function writeNext() {
-            if (!connected) return;
-
-            var nextElm = node.writeQueue[0];
-            if (nextElm) {
-                node._conn.writeItems(nextElm.name, nextElm.val, onWritten);
-                node.writeInProgress = true;
-            }
-        }
-
         function manageStatus(newStatus) {
             if (status == newStatus) return;
 
@@ -320,18 +273,12 @@ module.exports = function (RED) {
             });
         }
 
-        function cycleCallback(err, values) {
+        function cycleCallback(values) {
             readInProgress = false;
 
             if (readDeferred && connected) {
                 doCycle();
                 readDeferred = 0;
-            }
-
-            if (err) {
-                manageStatus('badvalues');
-                node.error(RED._("s7.error.badvalues"), {});
-                return;
             }
 
             manageStatus('online');
@@ -354,107 +301,62 @@ module.exports = function (RED) {
 
         function doCycle() {
             if (!readInProgress && connected) {
-                node._conn.readAllItems(cycleCallback);
+                itemGroup.readAllItems().then(cycleCallback).catch(e => {
+                    node.error(e, {});
+                    readInProgress = false;
+                });
                 readInProgress = true;
             } else {
                 readDeferred++;
-
-                if (readDeferred > 10) {
-                    node.warn(RED._("s7.error.noresponse"), {});
-                    connect(); //this also drops any existing connection
-                }
             }
         }
         node.doCycle = doCycle;
 
-        function onConnect(err) {
-            var varKeys = Object.keys(node._vars);
-
-            clearTimeout(connectTimeoutTimer);
-
-            if (err) {
-                manageStatus('offline');
-                node.error(RED._("s7.error.onconnect") + err.toString(), {});
-
-                connected = false;
-
-                //try to reconnect if failed to connect
-                connectTimeoutTimer = setTimeout(connect, 5000);
-
-                return;
-            }
-
+        function onConnect() {
             readInProgress = false;
             readDeferred = 0;
             connected = true;
 
             manageStatus('online');
 
-            if (!varKeys || !varKeys.length) {
-                node.warn(RED._("s7.info.novars"), {});
-                return;
-            }
-
-            node._conn.setTranslationCB(function (tag) {
-                return node._vars[tag];
-            });
-            node._conn.addItems(varKeys);
             node.updateCycleTime(currentCycleTime);
-
-            writeNext();
         }
 
-        function closeConnection(done) {
-            //ensure we won't try to connect again if anybody wants to close it
-            clearTimeout(connectTimeoutTimer);
-
-            if (isVerbose) {
-                node.log(RED._("s7.info.disconnect"));
-            }
+        function onDisconnect() {
             manageStatus('offline');
-            clearInterval(node._td);
-
-            function doCb() {
-                node._conn = null;
-                if (typeof done == 'function') done();
-            }
             connected = false;
-
-            if (node._conn) {
-                node._conn.dropConnection(doCb);
-            } else {
-                process.nextTick(doCb);
-            }
         }
 
-        node.on('close', closeConnection);
+        node.on('close', done => {
+            manageStatus('offline');
+            if (!node.endpoint) done();
 
+            node.endpoint.disconnect().then(done).catch(e => {
+                node.error(e);
+            });
+        });
 
-        function connect() {
-            function doConnect() {
-                manageStatus('connecting');
+        manageStatus('offline');
 
-                if (isVerbose) {
-                    node.log(RED._("s7.info.connect"));
-                }
+        node.endpoint = new nodes7.S7Endpoint(connOpts);
+        node.endpoint.on('connecting', () => manageStatus('connecting'));
+        node.endpoint.on('connect', onConnect);
+        node.endpoint.on('disconnect', onDisconnect);
+        node.endpoint.on('error', (e => {
+            manageStatus('offline');
+            node.error(e && e.toString(), {});
+        }));
 
-                connected = false;
-                node._conn = new NodeS7({
-                    silent: !isVerbose,
-                    debug: isVerbose
-                });
-                node._conn.globalTimeout = parseInt(config.timeout) || 1500;
-                node._conn.initiateConnection(connOpts, onConnect);
-            }
+        itemGroup = new nodes7.S7ItemGroup(node.endpoint);
+        itemGroup.setTranslationCB(k => node._vars[k]);
 
-            if (node._conn) {
-                closeConnection(doConnect);
-            } else {
-                process.nextTick(doConnect);
-            }
+        let varKeys = Object.keys(node._vars)
+        if (!varKeys || !varKeys.length) {
+            node.warn(RED._("s7.info.novars"), {});
+            return;
+        } else {
+            itemGroup.addItems(varKeys);
         }
-
-        connect();
 
     }
     RED.nodes.registerType("s7 endpoint", S7Endpoint);
@@ -599,7 +501,7 @@ module.exports = function (RED) {
         }
 
         nrInputShim(node, onNewMsg);
-        
+
         node.status(generateStatus(node.endpoint.getStatus(), statusVal));
         node.endpoint.on('__STATUS__', onEndpointStatus);
 
@@ -630,18 +532,76 @@ module.exports = function (RED) {
 
         function onMessage(msg, send, done) {
             var res;
-            switch (config.function) {
+            let func = config.function || msg.function;
+            switch (func) {
                 case 'cycletime':
                     res = node.endpoint.updateCycleTime(msg.payload);
                     if (res) {
-                        done(res, msg);
+                        done(res);
                     } else {
                         send(msg);
+                        done();
                     }
                     break;
                 case 'trigger':
                     node.endpoint.doCycle();
                     send(msg);
+                    done();
+                    break;
+
+                case 'ssl':
+                    node.endpoint.endpoint
+                        .getSSL(Number(msg?.payload?.id || 0), Number(msg?.payload?.index || 0)).then(res => {
+                            msg.payload = res;
+                            send(msg);
+                            done();
+                        }).catch(e => {
+                            done(e);
+                        })
+                    break;
+
+                case 'list-blocks':
+                    node.endpoint.endpoint
+                        .listAllBlocks().then(res => {
+                            msg.payload = res;
+                            send(msg);
+                            done();
+                        }).catch(e => {
+                            done(e);
+                        })
+                    break;
+
+                case 'upload-block':
+                    node.endpoint.endpoint
+                        .uploadBlock(msg?.payload?.type, Number(msg?.payload?.number)).then(res => {
+                            msg.payload = res;
+                            send(msg);
+                            done();
+                        }).catch(e => {
+                            done(e);
+                        })
+                    break;
+
+                case 'upload-all-blocks':
+                    node.endpoint.endpoint
+                        .uploadAllBlocks().then(res => {
+                            msg.payload = res;
+                            send(msg);
+                            done();
+                        }).catch(e => {
+                            done(e);
+                        })
+                    break;
+
+                case 'all-block-info':
+                    node.endpoint.endpoint
+                        .getAllBlockInfo().then(res => {
+                            msg.payload = res;
+                            send(msg);
+                            done();
+                        }).catch(e => {
+                            done(e);
+                        })
                     break;
 
                 default:

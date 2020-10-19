@@ -1,16 +1,17 @@
 # node-red-contrib-s7
 A Node-RED node to interact with Siemens S7 PLCs.
-Based on the awesome work of [plcpeople/nodes7](https://github.com/plcpeople/nodeS7).
 
-This node was created by [Smart-Tech](https://netsmarttech.com) as part of the [ST-One](https://netsmarttech.com/page/st-one) project.
+This node was created as part of the [ST-One](https://st-one.io) project.
+
 
 ## Install
 
-You can install this node directly from the "Manage Palette" menu in the Node-RED interface. An optional compilation step is only necessary for supporting MPI-USB adapter.
+You can install this node directly from the "Manage Palette" menu in the Node-RED interface.
 
 Alternatively, run the following command in your Node-RED user directory - typically `~/.node-red` on Linux or `%HOMEPATH%\.nodered` on Windows
 
         npm install node-red-contrib-s7
+
 
 ## Usage
 
@@ -21,6 +22,7 @@ The **S7 In** node makes the variable's values available in a flow in three diff
 *   **Single variable:** A single variable can be selected from the configured variables, and a message is sent every cycle, or only when it changes if _diff_ is checked. `msg.payload` contains the variable's value and `msg.topic` has the variable's name.
 *   **All variables, one per message:** Like the _Single variable_ mode, but for all variables configured. If _diff_ is checked, a message is sent everytime any variable changes. If _diff_ is unchecked, one message is sent for every variable, in every cycle. Care must be taken about the number of messages per second in this mode.
 *   **All variables:** In this mode, `msg.payload` contains an object with all configured variables and their values. If _diff_ is checked, a message is sent if at least one of the variables changes its value.
+
 
 ### Variable addressing
 
@@ -79,14 +81,13 @@ Therefore, some additional configuration steps on the PLC are necessary:
  - "Optimized block access" must be disabled for the DBs we want to access ([image](http://snap7.sourceforge.net/snap7_client_file/db_1500.bmp))
  - In the "Protection" section of the CPU Properties, enable the "Permit access with PUT/GET" checkbox ([image](http://snap7.sourceforge.net/snap7_client_file/cpu_1500.bmp))
 
-## Wishlist
-- Perform data type validation on the variables list, preventing errors on the runtime
 
 ## Bugs and enhancements
 
-Please share your ideas and experiences on the [Node-RED forum](https://discourse.nodered.org/), or open an issue on the [page of the project on GitHub](https://github.com/netsmarttech/node-red-contrib-s7)
+Please share your ideas and experiences on the [Node-RED forum](https://discourse.nodered.org/), or open an issue on the [page of the project on GitHub](https://github.com/st-one-io/node-red-contrib-s7)
+
 
 ## License
-Copyright: (c) 2016-2020, Smart-Tech, Guilherme Francescon Cittolin <guilherme.francescon@netsmarttech.com>
+Copyright: (c) 2016-2020, ST-One Ltda., Guilherme Francescon Cittolin <guilherme@st-one.io>
 
 GNU General Public License v3.0+ (see [LICENSE](LICENSE) or https://www.gnu.org/licenses/gpl-3.0.txt)
