@@ -50,7 +50,7 @@
                 "timeout": "Timeout",
                 "verbose": "Debug",
                 "adapter": "Adapter",
-                "adapterplaceholder": "Please install 'node-red-contrib-mpi-s7' for MPI support",
+                "adapterplaceholder": "Please install 'node-red-contrib-mpi-s7' for MPI/PPI/DP support",
                 "busaddr": "Address",
                 "search": "Search",
                 "flash-led": "Flash LED",
