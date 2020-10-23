@@ -551,7 +551,7 @@ module.exports = function (RED) {
 
                 case 'ssl':
                     node.endpoint.endpoint
-                        .getSSL(Number(msg?.payload?.id || 0), Number(msg?.payload?.index || 0)).then(res => {
+                        .getSSL(Number(msg && msg.payload && msg.payload.id || 0), Number(msg && msg.payload && msg.payload.index || 0)).then(res => {
                             msg.payload = res;
                             send(msg);
                             done();
@@ -573,7 +573,7 @@ module.exports = function (RED) {
 
                 case 'upload-block':
                     node.endpoint.endpoint
-                        .uploadBlock(msg?.payload?.type, Number(msg?.payload?.number)).then(res => {
+                        .uploadBlock(msg && msg.payload && msg.payload.type, Number(msg && msg.payload && msg.payload.number)).then(res => {
                             msg.payload = res;
                             send(msg);
                             done();
