@@ -12,6 +12,8 @@ Alternatively, run the following command in your Node-RED user directory - typic
 
         npm install node-red-contrib-s7
 
+NodeJS version 10 or greater and Node-RED version 1.0 or greater is required.
+
 
 ## Usage
 
@@ -85,6 +87,11 @@ Therefore, some additional configuration steps on the PLC are necessary:
 ## Bugs and enhancements
 
 Please share your ideas and experiences on the [Node-RED forum](https://discourse.nodered.org/), or open an issue on the [page of the project on GitHub](https://github.com/st-one-io/node-red-contrib-s7)
+
+
+## Support
+
+Community support is offered on a best-effort basis via GitHub Issues. For commercial support, please contact us by sending an e-mail to [st-one@st-one.io](mailto:st-one@st-one.io).
 
 
 ## License
