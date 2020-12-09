@@ -49,11 +49,9 @@
                 "cycletime": "Cycle time",
                 "timeout": "Timeout",
                 "verbose": "Debug",
-                "adapterauto": "Auto-detect adapter",
-                "adapterport": "Adapter",
-                "busaddr": "Bus Address",
-                "plcbusaddr": "PLC",
-                "adapteraddr": "Adapter",
+                "adapter": "Adapter",
+                "adapterplaceholder": "Please install 'node-red-contrib-mpi-s7' for MPI/PPI/DP support",
+                "busaddr": "Address",
                 "search": "Search",
                 "flash-led": "Flash LED",
                 "tabs": {
@@ -70,14 +68,13 @@
                     "export": "Export",
                     "import": "Import"
                 }
-
             },
             "placeholder": {
                 "address": "IP Address or FQDN (plc01.example.com)"
             },
             "transport": {
                 "iso-on-tcp": "Ethernet (ISO-on-TCP)",
-                "mpi-usb": "MPI/PPI/DP USB Adapter"
+                "mpi-s7": "MPI/PPI/DP Adapter"
             },
             "connmode": {
                 "rack-slot": "Rack/Slot",
@@ -89,11 +86,6 @@
                 "offline": "offline",
                 "unknown": "unknown",
                 "connecting": "connecting"
-            },
-            "verbose": {
-                "default": "Default (command line)",
-                "on": "On",
-                "off": "Off"
             }
         },
         "label": {
@@ -102,7 +94,6 @@
         },
         "error": {
             "onconnect": "Error connecting to PLC: ",
-            "badvalues": "Failure (Bad values)",
             "missingconfig": "Missing configuration",
             "varunknown": "Unknown variable '__var__'",
             "valmismatch": "Amount of variables and data mismatch",
@@ -111,8 +102,7 @@
             "invalidtransport": "Invalid transport \"__transport__\"",
             "invalidtsap": "Invalid TSAP configuration",
             "invalidtimeinterval": "Invalid time interval for cycle time of \"__interval__\"",
-            "invalidcontrolfunction": "Invalid control function \"__function__\"",
-            "nompiusblibrary": "Could not load MPI-USB library, check your installation"
+            "invalidcontrolfunction": "Invalid control function \"__function__\""
         },
         "info": {
             "connect": "Initiating connection to PLC",
@@ -120,18 +110,18 @@
             "novars": "No variables configured, skipping cyclic reading",
             "cycletimetooshort": "Cycle time too short, enforcing minimum of __min__ ms"
         },
-        "addrval": {
-            "MULTCOMMA": "Invalid address with multiple commas",
-            "DB": "Invalid DB address",
-            "MEMAREA": "Invalid memory area type",
-            "MEMAREADB": "Invalid memory area type inside DB",
-            "SUBADDR": "Invalid address offset with multiple dots",
-            "NOBITADDR": "Memory area requires bit address",
-            "NOSTRLEN": "Memory area requires string length",
-            "NUMTYPE": "Bit-offset and/or array size must be a number",
-            "ARRLEN": "Array size must be greater than zero",
-            "STRLEN": "String size must be greater than zero",
-            "BITADDR": "Bit offset must be between 0 and 7"
+        "validation": {
+            "ERR_PARSE_EMPTY": "Address cannot be empty",
+            "ERR_PARSE_UNKNOWN_FORMAT": "Unknown address format, check node's help section",
+            "ERR_PARSE_ADDR_OFFSET": "Byte offset is invalid",
+            "ERR_PARSE_DB_NUMBER": "Number of DB is unknown or invalid",
+            "ERR_PARSE_DB_DATATYPE": "Data type of DB area is unknown or invalid",
+            "ERR_PARSE_AREA": "Area addressed is unknown or invalid",
+            "ERR_PARSE_DATATYPE": "Data type is unknown or invalid",
+            "ERR_PARSE_BIT_OFFSET": "Bit offset is missing or is invalid",
+            "ERR_PARSE_STRING_LEN": "String length is missing or is invalid",
+            "ERR_PARSE_INVALID_BIT_OFFSET": "Bit offset not supported for this type",
+            "ERR_PARSE_INVALID_ARR_LEN": "Array length specified is invalid"
         }
     }
 }

@@ -1,3 +1,9 @@
+Version: 3.0.0
+------------
+ - Migrate underlying library to @st-one-io/node-s7
+ - Remove optional dependency on mpi-s7 (project is now split into this and `node-red-contrib-mpi-s7`)
+ - Added tag validation on the editor
+
 Version: 2.2.1
 ------------
  - Fixes and improve PLC discovery UI

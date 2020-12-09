@@ -1,16 +1,19 @@
 # node-red-contrib-s7
 A Node-RED node to interact with Siemens S7 PLCs.
-Based on the awesome work of [plcpeople/nodes7](https://github.com/plcpeople/nodeS7).
 
-This node was created by [Smart-Tech](https://netsmarttech.com) as part of the [ST-One](https://netsmarttech.com/page/st-one) project.
+This node was created as part of the [ST-One](https://st-one.io) project.
+
 
 ## Install
 
-You can install this node directly from the "Manage Palette" menu in the Node-RED interface. An optional compilation step is only necessary for supporting MPI-USB adapter.
+You can install this node directly from the "Manage Palette" menu in the Node-RED interface.
 
 Alternatively, run the following command in your Node-RED user directory - typically `~/.node-red` on Linux or `%HOMEPATH%\.nodered` on Windows
 
         npm install node-red-contrib-s7
+
+NodeJS version 10 or greater and Node-RED version 1.0 or greater is required.
+
 
 ## Usage
 
@@ -21,6 +24,7 @@ The **S7 In** node makes the variable's values available in a flow in three diff
 *   **Single variable:** A single variable can be selected from the configured variables, and a message is sent every cycle, or only when it changes if _diff_ is checked. `msg.payload` contains the variable's value and `msg.topic` has the variable's name.
 *   **All variables, one per message:** Like the _Single variable_ mode, but for all variables configured. If _diff_ is checked, a message is sent everytime any variable changes. If _diff_ is unchecked, one message is sent for every variable, in every cycle. Care must be taken about the number of messages per second in this mode.
 *   **All variables:** In this mode, `msg.payload` contains an object with all configured variables and their values. If _diff_ is checked, a message is sent if at least one of the variables changes its value.
+
 
 ### Variable addressing
 
@@ -79,14 +83,51 @@ Therefore, some additional configuration steps on the PLC are necessary:
  - "Optimized block access" must be disabled for the DBs we want to access ([image](http://snap7.sourceforge.net/snap7_client_file/db_1500.bmp))
  - In the "Protection" section of the CPU Properties, enable the "Permit access with PUT/GET" checkbox ([image](http://snap7.sourceforge.net/snap7_client_file/cpu_1500.bmp))
 
-## Wishlist
-- Perform data type validation on the variables list, preventing errors on the runtime
+
+### Notes on Logo! 8
+
+On the newest Logo! 8.FS4 (and possibly 0BA8) Logic modules there is no need to set the Mode to TSAP any more, instead the default Rack/Slot value of 0/2 works just fine.
+
+The following table shows memory areas accessible without additional settings in the controller program:
+
+*Note: These memory areas seem to be read-only from outside the controller, as they are directly used by the function blocks listed in "Logo Block" of the table*
+
+| Logo Block | Logo VM Range | example Node-RED address                          | Description |
+|------------|---------------|---------------------------------------------------|-------------|
+| `I`        | `1024 - 1031` | `DB1,BYTE1024` or `DB1,X1024.5` or `DB1,WORD1024` | Reads input terminals 1...8 or 6 or 1...16 |
+| `AI`       | `1032 - 1063` | `DB1,WORD1032`                                    | Reads analog input terminal 1. Always word sized. |
+| `Q`        | `1064 - 1071` | `DB1,BYTE1064` or `DB1,X1064.5` or `DB1,WORD1064` | Reads output terminals 1...8 or 6 or 1...16 |
+| `AQ`       | `1072 - 1103` | `DB1,WORD1072`                                    | Reads analog output terminal 1. Always word sized. |
+| `M`        | `1104 - 1117` | `DB1,BYTE1104` or `DB1,X1104.5` or `DB1,WORD1104` | Reads bit flags M1...M8 or M6 or M1...16 |
+| `AM`       | `1118 - 1245` | `DB1,WORD1118`                                    | Reads analog flag 1. Always word sized. |
+| `NI`       | `1246 - 1061` | `DB1,BYTE1246` or `DB1,X1246.5` or `DB1,WORD1246` | Reads network input 1...8 or 6 or 1...16 |
+| `NAI`      | `1262 - 1389` | `DB1,WORD1262`                                    | Reads analog network input 1. Always word sized. |
+| `NQ`       | `1390 - 1405` | `DB1,BYTE1390` or `DB1,X1390.5` or `DB1,WORD1390` | Reads network output 1...8 or 6 or 1...16 |
+| `NAQ`      | `1406 - 1469` | `DB1,WORD1406`                                    | Reads network output 1. Always word sized. |
+
+On the other hand, Logo memory areas VM 0-849 are mutable from outside the controller, but they need to be mapped into the Logo program. Without mapping, data written into these addresses will have no effect on program execution. Used VM addresses in the range mentioned above can be read/written from/into in the Logo program using the "Network" function blocks (in the function block setup use the *"Local variable memory (VM)"* option to map VMs to the function block).
+
+Some addressing examples:
+
+| Logo VM | Example Node-RED address | Description |
+|---------|--------------------------|-------------|
+| `0`     | `DB1,BYTE0`              | R/W access  |
+| `1`     | `DB1,X1.3`               | R/W access Note: use booleans |
+| `2..3`  | `DB1,WORD2`              | R/W access  |
+| `4..7`  | `DB1,DWORD4`             | R/W access  |
+ 
 
 ## Bugs and enhancements
 
-Please share your ideas and experiences on the [Node-RED forum](https://discourse.nodered.org/), or open an issue on the [page of the project on GitHub](https://github.com/netsmarttech/node-red-contrib-s7)
+Please share your ideas and experiences on the [Node-RED forum](https://discourse.nodered.org/), or open an issue on the [page of the project on GitHub](https://github.com/st-one-io/node-red-contrib-s7)
+
+
+## Support
+
+Community support is offered on a best-effort basis via GitHub Issues. For commercial support, please contact us by sending an e-mail to [st-one@st-one.io](mailto:st-one@st-one.io).
+
 
 ## License
-Copyright: (c) 2016-2020, Smart-Tech, Guilherme Francescon Cittolin <guilherme.francescon@netsmarttech.com>
+Copyright: (c) 2016-2020, ST-One Ltda., Guilherme Francescon Cittolin <guilherme@st-one.io>
 
 GNU General Public License v3.0+ (see [LICENSE](LICENSE) or https://www.gnu.org/licenses/gpl-3.0.txt)

@@ -1,5 +1,5 @@
 <!--
-  Copyright: (c) 2016-2020, Smart-Tech Controle e Automação
+  Copyright: (c) 2016-2020, ST-One Ltda., Guilherme Francescon Cittolin <guilherme@st-one.io>
   GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 
@@ -13,7 +13,7 @@
 				<label for="node-config-input-transport"><i class="fa fa-plug"></i> <span data-i18n="s7.endpoint.label.transport"></span></label>
 				<select type="text" id="node-config-input-transport">
 					<option value="iso-on-tcp" data-i18n="s7.endpoint.transport.iso-on-tcp"></option>
-					<option value="mpi-usb" data-i18n="s7.endpoint.transport.mpi-usb"></option>
+					<option value="mpi-s7" data-i18n="s7.endpoint.transport.mpi-s7"></option>
 				</select>
 			</div>
 			<div id="s7-endpoint-transport-iso-on-tcp" style="display:none; padding-left: 20px;">
@@ -47,24 +47,15 @@
 					<input class="input-append-left" type="text" id="node-config-input-remotetsaplo" style="width: 35px">
 				</div>
 			</div>
-			<div id="s7-endpoint-transport-mpi-usb" style="display:none; padding-left: 20px;">
-				<div class="form-row" style="display:none"> <!-- we can't choose the adapter for now, sorry -->
-					<label>&nbsp;</label>
-					<input type="checkbox" id="node-config-input-adapterauto" style="display: inline-block; width: auto; vertical-align: top;">
-					<label for="node-config-input-adapterauto" style="width:70%;"><span data-i18n="s7.endpoint.label.adapterauto"></span></label>
-				</div>
-				<div class="form-row" id="s7-endpoint-mode-adapterport" style="display:none">
-					<label for="node-config-input-adapterport"><i class="fa fa-random"></i> <span data-i18n="s7.endpoint.label.adapterport"></span></label>
-					<input type="text" id="node-config-input-adapterport" style="width:66%;">
-					<a id="node-config-lookup-adapter" class="btn red-ui-button"><i class="fa fa-search"></i></a>
+			<div id="s7-endpoint-transport-mpi-s7" style="display:none; padding-left: 20px;">
+				<div class="form-row">
+					<label for="node-config-input-adapter"><i class="fa fa-exchange"></i> <span data-i18n="s7.endpoint.label.adapter"></span></label>
+					<input type="text" id="node-config-input-adapter" data-i18n="[placeholder]s7.endpoint.label.adapter">
+					<input type="text" id="s7-endpoint-adapter-placeholder" data-i18n="[placeholder]s7.endpoint.label.adapterplaceholder" disabled style="display:none">
 				</div>
 				<div class="form-row">
-					<label><i class="fa fa-sitemap"></i> <span data-i18n="s7.endpoint.label.busaddr"></span></label>
-					<label for="node-config-input-adapteraddr" style="width: auto; margin-left: 10px;"> <span data-i18n="s7.endpoint.label.adapteraddr"></span></label>
-					<input type="text" id="node-config-input-adapteraddr" style="width: 60px;">
-					<label for="node-config-input-busaddr" style="width: auto; margin-left: 10px;"> <span data-i18n="s7.endpoint.label.plcbusaddr"></span></label>
+					<label for="node-config-input-busaddr"><i class="fa fa-sitemap"></i> <span data-i18n="s7.endpoint.label.busaddr"></span></label>
 					<input type="text" id="node-config-input-busaddr" style="width: 60px;">
-					<a id="node-config-lookup-plc-mpi" class="btn red-ui-button" disabled><i class="fa fa-search"></i></a>
 				</div>
 			</div>
 			<div class="form-row">
@@ -74,14 +65,6 @@
 			<div class="form-row">
 				<label for="node-config-input-timeout"><i class="fa fa-clock-o"></i> <span data-i18n="s7.endpoint.label.timeout"></span></label>
 				<input type="text" id="node-config-input-timeout" data-i18n="[placeholder]s7.endpoint.label.timeout" style="width: 60px;"> <span>ms</span>
-			</div>
-            <div class="form-row">
-				<label for="node-config-input-verbose"><i class="fa fa-comment"></i> <span data-i18n="s7.endpoint.label.verbose"></span></label>
-				<select type="text" id="node-config-input-verbose">
-					<option value="default" data-i18n="s7.endpoint.verbose.default"></option>
-					<option value="on" data-i18n="s7.endpoint.verbose.on"></option>
-					<option value="off" data-i18n="s7.endpoint.verbose.off"></option>                 
-				</select>
 			</div>
 			<div class="form-row">
 				<label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="s7.label.name"></span></label>
@@ -104,14 +87,13 @@
 				<a href="#" class="editor-button editor-button-small" id="node-config-input-add-variable" style="margin: 4px;"><i class="fa fa-plus"></i> <span data-i18n="s7.endpoint.label.variables.add"></span></a>
 				<a href="#" class="editor-button editor-button-small" id="node-config-s7-endpoint-var-clean" style="margin: 4px;"><i class="fa fa-trash-o"></i> <span data-i18n="s7.endpoint.label.variables.clean"></span></a>
 			</div>
-			<!--<input type="hidden" id="node-config-input-vartable">-->
 		</div>
 	</div>
 </script>
 
 <script type="text/x-red" data-help-name="s7 endpoint">
 	<p>Configures the connection to a PLC</p>
-	<p>This node was created by <a href="https://netsmarttech.com" target="_blank">Smart-Tech</a> as part of the <a href="https://netsmarttech.com/page/st-one" target="_blank">ST-One</a> project</p>
+	<p>This node was created as part of the <a href="https://st-one.io" target="_blank">ST-One</a> project</p>
 
 	<h3>Details</h3>
 	<p>
@@ -147,16 +129,15 @@
 			method
 		</li>
 	</ul>
-	<h4><i>MPI/PPI/DP USB Adapter</i></h4>
+	<h4><i>MPI/PPI/DP Adapter</i></h4>
 	<p>
-		Connects to the PLC using MPI/USB Adapters available on the system. Requires
-		optional libraries that may not be available on your system.
+		Connects to the PLC using MPI/PPI/DP Adapters available on the system. Requires
+		the installation of <code>node-red-contrib-mpi-s7</code>.
 	</p>
 	<ul>
 		<li>
-			<b>Bus Address</b>: specifies the address that the adapter will use on the
-			MPI/PPI/DP bus when communicating to other devices. The PLC address specified
-			the address of the PLC on the bus that we will communicate to.
+			<b>Address</b>: specifies the address on the bus of the PLC 
+			that we will communicate to.
 		</li>
 	</ul>
 	
@@ -455,43 +436,81 @@
 
 <script type="text/javascript">
 
-	function validateS7Address(addr) {
-		var isBitAddr, isStrAddr, isArray, c, i;
-		addr = addr.split(',');
-		if (addr.length > 2) return "MULTCOMMA";
-		if (addr.length > 1) {
-			// test DB part
-			if (!(/^DB\d+/.test(addr[0]))) return "DB";
-			addr = addr[1].split('.');
-			if (!(/^(S|STRING|DI|DINT|I|INT|DW|DWORD|R|REAL|WORD|TIMER|COUNTER|B|BYTE|C|CHAR|X)\d+$/.test(addr[0]))) return "MEMAREADB";
-			isBitAddr = /^X\d+$/.test(addr[0]);
-			isStrAddr = /^(S|STRING)\d+$/.test(addr[0]);
+	function validateS7Address(address) {
+
+		if (!address) return 'ERR_PARSE_EMPTY';
+
+		var NODES7_REGEX_ADDR = /^(?:DB(\d+),)?([A-Z]+)(\d+)(?:\.(\d+))?(?:\.(\d+))?$/;
+		var NODES7_ADDRTYPE = ["E", "I", "A", "Q", "P", "M", "T", "C"];
+		var NODES7_DATATYPE = ["X", "B", "C", "I", "DI", "W", "D", "DW", "R"];
+		var NODES7_DATATYPE_DB = ["X", "BYTE", "CHAR", "STRING", "INT", "DINT", "WORD", "DWORD", "REAL", "DT", "DTZ", "DTL", "DTLZ", "B", "C", "S", "I", "DI", "W", "D", "DW", "R"];
+
+		var match = address.match(NODES7_REGEX_ADDR);
+		if (!match) return 'ERR_PARSE_UNKNOWN_FORMAT';
+
+		var match_db = match[1];
+		var match_area = match[2];
+		var match_addr = match[3];
+		var match_bitAddr = parseInt(match[4]);
+		var match_arrLen = parseInt(match[5]);
+
+		var addrType, dataType, addressOffset, dbNumber;
+
+		addressOffset = parseInt(match_addr)
+		if (isNaN(addressOffset)) return 'ERR_PARSE_ADDR_OFFSET';
+
+		if (match_db) {
+			dbNumber = parseInt(match_db);
+			if (dbNumber < 1 || isNaN(dbNumber)) return 'ERR_PARSE_DB_NUMBER';
+		}
+
+		if (dbNumber) {
+			if (!NODES7_DATATYPE_DB.includes(match_area)) return 'ERR_PARSE_DB_DATATYPE';
+			dataType = match_area;
 		} else {
-			addr = addr.split('.');
-			if (!(/^(PIB|PEB|PQB|PAB|PIC|PEC|PQC|PAC|PIW|PEW|PQW|PAW|PII|PEI|PQI|PAI|PID|PED|PQD|PAD|PIDI|PEDI|PQDI|PADI|PIR|PER|PQR|PAR|IB|EB|IC|EC|IW|EW|II|EI|ID|ED|IDI|EDI|IR|ER|QB|AB|QC|AC|QW|AW|QI|AI|QD|AD|QDI|ADI|QR|AR|MB|MC|MW|MI|MD|MDI|MR|T|C|I|E|Q|A|M)\d+$/
-				.test(addr[0]))) return "MEMAREA";
-			isBitAddr = /^(I|E|Q|A|M)\d+$/.test(addr[0]);
+			// the first char indicates the PLC area (I, Q, M, P, ...)
+			addrType = match_area.charAt(0);
+			// the data type (if area is P, skip the first char (I,E,Q,A))
+			dataType = match_area.substr(addrType === "P" ? 2 : 1);
+
+			// validate address type
+			if (!NODES7_ADDRTYPE.includes(addrType)) return 'ERR_PARSE_AREA';
+
+			if (dataType === "" && addrType !== "T" && addrType !== "C") {
+				dataType = "X";
+			}
+
+			// validate data type
+			if (!NODES7_DATATYPE.includes(dataType)) return 'ERR_PARSE_DATATYPE';
 		}
-		if (((isBitAddr || isStrAddr) && addr.length > 3) || addr.length > 2) return "SUBADDR";
-		isArray = ((isBitAddr || isStrAddr) && addr.length == 3) || addr.length == 2;
-		if (isBitAddr && addr.length < 2) return "NOBITADDR";
-		if (isStrAddr && addr.length < 2) return "NOSTRLEN";
-		for (i = 1; i < addr.length; i++) {
-			if (!(/^\d+$/.test(addr[i]))) return "NUMTYPE";
+
+		if (dataType === "X") {
+			// handle array lengths and bit address
+			if (isNaN(match_bitAddr)) return 'ERR_PARSE_BIT_OFFSET';
+			if (match_bitAddr > 7) return 'ERR_PARSE_BIT_OFFSET';
+
+		} else if (dataType === "STRING" || dataType === "S") {
+			// match_bitAddr is the string length for string types
+			if (isNaN(match_bitAddr) || match_bitAddr < 1) return 'ERR_PARSE_STRING_LEN';
+
+		} else {
+			// the array length should be at the bitAddr field, this is a syntax error
+			if (!isNaN(match_arrLen)) return 'ERR_PARSE_INVALID_BIT_OFFSET';
+
+			// the bitAddr field is actually the array length
+			if (!isNaN(match_bitAddr) && match_bitAddr < 1) return 'ERR_PARSE_INVALID_ARR_LEN';
 		}
-		if (isBitAddr) {
-			num = parseInt(addr[1]);
-			if (isNaN(num) || num < 0 || num > 7) return "BITADDR";
-		}
-		if (isStrAddr) {
-			num = parseInt(addr[1]);
-			if (isNaN(num) || num <= 0) return "STRLEN";
-		}
-		if (isArray) {
-			num = parseInt(addr[isBitAddr || isStrAddr ? 2 : 1]);
-			if (isNaN(num) || num <= 0) return "ARRLEN";
-		}
+
 		return null;
+	}
+
+	function validateAddressList(list) {
+		for (var i = 0; i < list.length; i++){
+			var elm = list[i];
+			if (!elm.name) return false;
+			if (validateS7Address(elm.addr)) return false;
+		}
+		return true;
 	}
 
 	function validateTSAP(num) {
@@ -544,26 +563,19 @@
 			connmode: {
 				value: "rack-slot"
 			},
-			adapterauto: {
-				value: true
-			},
-			adapterport: {
-				value: ""
+			adapter: {
+				value: "",
+				type: "mpi-s7 adapter",
+				validate: function(v) {return this.transport != "mpi-s7" || !!v }
 			},
 			busaddr: {
 				value: 2
 			},
-			adapteraddr: {
-				value: 0
-			},
 			cycletime: {
-				value: 500
+				value: 1000
 			},
 			timeout: {
-				value: 1500
-			},
-			verbose: {
-				value: "default"
+				value: 2000
 			},
 			name: {
 				value: ""
@@ -572,7 +584,8 @@
 				value: [{
 					name: "",
 					addr: ""
-				}]
+				}],
+				validate: validateAddressList
 			}
 		},
 		label: function () {
@@ -583,14 +596,19 @@
 					this.connmode == 'tsap' ?
 						(this.localtsaphi + "." + this.localtsaplo + "/" + this.remotetsaphi + "." + this.remotetsaplo) :
 						(this.rack + ":" + this.slot))
-			} else if (this.transport == "mpi-usb") {
-				return "MPI/PPI/DP@" + this.busaddr;
+			} else if (this.transport == "mpi-s7") {
+				var adapterNode = RED.nodes.node(this.adapter);
+				if (adapterNode) {
+					return adapterNode.label() + "/" + this.busaddr;
+				}
+				return "MPI/PPI/DP @ ??/" + this.busaddr;
 			} else {
 				return "s7 endpoint";
 			}
 		},
 		oneditprepare: function () {
 			var self = this;
+			var tt = this._.bind(this);
 			var labelName = this._("s7.endpoint.label.variables.name");
 			var labelAddr = this._("s7.endpoint.label.variables.addr");
 			var labelDel = this._("s7.endpoint.label.variables.del");
@@ -601,17 +619,19 @@
 			
 			var transportList = $('#node-config-input-transport');
 			var transportIsoOnTCPGroup = $('#s7-endpoint-transport-iso-on-tcp');
-			var transportMpiUsbGroup = $('#s7-endpoint-transport-mpi-usb');
+			var transportMpiS7Group = $('#s7-endpoint-transport-mpi-s7');
 
 			var fieldAddressIsoOnTcp = $('#node-config-input-address');
 			var fieldName = $('#node-config-input-name');
 
-			var adapterAutoCheckbox = $('#node-config-input-adapterauto');
-			var apaterPortRow = $('#s7-endpoint-mode-adapterport');
-			var lookupAdapterBtn = $('#node-config-lookup-adapter');
-			var lookupPlcMpiBtn = $('#node-config-lookup-plc-mpi');
 			var lookupPlcPNBtn = $('#node-config-lookup-plc-pn');
 			var flashPlcPNBtn = $('#node-config-flash-plc-pn');
+
+			// put a placeholder for mpi-s7 adapter if not installed
+			if (!RED.nodes.getType('mpi-s7 adapter')){
+				$('#node-config-input-adapter').hide();
+				$('#s7-endpoint-adapter-placeholder').show();
+			}
 
 			// Prepare tabs
 			var tabs = RED.tabs.create({
@@ -634,6 +654,8 @@
 			}, 0);
 
 			function generateVariable(variable) {
+				var curTooltip;
+				var previousValue = variable.addr;
 				var container = $('<li/>', {
 					style: "background: #fff; margin:0; padding:8px 0px; border-bottom: 1px solid #ccc;"
 				});
@@ -674,11 +696,46 @@
 					container.fadeOut(150, function () {
 						$(this).remove();
 					});
+					if (curTooltip) curTooltip.close();
+				});
+
+				variableAddr.change(function () {
+					//validate address
+					var curVal = variableAddr.val();
+					var valError = validateS7Address(curVal);
+					if (valError) {
+						variableAddr.addClass('input-error')
+						var errorText = tt("s7.validation." + valError);
+						if (curTooltip) {
+							curTooltip.setContent(errorText);
+							curTooltip.open();
+						} else if (RED.popover && RED.popover.tooltip){
+							curTooltip = RED.popover.tooltip(variableAddr, errorText);
+							curTooltip.open();
+						}
+					} else {
+						variableAddr.removeClass('input-error');
+						if(curTooltip) {
+							curTooltip.close();
+							curTooltip.setContent('');
+							//hack to remove the popup, as Node-RED don't offer
+							// and "unbind" function. May break in the future
+							variableAddr.off('mouseenter mouseleave disabled');
+							curTooltip = null;
+						}
+					}
+
+					//update name if matching old one
+					if (previousValue && variableName.val() == previousValue) {
+						variableName.val(curVal);
+					}
+					previousValue = curVal;
 				});
 
 				//populate data
 				variableAddr.val(variable.addr);
 				variableName.val(variable.name);
+				variableAddr.change();
 
 				$("#node-config-input-variables-container").append(container);
 			}
@@ -717,15 +774,6 @@
 				min: 0,
 				max: 127
 			});
-
-			$("#node-config-input-adapteraddr").spinner({
-				min: 0,
-				max: 127
-			});
-			//fix for undefined adapteraddr
-			if(!self.adapteraddr){
-				$("#node-config-input-adapteraddr").val(0);
-			}
 
 			$("#node-config-s7-endpoint-var-clean").click(cleanVarTable);
 
@@ -812,27 +860,18 @@
 			}
 
 			if (self.timeout === undefined) {
-				console.log('defaults timeout to "1500"');
 				self.timeout = 1500;
 				$("#node-config-input-timeout").val(self.timeout);
 			}
 
 			if (self.verbose === undefined) {
-				console.log('defaults verbose to "default"');
 				self.verbose = 'default';
 				$("#node-config-input-verbose").val(self.verbose);
 			}
 
 			if (self.transport === undefined) {
-				console.log('defaults transport to "iso-on-tcp"');
 				self.transport = 'iso-on-tcp';
 				transportList.val(self.transport);
-			}
-
-			if (self.adapterauto === undefined) {
-				console.log('defaults transport to "iso-on-tcp"');
-				self.adapterauto = true;
-				adapterAutoCheckbox.prop("checked", self.adapterauto);
 			}
 
 			connTypeList.change(function () {
@@ -853,26 +892,16 @@
 				var curVal = transportList.val();
 				if(curVal == "iso-on-tcp") {
 					transportIsoOnTCPGroup.show();
-					transportMpiUsbGroup.hide();
-				} else if (curVal == "mpi-usb") {
+					transportMpiS7Group.hide();
+				} else if (curVal == "mpi-s7") {
 					transportIsoOnTCPGroup.hide();
-					transportMpiUsbGroup.show();
+					transportMpiS7Group.show();
 				} else {
 					transportIsoOnTCPGroup.hide();
-					transportMpiUsbGroup.hide();
+					transportMpiS7Group.hide();
 				}
 			});
 			transportList.change();
-
-			adapterAutoCheckbox.change(function() {
-				var curVal = adapterAutoCheckbox.prop('checked');
-				if (curVal) {
-					apaterPortRow.hide();
-				} else {
-					apaterPortRow.show();
-				}
-			});
-			adapterAutoCheckbox.change();
 
 			$.getJSON('__node-red-contrib-s7/discover/available/iso-on-tcp', function(data) {
 				if (data) {
@@ -957,42 +986,6 @@
 				$.getJSON(tgtUrl);
 			});
 
-			/*
-			lookupAdapterBtn.click(function () {
-				if (lookupAdapterBtn.hasClass('disabled')) return;
-
-				var icon = lookupAdapterBtn.children('i');
-				icon.removeClass('fa-search').addClass('disabled fa-spinner fa-spin fa-fw');
-				icon.removeClass('disabled fa-spinner fa-spin fa-fw').addClass('fa-search');
-				$("#node-config-input-adapterport").autocomplete({
-					source: ["serial:01234567890", "serial:12121212121212", "port:3.1"],
-					minLength: 0,
-					close: function (event, ui) {
-						$("#node-config-input-adapterport").autocomplete("destroy");
-					}
-				}).autocomplete("search", "");
-				return;
-			});//*/
-
-			/*
-			lookupPlcMpiBtn.click(function () {
-				if (lookupPlcMpiBtn.hasClass('disabled')) return;
-
-				var icon = lookupPlcMpiBtn.children('i');
-				icon.removeClass('fa-search').addClass('disabled fa-spinner fa-spin fa-fw');
-				setTimeout(() => {
-					icon.removeClass('disabled fa-spinner fa-spin fa-fw').addClass('fa-search');
-					$("#node-config-input-busaddr").autocomplete({
-						source: ["2", "6", "8"],
-						minLength: 0,
-						close: function (event, ui) {
-							$("#node-config-input-busaddr").autocomplete("destroy");
-						}
-					}).autocomplete("search", "");
-				}, 2000);
-				return;
-			});//*/
-
 		},
 		oneditsave: function () {
 			var node = this;
@@ -1001,9 +994,11 @@
 
 			vars.each(function (i) {
 				var elm = $(this);
+				var addr = elm.find(".node-config-input-variable-addr").val();
+				var name = elm.find(".node-config-input-variable-name").val();
 				var v = {
-					addr: elm.find(".node-config-input-variable-addr").val(),
-					name: elm.find(".node-config-input-variable-name").val()
+					addr: addr,
+					name: name || addr
 				}
 				node.vartable.push(v);
 			});
@@ -1045,7 +1040,7 @@
 
 <script type="text/x-red" data-help-name="s7 in">
 	<p>Reads data from a S7 PLC</p>
-	<p>This node was created by <a href="https://netsmarttech.com" target="_blank">Smart-Tech</a> as part of the <a href="https://netsmarttech.com/page/st-one" target="_blank">ST-One</a> project</p>
+	<p>This node was created as part of the <a href="https://st-one.io" target="_blank">ST-One</a> project</p>
 
 	<h3>Outputs</h3>
 	<dl class="message-properties">
@@ -1213,7 +1208,7 @@
 
 <script type="text/x-red" data-help-name="s7 out">
 	<p>Writes to a memory area in a S7 PLC</p>
-	<p>This node was created by <a href="https://netsmarttech.com" target="_blank">Smart-Tech</a> as part of the <a href="https://netsmarttech.com/page/st-one" target="_blank">ST-One</a> project</p>
+	<p>This node was created as part of the <a href="https://st-one.io" target="_blank">ST-One</a> project</p>
 
 	<p class="form-tips">
 		<b>Caution when writing data to production PLCs!</b><br/>
@@ -1349,6 +1344,7 @@
 	<div class="form-row">
 		<label for="node-input-function"><i class="fa fa-sliders"></i> <span data-i18n="s7.control.label.function"></span></label>
 		<select type="text" id="node-input-function">
+			<option value=""></option>
 			<option value="cycletime" data-i18n="s7.control.function.cycletime"></option>
 			<option value="trigger" data-i18n="s7.control.function.trigger"></option>
 		</select>
@@ -1361,7 +1357,7 @@
 
 <script type="text/x-red" data-help-name="s7 control">
 	<p>Enables advanced control of the PLC and the connection</p>
-	<p>This node was created by <a href="https://netsmarttech.com" target="_blank">Smart-Tech</a> as part of the <a href="https://netsmarttech.com/page/st-one" target="_blank">ST-One</a> project</p>
+	<p>This node was created as part of the <a href="https://st-one.io" target="_blank">ST-One</a> project</p>
 	
 	<h3>Details</h3>
 	<p>The behavior of this node is changed according to the selected function. Each function
@@ -1398,8 +1394,7 @@
 				required: true
 			},
 			function: {
-				value: "cycletime",
-				required: true
+				value: "cycletime"
 			},
 			name: {
 				value: ""

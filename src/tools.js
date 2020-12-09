@@ -1,6 +1,6 @@
 //@ts-check
 /*
-  Copyright: (c) 2016-2020, Smart-Tech Controle e Automação
+  Copyright: (c) 2016-2020, ST-One Ltda., Guilherme Francescon Cittolin <guilherme@st-one.io>
   GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 */
 
@@ -15,22 +15,8 @@ const pnDevRoleMask = 0x02;
 class Tools {
 
     constructor() {
-        this.mpiS7Available = null;
         this.pnToolsAvailable = null;
         this.ifaceCache = new Map();
-    }
-
-    async isMpiS7Available() {
-        if (this.mpiS7Available === null) {
-            try {
-                require('mpi-s7');
-                this.mpiS7Available = true;
-            } catch (e) {
-                this.mpiS7Available = false;
-            }
-        }
-
-        return this.mpiS7Available;
     }
 
     async isPnToolsAvailable() {
