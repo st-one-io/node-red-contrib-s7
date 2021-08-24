@@ -43,7 +43,7 @@ The variables and their addresses configured on the **S7 Endpoint** follow a sli
 | `DB2,S7.10`*                  | -                     | String        | String of length 10 starting at byte 7 of DB 2 |
 | `I1.0` or `E1.0`              | `I1.0` or `E1.0`      | Boolean       | Bit 0 of byte 1 of input area |
 | `Q2.1` or `A2.1`              | `Q2.1` or `A2.1`      | Boolean       | Bit 1 of byte 2 of output area |
-| `M3.2`                        | `QM3.2`               | Boolean       | Bit 2 of byte 3 of memory area |
+| `M3.2`                        | `M3.2`                | Boolean       | Bit 2 of byte 3 of memory area |
 | `IB4` or `EB4`                | `IB4` or `EB4`        | Number        | Byte 4 (0 -255) of input area |
 | `QB5` or `AB5`                | `QB5` or `AB5`        | Number        | Byte 5 (0 -255) of output area |
 | `MB6`                         | `MB6`                 | Number        | Byte 6 (0 -255) of memory area |
