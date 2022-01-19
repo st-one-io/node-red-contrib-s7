@@ -442,8 +442,8 @@
 
 		var NODES7_REGEX_ADDR = /^(?:DB(\d+),)?([A-Z]+)(\d+)(?:\.(\d+))?(?:\.(\d+))?$/;
 		var NODES7_ADDRTYPE = ["E", "I", "A", "Q", "P", "M", "T", "C"];
-		var NODES7_DATATYPE = ["X", "B", "C", "I", "DI", "W", "D", "DW", "R"];
-		var NODES7_DATATYPE_DB = ["X", "BYTE", "CHAR", "STRING", "INT", "DINT", "WORD", "DWORD", "REAL", "DT", "DTZ", "DTL", "DTLZ", "B", "C", "S", "I", "DI", "W", "D", "DW", "R"];
+		var NODES7_DATATYPE = ["X", "B", "C", "I", "DI", "W", "D", "DW", "R", "RI", "RDI", "RW", "RDW", "RR"];
+		var NODES7_DATATYPE_DB = ["X", "BYTE", "CHAR", "STRING", "INT", "DINT", "WORD", "DWORD", "REAL", "RINT", "RDINT", "RWORD", "RDWORD", "RREAL", "DT", "DTZ", "DTL", "DTLZ", "B", "C", "S", "I", "DI", "W", "D", "DW", "R", "RI", "RDI", "RW", "RD", "RDW", "RR"];
 
 		var match = address.match(NODES7_REGEX_ADDR);
 		if (!match) return 'ERR_PARSE_UNKNOWN_FORMAT';
