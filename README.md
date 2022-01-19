@@ -28,11 +28,7 @@ The **S7 In** node makes the variable's values available in a flow in three diff
 
 ### Variable addressing
 
-The variables and their addresses configured on the **S7 Endpoint** follow a slightly different scheme than used on Step 7 or TIA Portal. 
-
-The default endianness is **Big-Endian**, but the address can be "reversed" as well, so we can interpret them as **Little-Endian**. The "reversed" type are only supported for WORD, DWORD, INT, DINT and REAL.
-
-Here are some examples that may guide you on addressing your variables:
+The variables and their addresses configured on the **S7 Endpoint** follow a slightly different scheme than used on Step 7 or TIA Portal. Here are some examples that may guide you on addressing your variables:
 
 | Address                       | Step7 equivalent      | JS Data type  | Description |
 | ----------------------------- | --------------------- | ------------- | ----------- |
