@@ -28,7 +28,11 @@ The **S7 In** node makes the variable's values available in a flow in three diff
 
 ### Variable addressing
 
-The variables and their addresses configured on the **S7 Endpoint** follow a slightly different scheme than used on Step 7 or TIA Portal. Here are some examples that may guide you on addressing your variables:
+The variables and their addresses configured on the **S7 Endpoint** follow a slightly different scheme than used on Step 7 or TIA Portal. 
+
+The default endianness is **Big-Endian**, but the address can be "reversed" as well, so we can interpret them as **Little-Endian**. The "reversed" type are only supported for WORD, DWORD, INT, DINT and REAL.
+
+Here are some examples that may guide you on addressing your variables:
 
 | Address                       | Step7 equivalent      | JS Data type  | Description |
 | ----------------------------- | --------------------- | ------------- | ----------- |
@@ -69,6 +73,9 @@ The variables and their addresses configured on the **S7 Endpoint** follow a sli
 | `DB1,DTZ10`                   | -                     | Date**        | A timestamp in the DATE_AND_TIME format, in UTC |
 | `DB2,DTL2`                    | -                     | Date**        | A timestamp in the DTL format |
 | `DB2,DTLZ12`                  | -                     | Date**        | A timestamp in the DTL format, in UTC |
+| `DB57,RWORD4`                 | `DB57.DBW4`           | Number        | Unsigned 16-bit number at byte 4 of DB 57, interpreted as Little-Endian |
+| `DB13,RDI5` or `DB13,RDINT5`  | `DB13.DBD5`           | Number        | Signed 32-bit number at byte 5 of DB 13, interpreted as Little-Endian |
+| `MRW20`                       | `MW20`                | Number        | Unsigned 16-bit number at byte 20 of memory area, interpreted as Little-Endian |
 
 
  - *) Note that strings on the PLC uses 2 extra bytes at start for size/length of the string

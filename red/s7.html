@@ -162,6 +162,11 @@
 	<p>
 		The variables and their addresses configured on the <strong>S7 Endpoint</strong> 
 		follow a slightly different scheme than used on Step 7 or TIA Portal. 
+	</p>
+	<p>
+		The default endianness is <strong>Big-Endian</strong>, but the address can be "reversed" as well, 
+		so we can interpret them as <strong>Little-Endian</strong>.
+		The "reversed" type are only supported for WORD, DWORD, INT, DINT and REAL.
 		Here are some examples that may guide you on addressing your variables:
 	</p>
 	<style>
@@ -422,6 +427,24 @@
 				<td>Date**</td>
 				<td>A timestamp in the DTL format, in UTC</td>
 			</tr>
+			<tr>
+				<td><code>DB57,RWORD4</code></td>
+				<td><code>DB57.DBW4</code></td>
+				<td>Number</td>
+				<td>Unsigned 16-bit number at byte 4 of DB 57, interpreted as Little-Endian</td>
+			</tr>
+			<tr>
+				<td><code>DB13,RDI5</code> or <code>DB13,RDINT5</code></td>
+				<td><code>DB13.DBD5</code></td>
+				<td>Number</td>
+				<td>Signed 32-bit number at byte 5 of DB 13, interpreted as Little-Endian</td>
+			</tr>
+			<tr>
+				<td><code>MRW20</code></td>
+				<td><code>MRW20</code></td>
+				<td>Number</td>
+				<td>Unsigned 16-bit number at byte 20 of memory area, interpreted as Little-Endian</td>
+			</tr>
 		</tbody>
 	</table>
 
@@ -442,7 +465,7 @@
 
 		var NODES7_REGEX_ADDR = /^(?:DB(\d+),)?([A-Z]+)(\d+)(?:\.(\d+))?(?:\.(\d+))?$/;
 		var NODES7_ADDRTYPE = ["E", "I", "A", "Q", "P", "M", "T", "C"];
-		var NODES7_DATATYPE = ["X", "B", "C", "I", "DI", "W", "D", "DW", "R", "RI", "RDI", "RW", "R", "RDW", "RR"];
+		var NODES7_DATATYPE = ["X", "B", "C", "I", "DI", "W", "D", "DW", "R", "RI", "RDI", "RW", "RD", "RDW", "RR"];
 		var NODES7_DATATYPE_DB = ["X", "BYTE", "CHAR", "STRING", "INT", "DINT", "WORD", "DWORD", "REAL", "RINT", "RDINT", "RWORD", "RDWORD", "RREAL", "DT", "DTZ", "DTL", "DTLZ", "B", "C", "S", "I", "DI", "W", "D", "DW", "R", "RI", "RDI", "RW", "RD", "RDW", "RR"];
 
 		var match = address.match(NODES7_REGEX_ADDR);
