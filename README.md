@@ -131,6 +131,6 @@ Community support is offered on a best-effort basis via GitHub Issues. For comme
 
 
 ## License
-Copyright: (c) 2016-2020, ST-One Ltda., Guilherme Francescon Cittolin <guilherme@st-one.io>
+Copyright: (c) 2016-2022, ST-One Ltda., Guilherme Francescon Cittolin <guilherme@st-one.io>
 
 GNU General Public License v3.0+ (see [LICENSE](LICENSE) or https://www.gnu.org/licenses/gpl-3.0.txt)
