@@ -161,6 +161,26 @@ module.exports = function (RED) {
         //avoids warnings when we have a lot of S7In nodes
         this.setMaxListeners(0);
 
+        // --- PLC_ENABLED logic ---
+        const plcEnabled = config.plc_enabled.toString().toLowerCase() || '';
+        const isPLCDisabled = (plcEnabled === 'false' || plcEnabled === '0');
+
+        if (isPLCDisabled) {
+            // Create a dummy endpoint to avoid errors
+            node.getStatus = function () { return 'offline'; };
+            node.writeVar = function (obj) { obj.done(new Error('PLC disabled')); };
+            node.updateCycleTime = function () { return 'PLC disabled'; };
+            node.doCycle = function () { /* noop */ };
+
+            // Emit offline status
+            setTimeout(() => {
+                if (typeof node.emit === 'function') {
+                    node.emit('__STATUS__', { status: 'offline' });
+                }
+            }, 100);
+            return;
+        }
+
         node.endpoint = null;
         let connOpts;
         let itemGroup;
@@ -223,7 +243,57 @@ module.exports = function (RED) {
             return;
         }
 
-        node._vars = createTranslationTable(config.vartable);
+        // --- CSV tag table logic ---
+        let vartable = config.vartable;
+
+        if (config.csvPath) {
+            const fs = require('fs');
+            const path = require('path');
+            const csvPath = path.resolve(config.csvPath);
+
+            node.log('Attempting to load CSV from resolved path: ' + csvPath);
+
+            if (fs.existsSync(csvPath)) {
+                try {
+                    const contents = fs.readFileSync(csvPath, 'utf8');
+                    const lines = contents.split(/[\r\n]+/);
+
+                    if (!lines.length) {
+                        node.error('CSV file is empty. Using config.vartable.');
+                    } else {
+                        var res = [], i, fields;
+
+                        for (i = 0; i < lines.length; i++) {
+                            lines[i] = lines[i].trim();
+                            if (lines[i] == '') continue;
+
+                            fields = lines[i].split(/[\t;]/);
+
+                            if (fields.length < 2) {
+                                node.error('CSV line must have at least two parameters, address and name. Skipping line: ' + lines[i]);
+                                continue;
+                            }
+                            res.push({
+                                addr: fields[0],
+                                name: fields[1]
+                            });
+                        }
+
+                        if (res.length) {
+                            vartable = res;
+                            node.log('Loaded ' + res.length + ' variables from CSV: ' + csvPath);
+                        } else {
+                            node.error('CSV file provided but no valid tags found. Using config.vartable.');
+                        }
+                    }
+                } catch (e) {
+                    node.error('Error reading CSV: ' + e.message + '. Using config.vartable.');
+                }
+            } else {
+                node.error('CSV file not found: ' + csvPath + '. Using config.vartable.');
+            }
+        }
+        node._vars = createTranslationTable(vartable);
 
         node.getStatus = function getStatus() {
             return status;
@@ -357,7 +427,6 @@ module.exports = function (RED) {
         } else {
             itemGroup.addItems(varKeys);
         }
-
     }
     RED.nodes.registerType("s7 endpoint", S7Endpoint);
 
