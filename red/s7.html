@@ -21,8 +21,7 @@
 					<label for="node-config-input-address"><i class="fa fa-globe"></i> <span data-i18n="s7.endpoint.label.address"></span></label>
 					<input class="input-append-left" type="text" id="node-config-input-address" data-i18n="[placeholder]s7.endpoint.placeholder.address" style="width: 40%;">
 					<label for="node-config-input-port" style="margin-left: 10px; width: auto; "> <span data-i18n="s7.endpoint.label.port"></span></label>
-					<input type="text" id="node-config-input-port" data-i18n="[placeholder]s7.endpoint.label.port" style="width: 50px; margin-right: 10px;">
-					<a id="node-config-lookup-plc-pn" class="btn red-ui-button disabled" data-i18n="[title]s7.endpoint.label.search"><i class="fa fa-search"></i></a>
+					<input type="text" id="node-config-input-port" placeholder="102 or env_var like ${S7_PORT}" style="width: 120px; margin-right: 10px;">					<a id="node-config-lookup-plc-pn" class="btn red-ui-button disabled" data-i18n="[title]s7.endpoint.label.search"><i class="fa fa-search"></i></a>
 					<a id="node-config-flash-plc-pn" class="btn red-ui-button disabled" data-i18n="[title]s7.endpoint.label.flash-led"><i class="fa fa-lightbulb-o"></i></a>
 				</div>
 				<div class="form-row">
@@ -34,9 +33,9 @@
 				</div>
 				<div class="form-row" id="node-config-s7-endpoint-mode-rackslot">
 					<label for="node-config-input-rack"><i class="fa fa-sitemap"></i> <span data-i18n="s7.endpoint.label.rack"></span></label>
-					<input class="input-append-left" type="text" id="node-config-input-rack" data-i18n="[placeholder]s7.endpoint.label.rack" style="width: 50px">
+					<input class="input-append-left" type="text" id="node-config-input-rack" placeholder="0 or env_var like ${S7_RACK}" style="width: 120px">
 					<label for="node-config-input-slot" style="margin-left: 10px; width: 35px; "> <span data-i18n="s7.endpoint.label.slot"></span></label>
-					<input type="text" id="node-config-input-slot" data-i18n="[placeholder]s7.endpoint.label.slot" style="width:50px">
+					<input type="text" id="node-config-input-slot" placeholder="2 or env_var like ${S7_SLOT}" style="width: 120px">
 				</div>
 				<div class="form-row" id="node-config-s7-endpoint-mode-tsap">
 					<label for="node-config-input-localtsaphi"><i class="fa fa-exchange"></i> <span data-i18n="s7.endpoint.label.tsap-local"></span></label>
@@ -70,6 +69,14 @@
 				<label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="s7.label.name"></span></label>
 				<input type="text" id="node-config-input-name" data-i18n="[placeholder]s7.label.name">
 			</div>
+			<div class="form-row">
+                <label for="node-config-input-plc-enabled"><i class="fa fa-power-off"></i> <span data-i18n="s7.endpoint.label.plc_enabled">PLC Enabled</span></label>
+                <input type="text" id="node-config-input-plc-enabled" data-i18n="[placeholder]s7.endpoint.placeholder.plc_enabled" placeholder="(optional) use false or env_var like {S7_ENABLE}">
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-csv-path"><i class="fa fa-file-csv"></i> <span data-i18n="s7.endpoint.label.csv_path">CSV File Path</span></label>
+                <input type="text" id="node-config-input-csv-path" data-i18n="[placeholder]s7.endpoint.placeholder.csv_path" placeholder="(optional path/filename) or env_var like {S7_CSV_FILE}">
+            </div>
 		</div>
 		<div id="s7-endpoint-tab-variables" style="display:none">
 			<div class="form-row" style="margin-bottom:0;">
@@ -445,6 +452,90 @@
 
 	<p>*) Note that strings on the PLC uses 2 extra bytes at start for size/length of the string</p>
 	<p>**) Note that javascript's <code>Date</code> are <i>always</i> represented in UTC. Please use other nodes like <a href="https://flows.nodered.org/node/node-red-contrib-moment" target="_blank">node-red-contrib-moment</a> to properly handle type conversions</p>
+<!-- Dynamic Configuration Management start -->
+
+<h3>Dynamic Configuration Management</h3>
+
+	<h4>PLC Enabled</h4>
+	<p>
+		The <b>PLC Enabled</b> field allows you to completely disable PLC communication without removing the configuration. This is useful for:
+	</p>
+	<ul>
+		<li>Testing flows without a physical PLC available</li>
+		<li>Deploying to different environments with different configurations</li>
+		<li>Temporary communication disabling</li>
+	</ul>
+	<p>Accepted values:</p>
+	<ul>
+		<li>Empty or <code>true</code>: PLC enabled (default behavior)</li>
+		<li><code>false</code> or <code>0</code>: PLC disabled</li>
+		<li><code>${S7_ENABLE}</code>: Environment variable</li>
+	</ul>
+	<p>When PLC is disabled:</p>
+	<ul>
+		<li>The endpoint remains in "offline" state</li>
+		<li>Write operations fail with "PLC disabled" error</li>
+		<li>No connection attempts are made</li>
+	</ul>
+
+	<h4>CSV File Path</h4>
+	<p>
+		The <b>CSV File Path</b> field allows loading the variable list from an external CSV file instead of the node configuration. This facilitates:
+	</p>
+	<ul>
+		<li>Reusing the same configuration across different installations</li>
+		<li>Centralized tag management</li>
+		<li>Synchronization with external configuration systems</li>
+	</ul>
+	<p>CSV file format:</p>
+	<pre><code>address&lt;TAB|;&gt;name
+DB1,REAL0	Temperature_1
+DB1,REAL4	Temperature_2
+MB100	Memory_Byte_100</code></pre>
+	<p>
+		The CSV file takes priority over internal configuration. If the file doesn't exist or is empty, the node configuration is used.
+	</p>
+	<p>Accepted values:</p>
+	<ul>
+		<li>Absolute path: <code>C:\config\s7_tags.csv</code></li>
+		<li>Relative path: <code>./config/tags.csv</code></li>
+		<li>Environment variable: <code>${S7_CSV_FILE}</code></li>
+	</ul>
+
+	<h4>Environment Variables in Connection Parameters</h4>
+	<p>The following parameters now support environment variables:</p>
+	<ul>
+		<li><b>Port</b>: <code>102</code> or <code>${S7_PORT}</code></li>
+		<li><b>Rack</b>: <code>0</code> or <code>${S7_RACK}</code></li>
+		<li><b>Slot</b>: <code>2</code> or <code>${S7_SLOT}</code></li>
+	</ul>
+	<p>
+		This allows configuring different environments (development, test, production) using the same flow but with different connection parameters.
+	</p>
+
+	<h3>Usage Examples</h3>
+	<h4>Sample CSV File</h4>
+	<pre><code>DB1,REAL0	Tank_Level_1
+DB1,REAL4	Tank_Level_2
+DB1,DI8	Production_Counter
+DB1,X12.0	Pump_1_Status
+DB1,X12.1	Pump_2_Status
+DB1,X12.2	Alarm_General
+MB100	System_Mode
+MW102	Recipe_Number
+DB5,STRING10.50	Product_Name</code></pre>
+
+	<h3>Technical Notes</h3>
+	<ul>
+		<li>Environment variables are automatically resolved by Node-RED</li>
+		<li>CSV loading occurs only at node startup</li>
+		<li>In case of CSV errors, the node configuration is used with a warning message</li>
+		<li>CSV parsing supports TAB (	) and semicolon (;) separators</li>
+		<li>Empty lines in CSV are ignored</li>
+	</ul>
+	
+<!-- Dynamic Configuration Management END -->
+	
 </script>
 
 <script type="text/javascript">
@@ -523,7 +614,7 @@
 	}
 
 	function validateAddressList(list) {
-		for (var i = 0; i < list.length; i++){
+		for (var i = 0; i < list.length; i++) {
 			var elm = list[i];
 			if (!elm.name) return false;
 			if (validateS7Address(elm.addr)) return false;
@@ -548,19 +639,28 @@
 			},
 			address: {
 				value: "",
-				validate: function(v) {return this.transport == 'iso-on-tcp' ? !!v : true}
+				validate: function (v) { return this.transport == 'iso-on-tcp' ? !!v : true }
 			},
 			port: {
 				value: "102",
-				validate: RED.validators.number()
+				validate: function (v) {
+					// Allow environment variables like ${VAR_NAME} or numbers
+					return /^(\$\{[A-Z_][A-Z0-9_]*\}|\d+)$/i.test(v) || v === "";
+				}
 			},
 			rack: {
 				value: "0",
-				validate: RED.validators.number()
+				validate: function (v) {
+					// Allow environment variables like ${VAR_NAME} or numbers
+					return /^(\$\{[A-Z_][A-Z0-9_]*\}|\d+)$/i.test(v) || v === "";
+				}
 			},
 			slot: {
 				value: "2",
-				validate: RED.validators.number()
+				validate: function (v) {
+					// Allow environment variables like ${VAR_NAME} or numbers
+					return /^(\$\{[A-Z_][A-Z0-9_]*\}|\d+)$/i.test(v) || v === "";
+				}
 			},
 			localtsaphi: {
 				value: "01",
@@ -584,7 +684,7 @@
 			adapter: {
 				value: "",
 				type: "mpi-s7 adapter",
-				validate: function(v) {return this.transport != "mpi-s7" || !!v }
+				validate: function (v) { return this.transport != "mpi-s7" || !!v }
 			},
 			busaddr: {
 				value: 2
@@ -604,16 +704,25 @@
 					addr: ""
 				}],
 				validate: validateAddressList
+			},
+			plc_enabled: {
+				value: ""
+			},
+			csvPath: {
+				value: ""
 			}
 		},
 		label: function () {
 			if (this.name) {
 				return this.name
 			} else if (this.transport == "iso-on-tcp") {
-				return this.address + ":" + this.port + "@" + (
+				var displayPort = this.port || "102";
+				var displayRack = this.rack || "0";
+				var displaySlot = this.slot || "2";
+				return this.address + ":" + displayPort + "@" + (
 					this.connmode == 'tsap' ?
 						(this.localtsaphi + "." + this.localtsaplo + "/" + this.remotetsaphi + "." + this.remotetsaplo) :
-						(this.rack + ":" + this.slot))
+						(displayRack + ":" + displaySlot))
 			} else if (this.transport == "mpi-s7") {
 				var adapterNode = RED.nodes.node(this.adapter);
 				if (adapterNode) {
@@ -634,7 +743,7 @@
 			var connTypeList = $('#node-config-input-connmode');
 			var rackSlotRow = $('#node-config-s7-endpoint-mode-rackslot');
 			var tsapRow = $('#node-config-s7-endpoint-mode-tsap');
-			
+
 			var transportList = $('#node-config-input-transport');
 			var transportIsoOnTCPGroup = $('#s7-endpoint-transport-iso-on-tcp');
 			var transportMpiS7Group = $('#s7-endpoint-transport-mpi-s7');
@@ -646,7 +755,7 @@
 			var flashPlcPNBtn = $('#node-config-flash-plc-pn');
 
 			// put a placeholder for mpi-s7 adapter if not installed
-			if (!RED.nodes.getType('mpi-s7 adapter')){
+			if (!RED.nodes.getType('mpi-s7 adapter')) {
 				$('#node-config-input-adapter').hide();
 				$('#s7-endpoint-adapter-placeholder').show();
 			}
@@ -727,13 +836,13 @@
 						if (curTooltip) {
 							curTooltip.setContent(errorText);
 							curTooltip.open();
-						} else if (RED.popover && RED.popover.tooltip){
+						} else if (RED.popover && RED.popover.tooltip) {
 							curTooltip = RED.popover.tooltip(variableAddr, errorText);
 							curTooltip.open();
 						}
 					} else {
 						variableAddr.removeClass('input-error');
-						if(curTooltip) {
+						if (curTooltip) {
 							curTooltip.close();
 							curTooltip.setContent('');
 							//hack to remove the popup, as Node-RED don't offer
@@ -892,6 +1001,15 @@
 				transportList.val(self.transport);
 			}
 
+			// Fill the new fields with the saved values
+			if (self.plc_enabled !== undefined) {
+				$("#node-config-input-plc-enabled").val(self.plc_enabled);
+			}
+
+			if (self.csvPath !== undefined) {
+				$("#node-config-input-csv-path").val(self.csvPath);
+			}
+
 			connTypeList.change(function () {
 				if (connTypeList.val() == "rack-slot") {
 					rackSlotRow.show();
@@ -906,9 +1024,9 @@
 			});
 			connTypeList.change();
 
-			transportList.change(function() {
+			transportList.change(function () {
 				var curVal = transportList.val();
-				if(curVal == "iso-on-tcp") {
+				if (curVal == "iso-on-tcp") {
 					transportIsoOnTCPGroup.show();
 					transportMpiS7Group.hide();
 				} else if (curVal == "mpi-s7") {
@@ -921,14 +1039,14 @@
 			});
 			transportList.change();
 
-			$.getJSON('__node-red-contrib-s7/discover/available/iso-on-tcp', function(data) {
+			$.getJSON('__node-red-contrib-s7/discover/available/iso-on-tcp', function (data) {
 				if (data) {
 					lookupPlcPNBtn.removeClass('disabled');
 				}
 			});
 
 			var lookupPlcPNValue = null;
-			fieldAddressIsoOnTcp.change(function() {
+			fieldAddressIsoOnTcp.change(function () {
 				lookupPlcPNValue = null;
 				flashPlcPNBtn.addClass('disabled');
 			})
@@ -943,8 +1061,8 @@
 				$.getJSON('__node-red-contrib-s7/discover/iso-on-tcp', function (data) {
 					console.log("node-red-contrib-s7 discovered PLCs", data)
 
-					var listData = $.map(data, function(val){
-						return { label: val, value: val['IP Address']}
+					var listData = $.map(data, function (val) {
+						return { label: val, value: val['IP Address'] }
 					})
 
 					fieldAddressIsoOnTcp.autocomplete({
@@ -965,14 +1083,14 @@
 						},
 						select: function (event, ui) {
 							var elm = ui.item.label
-							
+
 							event.preventDefault();
 							event.stopPropagation();
 							fieldAddressIsoOnTcp.val(elm['IP Address']);
 							fieldAddressIsoOnTcp.change();
 
 
-							if (!fieldName.val()){
+							if (!fieldName.val()) {
 								fieldName.val(elm['Station Name']);
 							}
 
@@ -980,18 +1098,18 @@
 							flashPlcPNBtn.removeClass('disabled');
 						}
 					});
-					
-					fieldAddressIsoOnTcp.focus(function() {
+
+					fieldAddressIsoOnTcp.focus(function () {
 						fieldAddressIsoOnTcp.autocomplete("search", "")
 					});
 					fieldAddressIsoOnTcp.focus();
-				}).always(function() {
+				}).always(function () {
 					iconLookup.removeClass('fa-spinner fa-spin fa-fw').addClass('fa-search');
 					lookupPlcPNBtn.removeClass('disabled');
 				});
 			});
 
-			flashPlcPNBtn.click(function() {
+			flashPlcPNBtn.click(function () {
 				if (flashPlcPNBtn.hasClass('disabled')) return;
 
 				if (!lookupPlcPNValue) {
@@ -1020,6 +1138,9 @@
 				}
 				node.vartable.push(v);
 			});
+
+			node.plc_enabled = $("#node-config-input-plc-enabled").val();
+			node.csvPath = $("#node-config-input-csv-path").val();
 		}
 	});
 </script>
