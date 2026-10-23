@@ -1,3 +1,7 @@
+Unreleased
+----------
+ - Fix endpoint tabs and variable rows to follow the Node-RED editor theme.
+
 Version: 3.0.0
 ------------
  - Migrate underlying library to @st-one-io/node-s7
