@@ -1,4 +1,25 @@
 # node-red-contrib-s7
+
+> **Downstream fork — development scope.** This repository originates from [st-one-io/node-red-contrib-s7](https://github.com/st-one-io/node-red-contrib-s7). The original project, authorship, history and GPL-3.0-or-later license are retained. This fork is maintained independently; it does not represent an official Siemens product or an industrial certification.
+
+## Purpose and current status
+
+This fork is intended to develop the existing Siemens S7 integration for Node-RED with emphasis on **reproducible tests, reliable connection lifecycle management, observable failures, diagnosable data quality and controlled releases**. New features are secondary to establishing evidence that existing behavior remains correct during faults and recovery.
+
+**Status (2026-11-06): objectives documented, implementation not yet validated.** The fork currently retains upstream version \`3.1.3\`. These documents describe intended engineering requirements, not verified properties of the present code. No Missel2 npm package or certified release is available. The installation instructions below continue to refer to the original upstream package, not a released build of this fork.
+
+Start here:
+- [Scope and boundaries](docs/PROJECT_SCOPE.md) — what the fork does and does not attempt.
+- [Engineering and quality policy](docs/QUALITY_POLICY.md) — required behavior and evidence for changes.
+- [Test strategy](docs/TEST_STRATEGY.md) — protocol test doubles, fault injection and release validation.
+- [Roadmap](docs/ROADMAP.md) — ordered work, starting with the previously investigated connection-lifecycle defect.
+- [Maintainer and agent instructions](AGENTS.md) — repository workflow and limits.
+- [Decision log](docs/DECISIONS.md) — decisions and open design questions.
+
+Development may take place independently in this fork; contribution to upstream is optional. The existing upstream documentation and historical attribution follow below.
+
+---
+
 A Node-RED node to interact with Siemens S7 PLCs.
 
 This node was created as part of the [ST-One](https://st-one.io) project.
