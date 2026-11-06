@@ -7,7 +7,7 @@
 **First technical priority.** Do not start with feature development or a large protocol rewrite.
 
 - [ ] Locate the actual Musashi Node-RED image patch/source, its origin commit and failure evidence.
-- [ ] Separate \`@st-one-io/nodes7\` / classical S7 code from any independent \`s7-plus\` changes.
+- [ ] Separate `@st-one-io/nodes7` / classical S7 code from any independent `s7-plus` changes.
 - [ ] Create a minimal failing test for a failed or interrupted connection and resource cleanup.
 - [ ] Record connection/session counts, retry cycles, timing and diagnostic events.
 - [ ] Apply the minimum reviewed correction at the right layer; decide whether it belongs in this fork, a maintained protocol dependency fork or both.
@@ -19,7 +19,7 @@
 ## P1 — CI baseline and disposable protocol endpoint
 
 - [ ] Select and pin supported Node.js/Node-RED platforms.
-- [ ] Replace the current failing \`npm test\` placeholder with real automated tests.
+- [ ] Replace the current failing `npm test` placeholder with real automated tests.
 - [ ] Verify an S7-compatible server/fixture on GitHub-hosted Ubuntu and Windows runners.
 - [ ] Test TCP fault injection and ensure the workflow fails if the server cannot start.
 - [ ] Add static analysis, dependency/security checks and redacted downloadable diagnostics.

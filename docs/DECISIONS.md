@@ -10,7 +10,7 @@ Dates describe the time a direction was documented. An accepted direction is not
 
 ## D-002 — Initial regression priority (2026-11-06)
 
-**Decision:** First investigate the connection-lifecycle failure previously worked on in a Musashi Node-RED environment. Source patch and runtime evidence must be retrieved and validated. The initial fork uses \`@st-one-io/nodes7\`; any historical \`s7-plus\` patch is a separate component and must not be folded into the classic S7 integration without an explicit architecture decision.
+**Decision:** First investigate the connection-lifecycle failure previously worked on in a Musashi Node-RED environment. Source patch and runtime evidence must be retrieved and validated. The initial fork uses `@st-one-io/nodes7`; any historical `s7-plus` patch is a separate component and must not be folded into the classic S7 integration without an explicit architecture decision.
 
 **Open:** exact source location, minimal failing case, dependency ownership, correct limits on application-managed sessions.
 
@@ -26,7 +26,7 @@ Dates describe the time a direction was documented. An accepted direction is not
 
 ## Open decisions
 
-- Exact dependency-fork strategy for \`@st-one-io/nodes7\` versus an alternative maintained protocol implementation.
+- Exact dependency-fork strategy for `@st-one-io/nodes7` versus an alternative maintained protocol implementation.
 - Minimum supported Node.js/Node-RED versions and dependency pinning policy.
 - Final error/status and data-freshness message schema.
 - Formal CI reliability thresholds and test duration based on first measurements.

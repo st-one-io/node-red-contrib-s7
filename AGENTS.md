@@ -1,6 +1,6 @@
 # Engineering instructions for maintainers and coding agents
 
-Read \`README.md\`, \`docs/PROJECT_SCOPE.md\`, \`docs/QUALITY_POLICY.md\`, \`docs/TEST_STRATEGY.md\`, \`docs/ROADMAP.md\` and \`docs/DECISIONS.md\` before planning changes. Check the actual current branch, code, open work and CI: documentation is intent, not proof of deployment or test success.
+Read `README.md`, `docs/PROJECT_SCOPE.md`, `docs/QUALITY_POLICY.md`, `docs/TEST_STRATEGY.md`, `docs/ROADMAP.md` and `docs/DECISIONS.md` before planning changes. Check the actual current branch, code, open work and CI: documentation is intent, not proof of deployment or test success.
 
 ## Project priorities
 
@@ -26,7 +26,7 @@ Read \`README.md\`, \`docs/PROJECT_SCOPE.md\`, \`docs/QUALITY_POLICY.md\`, \`doc
 
 ## Baseline snapshot (2026-11-06)
 
-The original \`package.json\` reports version 3.1.3 and depends on \`@st-one-io/nodes7@1.1.2\`; \`npm test\` is a failing placeholder. No GitHub Actions workflow or automated CI verification was found at fork creation. Existing \`test/flow_writeTest.json\` is not a verified automated test suite. These observations should be refreshed rather than assumed true after development progresses.
+The original `package.json` reports version 3.1.3 and depends on `@st-one-io/nodes7@1.1.2`; `npm test` is a failing placeholder. No GitHub Actions workflow or automated CI verification was found at fork creation. Existing `test/flow_writeTest.json` is not a verified automated test suite. These observations should be refreshed rather than assumed true after development progresses.
 
 ## Working boundaries
 

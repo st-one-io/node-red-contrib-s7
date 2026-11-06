@@ -28,7 +28,7 @@ Candidate fixture: a Python/Snap7-derived S7 server or a dedicated deterministic
 
 ## Priority regression: Musashi connection lifecycle
 
-Prior work reported socket/resource cleanup and reconnection faults in a Node-RED deployment. The exact patch provenance and relevant dependency have **not yet been independently verified in this repository**. First locate and review the source patch, deployment/container changes and any available logs. Distinguish classic \`nodes7\` from the separate \`s7-plus\` stack. Do not merge unrelated protocol changes.
+Prior work reported socket/resource cleanup and reconnection faults in a Node-RED deployment. The exact patch provenance and relevant dependency have **not yet been independently verified in this repository**. First locate and review the source patch, deployment/container changes and any available logs. Distinguish classic `nodes7` from the separate `s7-plus` stack. Do not merge unrelated protocol changes.
 
 Expected regression sequence:
 1. Identify an affected baseline revision and a deterministic trigger.

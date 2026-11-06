@@ -6,7 +6,7 @@
 
 This fork is intended to develop the existing Siemens S7 integration for Node-RED with emphasis on **reproducible tests, reliable connection lifecycle management, observable failures, diagnosable data quality and controlled releases**. New features are secondary to establishing evidence that existing behavior remains correct during faults and recovery.
 
-**Status (2026-11-06): objectives documented, implementation not yet validated.** The fork currently retains upstream version \`3.1.3\`. These documents describe intended engineering requirements, not verified properties of the present code. No Missel2 npm package or certified release is available. The installation instructions below continue to refer to the original upstream package, not a released build of this fork.
+**Status (2026-11-06): objectives documented, implementation not yet validated.** The fork currently retains upstream version `3.1.3`. These documents describe intended engineering requirements, not verified properties of the present code. No Missel2 npm package or certified release is available. The installation instructions below continue to refer to the original upstream package, not a released build of this fork.
 
 Start here:
 - [Scope and boundaries](docs/PROJECT_SCOPE.md) — what the fork does and does not attempt.
