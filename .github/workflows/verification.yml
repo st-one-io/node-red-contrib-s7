@@ -57,22 +57,47 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Show the original known defect is reproducible
+      - name: Reproduce five known read/reconnect lifecycle defects on the original wrapper
         shell: bash
         run: |
-          set +e
-          node --test --test-name-pattern="late successful read cannot resurrect" test/known-defects/s7-endpoint.lifecycle.test.js > known-defect.tap 2>&1
-          code=$?
-          set -e
-          cat known-defect.tap
-          # This is an *expected-failure characterization*, not a passing
-          # reliability regression. It must fail for the exact known test.
-          if [ "$code" -eq 0 ]; then
-            echo "::error::Known defect did not reproduce; update the test/gate alongside the fix"
-            exit 1
-          fi
-          if ! grep -Eq "not ok .*late successful read cannot resurrect" known-defect.tap; then
-            echo "::error::Unexpected failure unrelated to the known defect"
-            exit 1
-          fi
-          echo "::notice::Known stale-read defect reproduced; not repaired in PR #1"
+          set -euo pipefail
+          patterns=(
+            "late successful read cannot resurrect disconnected status"
+            "late failure from an obsolete read must not mark a reconnected endpoint offline"
+            "a reconnect must not overlap a pending read on the same item group"
+            "late successful read must not publish obsolete data after disconnect"
+            "closing an endpoint cancels its polling timer during a pending read"
+          )
+          index=0
+          for pattern in "${patterns[@]}"; do
+            index=$((index + 1))
+            output="known-defect-${index}.tap"
+            set +e
+            node --test --test-name-pattern="$pattern" test/known-defects/s7-endpoint.lifecycle.test.js > "$output" 2>&1
+            code=$?
+            set -e
+            cat "$output"
+            # An expected failure is NOT a passing reliability test. Validate
+            # that only the named characterization failed, not the fixture.
+            if [ "$code" -eq 0 ]; then
+              echo "::error::Known defect did not reproduce: $pattern"
+              exit 1
+            fi
+            if ! grep -E "not ok [0-9]+ -" "$output" | grep -Fq -- "$pattern"; then
+              echo "::error::Named defect not observed: $pattern"
+              exit 1
+            fi
+            if ! grep -Fq '# fail 1' "$output"; then
+              echo "::error::Unexpected additional test failure: $pattern"
+              exit 1
+            fi
+            echo "::notice::Baseline defect reproduced: $pattern"
+          done
+      - name: Preserve red characterization logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: expected-failure-characterization-ubuntu-node22
+          path: known-defect-*.tap
+          if-no-files-found: warn
+          retention-days: 14

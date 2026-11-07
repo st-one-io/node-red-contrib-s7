@@ -6,7 +6,7 @@
 
 This fork is intended to develop the existing Siemens S7 integration for Node-RED with emphasis on **reproducible tests, reliable connection lifecycle management, observable failures, diagnosable data quality and controlled releases**. New features are secondary to establishing evidence that existing behavior remains correct during faults and recovery.
 
-**Status (2026-11-07): initial CI and test harness under review in PR #1.** The package retains upstream version `3.1.3` and its original S7 runtime code. A reproducible stale-read issue has been identified on the unmodified wrapper; it is not fixed in PR #1. No fork-specific npm release, Siemens hardware verification or industrial certification is available. The installation instructions below refer to the original upstream npm package, not a published build of this fork.
+**Status (2026-11-07): CI baseline was squash-merged in PR #1; Issue #3 characterization continues in draft PR #6.** The package retains upstream version `3.1.3` and its original S7 runtime code. A reproducible stale-read issue has been identified on the unmodified wrapper; it is not fixed in PR #1. No fork-specific npm release, Siemens hardware verification or industrial certification is available. The installation instructions below refer to the original upstream npm package, not a published build of this fork.
 
 **Development model:** This fork uses AI assistance for most engineering implementation and investigation. The human maintainer `Missel2` sets priorities, reviews the evidence and makes decisions on merges and releases. AI-generated code has no special exemption from testing or review. See [how the project is maintained](docs/AI_DEVELOPMENT.md).
 
@@ -14,6 +14,7 @@ Start here:
 - [Scope and boundaries](docs/PROJECT_SCOPE.md) — what the fork does and does not attempt.
 - [Engineering and quality policy](docs/QUALITY_POLICY.md) — required behavior and evidence for changes.
 - [Test strategy](docs/TEST_STRATEGY.md) — protocol test doubles, fault injection and release validation.
+- [Future S7-1200 HIL matrix](docs/HIL_TEST_MATRIX.md) — named physical-CPU test cases, pending status, safety gates and test-debt tracking.
 - [Roadmap](docs/ROADMAP.md) — ordered work, starting with the previously investigated connection-lifecycle defect.
 - [Human-directed, AI-led engineering](docs/AI_DEVELOPMENT.md) — responsibilities, disclosures and boundaries.
 - [Origins and acknowledgements](docs/UPSTREAM_AND_CREDITS.md) — sources, maintainers, licenses and thanks.
@@ -24,7 +25,7 @@ Start here:
 - [Maintainer and agent instructions](AGENTS.md) — repository workflow and limits.
 - [Decision log](docs/DECISIONS.md) — decisions and open design questions.
 
-PR #1 is deliberately limited to project governance, initial CI and baseline characterization; source code fixes are tracked separately in [#2](https://github.com/Missel2/node-red-contrib-s7/issues/2) and [#3](https://github.com/Missel2/node-red-contrib-s7/issues/3). Development may take place independently in this fork; contribution to upstream is optional. Thanks to [ST-One and the original contributors](docs/UPSTREAM_AND_CREDITS.md), the [nodes7 contributors](https://github.com/st-one-io/nodes7), and the [Node-RED community](https://github.com/node-red/node-red). The existing upstream documentation and historical attribution follow below.
+Merged PR #1 deliberately contained only governance, initial CI and baseline characterization; source code fixes are tracked separately in [#2](https://github.com/Missel2/node-red-contrib-s7/issues/2) and [#3](https://github.com/Missel2/node-red-contrib-s7/issues/3). Development may take place independently in this fork; contribution to upstream is optional. Thanks to [ST-One and the original contributors](docs/UPSTREAM_AND_CREDITS.md), the [nodes7 contributors](https://github.com/st-one-io/nodes7), and the [Node-RED community](https://github.com/node-red/node-red). The existing upstream documentation and historical attribution follow below.
 
 ---
 

@@ -1,10 +1,10 @@
 # Roadmap and next verified work
 
-**Status date:** 2026-11-06. This is an ordered engineering plan, not a delivery claim. Work state must be updated from code, PRs and CI logs at the time of each change.
+**Status date:** 2026-11-07. This is an ordered engineering plan, not a delivery claim. Work state must be updated from code, PRs and CI logs at the time of each change.
 
 ## P0 — Reproduce the previously investigated Musashi connection fault
 
-**First technical priority.** Do not start with feature development or a large protocol rewrite. PR #1 is limited to CI/documentation and baseline tests; no S7 runtime patch is included. [Issue #3](https://github.com/Missel2/node-red-contrib-s7/issues/3) tracks wrapper characterization, and [Issue #2](https://github.com/Missel2/node-red-contrib-s7/issues/2) tracks the separate pending COTP/transport teardown hypothesis. See [Musashi investigation](MUSASHI_CONNECTION_REGRESSION.md) and [evidence ledger](EVIDENCE.md). Apply targeted patches only after reproducing a failure.
+**First technical priority.** Do not start with feature development or a large protocol rewrite. The CI/bootstrap PR #1 has been squash-merged without S7 runtime changes; draft PR #6 now holds expanded **expected-failing characterization tests**, not a runtime patch. [Issue #3](https://github.com/Missel2/node-red-contrib-s7/issues/3) tracks wrapper characterization, and [Issue #2](https://github.com/Missel2/node-red-contrib-s7/issues/2) tracks the separate pending COTP/transport teardown hypothesis. See [Musashi investigation](MUSASHI_CONNECTION_REGRESSION.md) and [evidence ledger](EVIDENCE.md). Apply targeted patches only after reproducing a failure.
 
 - [ ] Locate the actual Musashi Node-RED image patch/source, its origin commit and failure evidence.
 - [ ] Separate `@st-one-io/nodes7` / classical S7 code from any independent `s7-plus` changes.
@@ -36,6 +36,18 @@
 - [ ] Test redeploy, shutdown, repeated faults and sustained recovery for leaks.
 
 **Exit evidence:** specified and tested behavior, not merely absence of observed errors.
+
+## P2H — Future isolated physical S7-1200 verification ([Issue #8](https://github.com/Missel2/node-red-contrib-s7/issues/8))
+
+**Planned, not deployed and not run.** The maintainer intends to provide a dedicated S7-1200 reachable only through an isolated RischLab hardware-in-the-loop test runner. Continue mock and disposable protocol CI while awaiting hardware.
+
+- [ ] Identify the exact CPU order number, firmware and a dedicated test PLC program with a non-optimized scratch DB and no physical I/O effects.
+- [ ] Approve topology, TCP/102 egress constraints, test-data addresses, power/reset and safe read/write procedures.
+- [ ] Run only trusted, approved source revisions against the hardware; do not expose the test runner or PLC to arbitrary public PR code.
+- [ ] For **every development PR**, mark required future tests by stable `HIL-S7-*` IDs from [HIL_TEST_MATRIX.md](HIL_TEST_MATRIX.md). Pending means **not executed**, even if mocked tests are green.
+- [ ] Create a separately authorized, gated HIL workflow with evidence (CPU, firmware, project SHA, commit SHA, test logs), after the bench is available.
+
+**Exit evidence:** verified runs on the named S7-1200 with safe setup and reset. Until then all HIL cases remain pending.
 
 ## P3 — Compatibility and controlled releases
 

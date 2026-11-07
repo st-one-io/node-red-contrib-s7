@@ -52,3 +52,10 @@ Dates describe the time a direction was documented. An accepted direction is not
 ## D-009 — Separate CI/bootstrap from reliability fixes (2026-11-07)
 
 **Decision:** PR #1 establishes AI-assisted maintenance transparency, attribution, task tracking, hosted CI and tests against the unchanged S7 runtime. Its earlier experimental wrapper corrections are explicitly excluded from the final PR diff. Known defects remain tracked in GitHub Issues; first reproduce, then make one narrowly scoped fix. The required “Baseline must fail stale-read regression” check is an **expected-failure characterization**, not a passing repaired-behavior test. Its semantics must be migrated when Issue #3 is fixed. See [work index](WORK_INDEX.md) and [evidence](EVIDENCE.md).
+
+
+## D-010 — Planned isolated S7-1200 HIL and mandatory per-change test debts (2026-11-07)
+
+**Decision (human maintainer):** A physical Siemens S7-1200 and a RischLab-managed runner are a *future* test level, not a presently available test environment. Every PR names the pending `HIL-S7-*` tests that must run once the bench is available; no HIL outcome may be claimed without hardware evidence. Track cases and safeguards in [HIL_TEST_MATRIX.md](HIL_TEST_MATRIX.md), [Issue #8](https://github.com/Missel2/node-red-contrib-s7/issues/8).
+
+**Safety and security:** Isolation from productive OT networks and outputs, controlled scratch DB, explicit authorization for writes, and trusted-source gating are mandatory. An open-source public PR must not be allowed to run untrusted code on the HIL-capable runner.

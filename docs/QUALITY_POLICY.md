@@ -17,6 +17,12 @@ Every material change should include: affected behavior; expected and observed f
 - **Hardware-verified:** tested against named CPU family, firmware and test configuration.
 - **Released:** a versioned, traceable artifact has been published.
 
+## Mandatory future hardware-test annotation
+
+The planned, isolated S7-1200 hardware bench is tracked in [Issue #8](https://github.com/Missel2/node-red-contrib-s7/issues/8) and [HIL_TEST_MATRIX.md](HIL_TEST_MATRIX.md). Every change/PR must declare `HIL: pending HIL-S7-... ` IDs or `HIL: not applicable` with a reason, update the matrix when the changed behavior needs a new case, and state whether any hardware test was **actually executed**. Hardware absence is not a CI success, and a green mock test cannot clear this debt.
+
+The hardware-accessible runner is **not** to be triggered by unreviewed public PR code. Physical CPU tests require approved isolation, CPU and firmware identifiers, a dedicated synthetic DB with no actuator wiring, authorized write operations and deterministic reset/checks. Never silently treat a previously run hardware test on a different SHA or firmware as fresh evidence.
+
 ## Connection lifecycle
 
 - Explicit states for idle, connecting, online, reconnecting, degraded, disconnected and stopped as applicable; exact public state names require an interface decision.

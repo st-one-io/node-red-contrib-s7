@@ -139,3 +139,25 @@ test('baseline writes invoke the existing mocked item group and completion callb
     assert.deepEqual(writes, [{ name: 'tag', value: 18 }]);
     assert.equal(errors.length, 0);
 });
+
+test('repeated triggers during an unresolved read coalesce into one follow-up', async () => {
+    // HIL-S7-005: pending real CPU repeated-trigger/reconnect test.
+    // This positive baseline is mocked; it is not hardware evidence.
+    const { node, transport, group } = fixture();
+    const first = pending();
+    const observed = [];
+    node.on('__ALL__', values => observed.push(values.tag));
+    let calls = 0;
+    group.nextRead = () => ++calls === 1 ? first.promise : Promise.resolve({ tag: 22 });
+
+    transport.emit('connect');
+    node.doCycle();
+    node.doCycle();
+    node.doCycle();
+    assert.equal(calls, 1, 'pending read must prevent overlapping triggers');
+
+    first.resolve({ tag: 11 });
+    await tick();
+    assert.equal(calls, 2, 'multiple triggers must coalesce to one follow-up');
+    assert.deepEqual(observed, [11, 22]);
+});

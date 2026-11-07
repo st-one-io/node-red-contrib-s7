@@ -89,6 +89,7 @@ const close = node => new Promise(resolve => node.emit('close', resolve));
 // a disconnected session resolves late. This test is EXPECTED TO FAIL until a
 // separate issue #3 change fixes and validates the behavior.
 // Keep this in a separate file from required passing baseline tests.
+// HIL-S7-004, HIL-S7-005: pending physical CPU read/fault tests.
 test('late successful read cannot resurrect disconnected status', async () => {
     const { node, transport, group, events } = fixture();
     const p = pending();
@@ -102,4 +103,87 @@ test('late successful read cannot resurrect disconnected status', async () => {
     assert.equal(node.getStatus(), 'offline');
     assert.equal(events.at(-1), 'offline');
     await close(node);
+});
+
+test('late failure from an obsolete read must not mark a reconnected endpoint offline', async () => {
+    const { node, transport, group, errors } = fixture();
+    const oldRead = pending();
+    let readCalls = 0;
+    group.nextRead = () => ++readCalls === 1
+        ? oldRead.promise
+        : Promise.resolve({ tag: 42 });
+
+    transport.emit('connect');
+    node.doCycle();
+    transport.emit('disconnect');
+    transport.emit('connect');
+    node.doCycle();
+    await tick();
+    assert.equal(node.getStatus(), 'online', 'new session has connected and read');
+
+    oldRead.reject(Error('obsolete session read failed'));
+    await tick();
+    // Original wrapper logs an obsolete error and drops a healthy connection
+    // back to offline. Do not change runtime code in this characterization PR.
+    assert.equal(node.getStatus(), 'online');
+    assert.equal(errors.length, 0, 'obsolete rejection must not emit a new error');
+});
+
+test('a reconnect must not overlap a pending read on the same item group', async () => {
+    const { node, transport, group } = fixture();
+    const oldRead = pending();
+    let readCalls = 0;
+    group.nextRead = () => {
+        readCalls++;
+        return readCalls === 1
+            ? oldRead.promise
+            : Promise.resolve({ tag: 45 });
+    };
+
+    transport.emit('connect');
+    node.doCycle();
+    assert.equal(readCalls, 1);
+
+    transport.emit('disconnect');
+    transport.emit('connect');
+    node.doCycle();
+    // Original onConnect() clears readInProgress, allowing an overlapping
+    // read while the first promise is still pending.
+    assert.equal(readCalls, 1, 'do not overlap an unresolved read after reconnect');
+
+    oldRead.resolve({ tag: 44 });
+    await tick();
+    assert.equal(readCalls, 2, 'a replacement read may run after old read settles');
+});
+
+test('late successful read must not publish obsolete data after disconnect', async () => {
+    // HIL-S7-004: pending isolated real S7-1200 read/disconnect sequence.
+    const { node, transport, group } = fixture();
+    const oldRead = pending();
+    const all = [], changed = [];
+    node.on('__ALL__', values => all.push(values));
+    node.on('__CHANGED__', event => changed.push(event));
+    group.nextRead = () => oldRead.promise;
+
+    transport.emit('connect');
+    node.doCycle();
+    transport.emit('disconnect');
+    oldRead.resolve({ tag: 999 });
+    await tick();
+
+    assert.equal(all.length, 0, 'disconnected read must not publish an all-values event');
+    assert.equal(changed.length, 0, 'disconnected read must not emit a change');
+});
+
+test('closing an endpoint cancels its polling timer during a pending read', async () => {
+    // HIL-S7-007: pending isolated real CPU close/redeploy validation.
+    const { node, transport, group, timers } = fixture();
+    group.nextRead = () => new Promise(() => {});
+    transport.emit('connect');
+    node.doCycle();
+    assert.equal(timers.size, 1, 'connection starts a polling timer');
+
+    await close(node);
+    assert.equal(node.getStatus(), 'offline');
+    assert.equal(timers.size, 0, 'closed endpoint must stop scheduling new PLC polls');
 });
