@@ -153,6 +153,10 @@ module.exports = function (RED) {
         var readInProgress = false;
         var readDeferred = 0;
         var connected = false;
+        var closed = false;
+        // Invalidate callbacks from previous connections without releasing
+        // ownership of an unresolved ItemGroup read (Issue #3).
+        var connectionGeneration = 0;
         var currentCycleTime = config.cycletime;
         var transport = config.transport || 'iso-on-tcp';
 
@@ -251,15 +255,17 @@ module.exports = function (RED) {
             }
 
             clearInterval(node._td);
+            node._td = null;
 
-            // don't set a new timer if value is zero
-            if (!time) return;
+            // Keep the user-selected interval, including 0 (disabled),
+            // across disconnect/reconnect. Never restart polling after close.
+            currentCycleTime = time;
+            if (!time || !connected || closed) return;
 
             if (time < MIN_CYCLE_TIME) {
                 node.warn(RED._("s7.info.cycletimetooshort", { min: MIN_CYCLE_TIME }), {});
                 time = MIN_CYCLE_TIME;
             }
-
             currentCycleTime = time;
             node._td = setInterval(doCycle, time);
         }
@@ -273,16 +279,8 @@ module.exports = function (RED) {
             });
         }
 
-        function cycleCallback(values) {
-            readInProgress = false;
-
-            if (readDeferred && connected) {
-                doCycle();
-                readDeferred = 0;
-            }
-
+        function publishRead(values) {
             manageStatus('online');
-
             var changed = false;
             node.emit('__ALL__', values);
             Object.keys(values).forEach(function (key) {
@@ -299,54 +297,115 @@ module.exports = function (RED) {
             if (changed) node.emit('__ALL_CHANGED__', values);
         }
 
-        function doCycle() {
-            if (!readInProgress && connected) {
-                itemGroup.readAllItems().then(cycleCallback).catch(e => {
-                    node.error(e, {});
-                    readInProgress = false;
+        function finishRead(generation, error, values) {
+            // An old read keeps ItemGroup ownership until its promise settles.
+            // Never report its result/error against a new or closed session.
+            readInProgress = false;
+            if (!closed && connected && generation === connectionGeneration) {
+                if (error) {
+                    node.error(error, {});
                     manageStatus('offline');
-                });
-                readInProgress = true;
-            } else {
-                readDeferred++;
+                } else {
+                    publishRead(values);
+                }
             }
+
+            // One coalesced read may follow a settled old read on reconnect.
+            // A never-settling transport promise still blocks this ItemGroup;
+            // dependency-level cancellation/timeout remains future work.
+            if (!closed && connected && readDeferred) {
+                readDeferred = 0;
+                doCycle();
+            }
+        }
+
+        function doCycle() {
+            if (closed || !connected) return;
+            if (readInProgress) {
+                readDeferred = 1;
+                return;
+            }
+            readInProgress = true;
+            var generation = connectionGeneration;
+            var operation;
+            try {
+                operation = itemGroup.readAllItems();
+            } catch (error) {
+                finishRead(generation, error);
+                return;
+            }
+            Promise.resolve(operation).then(
+                values => finishRead(generation, null, values),
+                error => finishRead(generation, error)
+            );
         }
         node.doCycle = doCycle;
 
         function onConnect() {
-            readInProgress = false;
-            readDeferred = 0;
+            if (closed) return;
+            connectionGeneration++;
             connected = true;
-
+            // Do not permit a new read to overlap an old unsettled read.
+            readDeferred = readInProgress ? 1 : 0;
             manageStatus('online');
-
             node.updateCycleTime(currentCycleTime);
         }
 
-        function onDisconnect() {
-            manageStatus('offline');
+        function onDisconnected(status) {
+            if (closed) return;
+            connectionGeneration++;
             connected = false;
+            readDeferred = 0;
+            clearInterval(node._td);
+            node._td = null;
+            manageStatus(status);
+        }
+
+        function onDisconnect() {
+            onDisconnected('offline');
         }
 
         node.on('close', done => {
+            closed = true;
+            connected = false;
+            connectionGeneration++;
+            readDeferred = 0;
+            clearInterval(node._td);
+            node._td = null;
             manageStatus('offline');
-            if (!node.endpoint) done();
-
-            node.endpoint.disconnect().then(done).catch(e => {
-                node.error(e);
-            });
+            if (!node.endpoint) {
+                done();
+                return;
+            }
+            // Always invoke Node-RED's close callback even if disconnect
+            // fails; no late transport result may reopen the closed node.
+            try {
+                Promise.resolve(node.endpoint.disconnect()).then(
+                    () => done(),
+                    error => { node.error(error); done(); }
+                );
+            } catch (error) {
+                node.error(error);
+                done();
+            }
         });
 
         manageStatus('offline');
 
         node.endpoint = new nodes7.S7Endpoint(connOpts);
-        node.endpoint.on('connecting', () => manageStatus('connecting'));
+        node.endpoint.on('connecting', () => onDisconnected('connecting'));
         node.endpoint.on('connect', onConnect);
         node.endpoint.on('disconnect', onDisconnect);
-        node.endpoint.on('error', (e => {
+        node.endpoint.on('error', error => {
+            if (closed) return;
+            // An error alone is not necessarily a transport disconnect:
+            // preserve the existing polling/retry path until 'disconnect' or
+            // 'connecting' is emitted, but invalidate the in-flight result.
+            connectionGeneration++;
+            readDeferred = readInProgress && connected ? 1 : 0;
             manageStatus('offline');
-            node.error(e && e.toString(), {});
-        }));
+            node.error(error && error.toString(), {});
+        });
 
         itemGroup = new nodes7.S7ItemGroup(node.endpoint);
         itemGroup.setTranslationCB(k => node._vars[k]);

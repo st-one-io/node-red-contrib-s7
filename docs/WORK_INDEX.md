@@ -6,7 +6,7 @@
 | --- | --- | --- | --- |
 | WI-001 | Completed | [PR #1: AI-assisted process, upstream credits and first CI](https://github.com/Missel2/node-red-contrib-s7/pull/1) | Squash-merged on `master` as `42296d8`; no S7 runtime changes |
 | WI-002 | P0 | [Issue #2: pending transport teardown](https://github.com/Missel2/node-red-contrib-s7/issues/2) | Hypothesis from source inspection; test first |
-| WI-003 | P0 | [Issue #3 / PR #6: stale reads and reconnect overlap](https://github.com/Missel2/node-red-contrib-s7/pull/6) | Five individually reproduced negative cases and one positive trigger-coalescing test; [CI run 42375597004](https://github.com/Missel2/node-red-contrib-s7/actions/runs/42375597004). **Not repaired.** |
+| WI-003 | P0 | [Issue #3 / PR #6: stale reads and reconnect overlap](https://github.com/Missel2/node-red-contrib-s7/pull/6) | PR #6 merged as `e79c151`; [PR #9](https://github.com/Missel2/node-red-contrib-s7/pull/9) fixes session-owned reads and timer cleanup; ten regression controls red-before/green-after on candidate [CI 42378583520](https://github.com/Missel2/node-red-contrib-s7/actions/runs/42378583520) (6/6); final head CI and human review before merge. |
 | WI-004 | P1 | [Issue #4: disposable S7 protocol endpoint](https://github.com/Missel2/node-red-contrib-s7/issues/4) | Wire-protocol CI not yet implemented |
 | WI-005 | P1 | [Issue #5: reproducible npm lockfile](https://github.com/Missel2/node-red-contrib-s7/issues/5) | Current inherited lockfile stale; release gate missing |
 | WI-006 | P2 | Data freshness, diagnostics and uncertain writes | Requirements only; do not implement before reliability baseline |
@@ -14,6 +14,6 @@
 
 ## Continuation rules
 
-Review open PRs, CI and issues before starting new work. Test one defect before patching it. The current expected-failing stale-read check is a **characterization**: it should be replaced with a passing regression after fixing #3, with any associated branch ruleset check name updated deliberately. Passing mock checks do not establish real S7 compatibility.
+Review open PRs, CI and issues before starting new work. Test one defect before patching it. On `master` before PR #9, the named stale-read check confirms the original bugs still reproduce. PR #9 retains the *required status check name* but checks original-red **and corrected-green**, without altering the protected ruleset; review actual job semantics and the exact SHA before merge. Passing mock checks do not establish real S7 compatibility.
 
 Never automatically merge, publish packages or access a production PLC.

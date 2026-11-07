@@ -14,9 +14,9 @@
     "url": "https://github.com/Missel2/node-red-contrib-s7/issues"
   },
   "scripts": {
-    "test": "node --test test/unit/s7-endpoint.baseline.test.js",
-    "test:unit": "node --test test/unit/s7-endpoint.baseline.test.js",
-    "check:syntax": "node --check red/s7.js && node --check src/tools.js && node --check test/unit/s7-endpoint.baseline.test.js && node --check test/known-defects/s7-endpoint.lifecycle.test.js"
+    "test": "node --test test/unit/s7-endpoint.baseline.test.js test/regression/s7-endpoint.lifecycle.test.js",
+    "test:unit": "node --test test/unit/s7-endpoint.baseline.test.js test/regression/s7-endpoint.lifecycle.test.js",
+    "check:syntax": "node --check red/s7.js && node --check src/tools.js && node --check test/unit/s7-endpoint.baseline.test.js && node --check test/regression/s7-endpoint.lifecycle.test.js"
   },
   "keywords": [
     "hardware",

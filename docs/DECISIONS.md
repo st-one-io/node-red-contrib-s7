@@ -59,3 +59,14 @@ Dates describe the time a direction was documented. An accepted direction is not
 **Decision (human maintainer):** A physical Siemens S7-1200 and a RischLab-managed runner are a *future* test level, not a presently available test environment. Every PR names the pending `HIL-S7-*` tests that must run once the bench is available; no HIL outcome may be claimed without hardware evidence. Track cases and safeguards in [HIL_TEST_MATRIX.md](HIL_TEST_MATRIX.md), [Issue #8](https://github.com/Missel2/node-red-contrib-s7/issues/8).
 
 **Safety and security:** Isolation from productive OT networks and outputs, controlled scratch DB, explicit authorization for writes, and trusted-source gating are mandatory. An open-source public PR must not be allowed to run untrusted code on the HIL-capable runner.
+
+
+## D-011 — Migrate Issue #3 from expected-red to baseline-red/candidate-green (2026-11-07)
+
+**Decision implemented in proposed PR #9; not merged:** Keep the existing `Baseline must fail stale-read regression` job name required by `protect-master` but test the original unchanged wrapper (`e79c15107731e0387d1b3679f2409aef043e87f5`) **and** the new candidate wrapper for each of ten focused lifecycle cases. This guarantees the original defect still reproduces *and* the candidate behavior passes, without prematurely changing a protected branch rule. Run the positive regression suite under `npm test` on Windows/Linux Node 22/24. Mocks alone do not establish actual S7 protocol or Siemens hardware behavior.
+
+**Read ownership:** Keep the ItemGroup read in flight across reconnect until the promise settles; discard results from obsolete connection generations. Coalesce a single follow-up read. A permanently pending dependency promise still prevents forward progress; resolving it safely requires separate test-first transport cancellation/timeout work.
+
+**Transport errors:** An `error` alone need not be a `disconnect`. Preserve polling after a transient error and allow a follow-up read, while discarding old read results. Explicit `disconnect`, `connecting` or close stops polling. This retains the established ability to recover from errors without a new `connect` event.
+
+**Hardware:** HIL-S7-004/-005/-007 all pending. No automatic merge, package publication or real PLC operation.

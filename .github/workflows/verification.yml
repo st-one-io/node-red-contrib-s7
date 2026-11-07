@@ -30,7 +30,7 @@ jobs:
           node-version: ${{ matrix.node }}
       - name: Syntax verification
         run: npm run check:syntax
-      - name: Baseline behavior tests (unmodified upstream wrapper)
+      - name: Wrapper baseline plus fixed lifecycle regressions
         run: npm test
 
   package-smoke:
@@ -49,55 +49,74 @@ jobs:
         run: npm pack --dry-run
 
   baseline-negative-control:
+    # Preserve the name required by protect-master. Its meaning is now BOTH
+    # expected-red on the immutable original revision AND green on this code.
     name: Baseline must fail stale-read regression
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The original read-only baseline commit is an ancestor of master.
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Reproduce five known read/reconnect lifecycle defects on the original wrapper
+      - name: Verify original fails and patched wrapper passes all lifecycle cases
         shell: bash
         run: |
           set -euo pipefail
+          # Known first-parent baseline, merged as PR #6 with no runtime edits.
+          baseline_sha="e79c15107731e0387d1b3679f2409aef043e87f5"
+          mkdir -p test-reports
+          git show "${baseline_sha}:red/s7.js" > test-reports/original-s7.js
           patterns=(
             "late successful read cannot resurrect disconnected status"
             "late failure from an obsolete read must not mark a reconnected endpoint offline"
             "a reconnect must not overlap a pending read on the same item group"
             "late successful read must not publish obsolete data after disconnect"
             "closing an endpoint cancels its polling timer during a pending read"
+            "stale success after reconnect cannot publish old data or delay a fresh read"
+            "close reports completion even when transport disconnect rejects"
+            "disabled polling remains disabled across a disconnect and reconnect"
+            "closed endpoint ignores a late connect and a pending read result"
+            "transport error discards old read but allows a subsequent polling retry"
           )
           index=0
           for pattern in "${patterns[@]}"; do
             index=$((index + 1))
-            output="known-defect-${index}.tap"
+            negative="test-reports/baseline-${index}.tap"
+            positive="test-reports/fixed-${index}.tap"
             set +e
-            node --test --test-name-pattern="$pattern" test/known-defects/s7-endpoint.lifecycle.test.js > "$output" 2>&1
-            code=$?
+            S7_TEST_SOURCE="$PWD/test-reports/original-s7.js" node --test --test-name-pattern="$pattern" test/regression/s7-endpoint.lifecycle.test.js > "$negative" 2>&1
+            baseline_code=$?
             set -e
-            cat "$output"
-            # An expected failure is NOT a passing reliability test. Validate
-            # that only the named characterization failed, not the fixture.
-            if [ "$code" -eq 0 ]; then
-              echo "::error::Known defect did not reproduce: $pattern"
+            if [ "$baseline_code" -eq 0 ] ||
+               ! grep -Fq "not ok 1 - $pattern" "$negative" ||
+               ! grep -Fq '# fail 1' "$negative" ||
+               ! grep -Fq 'AssertionError' "$negative"; then
+              cat "$negative"
+              echo "::error::Original baseline must fail ONLY the named assertion: $pattern"
               exit 1
             fi
-            if ! grep -E "not ok [0-9]+ -" "$output" | grep -Fq -- "$pattern"; then
-              echo "::error::Named defect not observed: $pattern"
+            S7_TEST_SOURCE="$PWD/red/s7.js" node --test --test-name-pattern="$pattern" test/regression/s7-endpoint.lifecycle.test.js > "$positive" 2>&1 || {
+              cat "$positive"
+              echo "::error::Patched lifecycle regression failed: $pattern"
+              exit 1
+            }
+            if ! grep -Fq '# fail 0' "$positive" ||
+               ! grep -Fq '# pass 1' "$positive"; then
+              cat "$positive"
+              echo "::error::Patched test did not run exactly once: $pattern"
               exit 1
             fi
-            if ! grep -Fq '# fail 1' "$output"; then
-              echo "::error::Unexpected additional test failure: $pattern"
-              exit 1
-            fi
-            echo "::notice::Baseline defect reproduced: $pattern"
+            echo "::notice::Baseline-red / patch-green: $pattern"
           done
-      - name: Preserve red characterization logs
+      - name: Preserve baseline-red and corrected-green test evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: expected-failure-characterization-ubuntu-node22
-          path: known-defect-*.tap
+          name: lifecycle-baseline-red-and-fixed-green-ubuntu-node22
+          path: test-reports/*.tap
           if-no-files-found: warn
           retention-days: 14
