@@ -2,6 +2,10 @@
 
 **Document type:** acceptance policy and design targets, not current test results.
 
+## Test-first rule
+
+For connection reliability changes, first reproduce a fault against an identified baseline with a deterministic test. Keep the failing behavior and test evidence independent from the fix. An expected-failure characterization that passes a CI gate proves only that the baseline defect still reproduces. Migrate that gate to a passing regression before claiming resolution. One PR should target one coherent defect unless dependencies make separation impossible.
+
 ## Evidence and reporting
 
 Every material change should include: affected behavior; expected and observed failure before the change; a reproducible test; dependencies and runtime versions; commit and CI links; and known limitations. The following states must not be conflated:

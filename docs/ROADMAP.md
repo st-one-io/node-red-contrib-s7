@@ -4,7 +4,7 @@
 
 ## P0 — Reproduce the previously investigated Musashi connection fault
 
-**First technical priority.** Do not start with feature development or a large protocol rewrite.
+**First technical priority.** Do not start with feature development or a large protocol rewrite. PR #1 is limited to CI/documentation and baseline tests; no S7 runtime patch is included. [Issue #3](https://github.com/Missel2/node-red-contrib-s7/issues/3) tracks wrapper characterization, and [Issue #2](https://github.com/Missel2/node-red-contrib-s7/issues/2) tracks the separate pending COTP/transport teardown hypothesis. See [Musashi investigation](MUSASHI_CONNECTION_REGRESSION.md) and [evidence ledger](EVIDENCE.md). Apply targeted patches only after reproducing a failure.
 
 - [ ] Locate the actual Musashi Node-RED image patch/source, its origin commit and failure evidence.
 - [ ] Separate `@st-one-io/nodes7` / classical S7 code from any independent `s7-plus` changes.

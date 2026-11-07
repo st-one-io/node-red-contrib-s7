@@ -6,17 +6,25 @@
 
 This fork is intended to develop the existing Siemens S7 integration for Node-RED with emphasis on **reproducible tests, reliable connection lifecycle management, observable failures, diagnosable data quality and controlled releases**. New features are secondary to establishing evidence that existing behavior remains correct during faults and recovery.
 
-**Status (2026-11-06): objectives documented, implementation not yet validated.** The fork currently retains upstream version `3.1.3`. These documents describe intended engineering requirements, not verified properties of the present code. No Missel2 npm package or certified release is available. The installation instructions below continue to refer to the original upstream package, not a released build of this fork.
+**Status (2026-11-07): initial CI and test harness under review in PR #1.** The package retains upstream version `3.1.3` and its original S7 runtime code. A reproducible stale-read issue has been identified on the unmodified wrapper; it is not fixed in PR #1. No fork-specific npm release, Siemens hardware verification or industrial certification is available. The installation instructions below refer to the original upstream npm package, not a published build of this fork.
+
+**Development model:** This fork uses AI assistance for most engineering implementation and investigation. The human maintainer `Missel2` sets priorities, reviews the evidence and makes decisions on merges and releases. AI-generated code has no special exemption from testing or review. See [how the project is maintained](docs/AI_DEVELOPMENT.md).
 
 Start here:
 - [Scope and boundaries](docs/PROJECT_SCOPE.md) — what the fork does and does not attempt.
 - [Engineering and quality policy](docs/QUALITY_POLICY.md) — required behavior and evidence for changes.
 - [Test strategy](docs/TEST_STRATEGY.md) — protocol test doubles, fault injection and release validation.
 - [Roadmap](docs/ROADMAP.md) — ordered work, starting with the previously investigated connection-lifecycle defect.
+- [Human-directed, AI-led engineering](docs/AI_DEVELOPMENT.md) — responsibilities, disclosures and boundaries.
+- [Origins and acknowledgements](docs/UPSTREAM_AND_CREDITS.md) — sources, maintainers, licenses and thanks.
+- [Verification ledger](docs/EVIDENCE.md) — observed results versus unverified aims.
+- [Development work index](docs/WORK_INDEX.md) — concrete tasks and priority while issues are unavailable.
+- [Repository administration checklist](docs/REPOSITORY_SETUP.md) — manual GitHub settings required for enforceable checks.
+- [Development handoff](docs/HANDOFF.md) — resuming work from repository state.
 - [Maintainer and agent instructions](AGENTS.md) — repository workflow and limits.
 - [Decision log](docs/DECISIONS.md) — decisions and open design questions.
 
-Development may take place independently in this fork; contribution to upstream is optional. The existing upstream documentation and historical attribution follow below.
+PR #1 is deliberately limited to project governance, initial CI and baseline characterization; source code fixes are tracked separately in [#2](https://github.com/Missel2/node-red-contrib-s7/issues/2) and [#3](https://github.com/Missel2/node-red-contrib-s7/issues/3). Development may take place independently in this fork; contribution to upstream is optional. Thanks to [ST-One and the original contributors](docs/UPSTREAM_AND_CREDITS.md), the [nodes7 contributors](https://github.com/st-one-io/nodes7), and the [Node-RED community](https://github.com/node-red/node-red). The existing upstream documentation and historical attribution follow below.
 
 ---
 
@@ -143,12 +151,11 @@ Some addressing examples:
 
 ## Bugs and enhancements
 
-Please share your ideas and experiences on the [Node-RED forum](https://discourse.nodered.org/), or open an issue on the [page of the project on GitHub](https://github.com/st-one-io/node-red-contrib-s7)
-
+For this fork, please report reproducible issues and propose changes at [Missel2/node-red-contrib-s7 Issues](https://github.com/Missel2/node-red-contrib-s7/issues). The [original ST-One repository](https://github.com/st-one-io/node-red-contrib-s7) remains the upstream project. The [Node-RED forum](https://discourse.nodered.org/) is an independent community resource.
 
 ## Support
 
-Community support is offered on a best-effort basis via GitHub Issues. For commercial support, please contact us by sending an e-mail to [st-one@st-one.io](mailto:st-one@st-one.io).
+This independent fork provides no guaranteed commercial support, safety certification or Siemens endorsement. The upstream project's support contact is documented in its own [README](https://github.com/st-one-io/node-red-contrib-s7#support); it does not provide support for changes made in this fork.
 
 
 ## License

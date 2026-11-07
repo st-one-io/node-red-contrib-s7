@@ -1,35 +1,37 @@
 {
-    "name": "node-red-contrib-s7",
-    "version": "3.1.3",
-    "description": "A Node-RED node to interact with Siemens S7 PLCs",
-    "main": "index.js",
-    "dependencies": {
-        "@st-one-io/nodes7": "1.1.2"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/st-one-io/node-red-contrib-s7.git"
-    },
-    "bugs": {
-        "url": "https://github.com/st-one-io/node-red-contrib-s7/issues"
-    },
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "keywords": [
-        "hardware",
-        "s7",
-        "logo",
-        "siemens",
-        "plc",
-        "profinet",
-        "node-red"
-    ],
-    "node-red": {
-        "nodes": {
-            "s7": "red/s7.js"
-        }
-    },
-    "author": "ST-One Ltda.",
-    "license": "GPL-3.0-or-later"
+  "name": "node-red-contrib-s7",
+  "version": "3.1.3",
+  "description": "A Node-RED node to interact with Siemens S7 PLCs",
+  "main": "index.js",
+  "dependencies": {
+    "@st-one-io/nodes7": "1.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Missel2/node-red-contrib-s7.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Missel2/node-red-contrib-s7/issues"
+  },
+  "scripts": {
+    "test": "node --test test/unit/s7-endpoint.baseline.test.js",
+    "test:unit": "node --test test/unit/s7-endpoint.baseline.test.js",
+    "check:syntax": "node --check red/s7.js && node --check src/tools.js && node --check test/unit/s7-endpoint.baseline.test.js && node --check test/known-defects/s7-endpoint.lifecycle.test.js"
+  },
+  "keywords": [
+    "hardware",
+    "s7",
+    "logo",
+    "siemens",
+    "plc",
+    "profinet",
+    "node-red"
+  ],
+  "node-red": {
+    "nodes": {
+      "s7": "red/s7.js"
+    }
+  },
+  "author": "ST-One Ltda.",
+  "license": "GPL-3.0-or-later"
 }

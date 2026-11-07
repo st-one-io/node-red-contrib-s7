@@ -1,0 +1,78 @@
+name: Verification
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verification-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  wrapper-contract:
+    name: Wrapper contract (${{ matrix.os }}, Node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+        node: ['22', '24']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Syntax verification
+        run: npm run check:syntax
+      - name: Baseline behavior tests (unmodified upstream wrapper)
+        run: npm test
+
+  package-smoke:
+    name: Package dependency smoke (Ubuntu, Node 22)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # Inherited package-lock.json is stale; this is not reproducible installation.
+      - name: Install current declared dependencies without using stale lock
+        run: npm install --no-package-lock --ignore-scripts --no-audit
+      - name: Inspect package composition
+        run: npm pack --dry-run
+
+  baseline-negative-control:
+    name: Baseline must fail stale-read regression
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Show the original known defect is reproducible
+        shell: bash
+        run: |
+          set +e
+          node --test --test-name-pattern="late successful read cannot resurrect" test/known-defects/s7-endpoint.lifecycle.test.js > known-defect.tap 2>&1
+          code=$?
+          set -e
+          cat known-defect.tap
+          # This is an *expected-failure characterization*, not a passing
+          # reliability regression. It must fail for the exact known test.
+          if [ "$code" -eq 0 ]; then
+            echo "::error::Known defect did not reproduce; update the test/gate alongside the fix"
+            exit 1
+          fi
+          if ! grep -Eq "not ok .*late successful read cannot resurrect" known-defect.tap; then
+            echo "::error::Unexpected failure unrelated to the known defect"
+            exit 1
+          fi
+          echo "::notice::Known stale-read defect reproduced; not repaired in PR #1"
